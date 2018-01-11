@@ -3,15 +3,18 @@ import { h, Component } from 'preact';
 import { CLASS_NAME as CN } from '~/content/constants';
 import { BR_TAG } from '~/content/model/post';
 import { marginLeftForThumb } from './file.jsx';
-import { hasChanged } from '../../util';
 
 export default class Body extends Component {
     constructor(props) {
         super(props);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return hasChanged(this, nextProps, nextState);
+    shouldComponentUpdate(nextProps) {
+        let { post: prevPost } = this.props;
+        let { post: nextPost } = nextProps;
+
+        if (prevPost !== nextPost) return true;
+        return false;
     }
 
     render({ post, handlers }) {

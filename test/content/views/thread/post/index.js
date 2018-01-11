@@ -5,6 +5,7 @@ import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { Post as ModelPost } from '~/content/model';
+import Body from '~/content/views/thread/post/body.jsx';
 
 describe(__filename, () => {
     before(() => setup());
@@ -45,6 +46,25 @@ $`.replace(/\n/g, ''));
             let $el = render(<Post />);
             let got = $el.outerHTML;
             assert(got === undefined);
+        });
+    });
+
+    describe('Body#shouldComponentUpdate()', () => {
+        let backup;
+        before(() => backup = Body.prototype.shouldComponentUpdate);
+        after(() => Body.prototype.shouldComponentUpdate = backup);
+
+        it('should handle body change correctly', done => {
+            let $el = render(<Post {...{ post }} />);
+
+            let fn = Body.prototype.shouldComponentUpdate;
+            Body.prototype.shouldComponentUpdate = function (...args) {
+                let ret = fn.apply(this, args);
+                assert(ret === false);
+                return ret;
+            };
+
+            $el._component.forceUpdate(() => done());
         });
     });
 
