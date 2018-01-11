@@ -100,13 +100,14 @@ $`.replace(/\n/g, ''));
             $quote.dispatchEvent(new window.Event('mouseover', { bubbles: true }));
         });
 
-        it('should handle delreq', done => {
+        it('should handle delreq', () => {
+            let addDelreqs, openPanel;
+            let p1 = new Promise(resolve => addDelreqs = resolve);
+            let p2 = new Promise(resolve => openPanel = resolve);
+
             let mock = procedures(null, {
-                'thread/addDelreqs': ({ url, id }) => {
-                    assert(url === 'http://example.net');
-                    assert(id === 'post01');
-                    done();
-                }
+                'thread/addDelreqs': addDelreqs,
+                'thread/openPanel': openPanel
             });
 
             post = new ModelPost({ ...post, del: 'del' });
@@ -115,6 +116,16 @@ $`.replace(/\n/g, ''));
 
             let $btn = $el.querySelector('.gohei-post-header .gohei-del');
             $btn.dispatchEvent(new window.Event('click'));
+
+            return Promise.all([
+                p1.then(({ url, id }) => {
+                    assert(url === 'http://example.net');
+                    assert(id === 'post01');
+                }),
+                p2.then(type => {
+                    assert(type === 'DELREQ');
+                })
+            ]);
         });
 
         it('should handle soudane', done => {

@@ -77,6 +77,8 @@ function handleDelreq(event) {
     let { commit, post, thread } = this.props;
     let { url } = thread;
     commit('thread/addDelreqs', { url, id: post.id });
+
+    commit('thread/openPanel', P_TYPE.DELREQ);
 }
 
 async function handleSoudane(event) {
