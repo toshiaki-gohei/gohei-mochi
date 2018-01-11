@@ -1,0 +1,635 @@
+body.gohei {
+    color: #800000;
+    background-color: #ffffee;
+    margin: 8px;
+}
+
+a {
+    color: #1a0dab;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+a:visited { color: #660099; }
+
+input[type="checkbox"],
+input[type="radio"] {
+    width: 1em;
+    height: 1em;
+}
+
+button,
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"] {
+    cursor: pointer;
+}
+
+.gohei-text-success { color: #3c763d; }
+.gohei-text-warning { color: #f47d42; }
+.gohei-text-error { color: #d84442; }
+.gohei-text-danger { color: #d84442; }
+.gohei-text-info { color: #4255d8; }
+
+.gohei-font-smaller { font-size: smaller; }
+
+.gohei-font-bolder { font-weight: bolder; }
+
+.gohei-text-center { text-align: center; }
+
+.gohei-text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gohei-err-msg {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.gohei-link-btn {
+    color: #1a0dab;
+    background-color: transparent;
+    display: inline-block;
+    border: 0 solid transparent;
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+}
+.gohei-link-btn:hover { text-decoration: underline; }
+
+.gohei-link-btn:disabled {
+    color: #7f7f7f;
+    text-decoration: none;
+}
+
+.gohei-btn {
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1.15;
+    padding: 0.2em 0.75em;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.5em;
+    text-align: center;
+    vertical-align: middle;
+    color: #111111;
+    background-color: #ffffff;
+    outline: none;
+}
+
+.gohei-btn:hover {
+    border-color: #e2e6ea;
+    background-color: #f8f9fa;
+}
+
+.gohei-btn:active {
+    background-color: #dae0e5;
+    border-color: #d3d9df;
+}
+
+.gohei-btn:disabled {
+    color: #808080;
+    background-color: #ffffff;
+}
+
+.gohei-icon-btn {
+    display: inline-block;
+    border: 0 solid transparent;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+}
+.gohei-icon-btn:hover { opacity: 0.7; }
+
+.gohei-inline-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    top: -0.2em;
+    vertical-align: middle;
+}
+
+.gohei-float-left { float: left; }
+.gohei-float-right { float: right; }
+
+.gohei-clearfix::before,
+.gohei-clearfix::after {
+    content: " ";
+    display: table;
+}
+.gohei-clearfix::after { clear: both; }
+
+.gohei-header {
+    position: relative;
+}
+
+.gohei-header .gohei-title {
+    text-align: center;
+}
+
+.gohei-header .gohei-header-nav {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.gohei-mode-title {
+    margin: 2px 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #ffffff;
+    text-align: center;
+}
+
+.gohei-app-catalog .gohei-mode-title {
+    background-color: #0040e0;
+}
+
+.gohei-app-thread .gohei-mode-title {
+    background-color: #e04000;
+}
+
+.gohei-catalog-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gohei-catalog-menu > .gohei-menu-group {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.gohei-catalog-menu > .gohei-left-menu {
+    width: 30%;
+}
+
+.gohei-catalog-menu > .gohei-right-menu {
+    width: 70%;
+    text-align: right;
+}
+
+.gohei-catalog-menu .gohei-menu-item {
+    display: inline-block;
+    font-size: 1.1em;
+}
+
+.gohei-catalog-menu .gohei-update-btn {
+    width: 5.5em;
+}
+
+.gohei-catalog-menu .gohei-menu-link {
+    padding: 0 4px;
+}
+.gohei-catalog-menu .gohei-menu-link:visited { color: #1a0dab; }
+
+.gohei-catalog-menu .gohei-spacer {
+    display: inline-block;
+    width: 1px;
+    height: 1.1em;
+    margin: 0 4px;
+    vertical-align: top;
+    background-color: #808080;
+}
+
+.gohei-catalog {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gohei-catalog-item {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.gohei-catalog-item > .gohei-border-container {
+    margin: 2px;
+    border: 1px solid #eeaa88;
+}
+
+.gohei-catalog-item > .gohei-border-container:hover {
+    margin: 0;
+    box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.gohei-catalog-item .gohei-thread-thumb {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gohei-catalog-item .gohei-thread-title {
+    font-size: smaller;
+}
+
+.gohei-catalog-item .gohei-thread-postnum {
+    margin-right: 2px;
+}
+
+.gohei-catalog-item .gohei-thread-newpostnum {
+    font-size: smaller;
+    color: #d84442;
+}
+
+.gohei-thread {
+    margin-right: 170px;
+    margin-bottom: 8px;
+}
+
+.gohei-thread > .gohei-newpost-msg {
+    color: #a05050;
+    font-size: 0.8em;
+    border-top: 1px solid #eeaa88;
+    margin: 8px 0;
+    padding: 4px 0;
+}
+
+.gohei-thread > .gohei-display-more {
+    text-align: center;
+}
+
+.gohei-app-thread > main > .gohei-console {
+    margin-left: 1em;
+}
+
+.gohei-app-thread > main > .gohei-console > .gohei-msg,
+.gohei-app-thread > main > .gohei-console > .gohei-thread-action {
+    margin-bottom: 4px;
+}
+
+.gohei-thread-action .gohei-update-btn {
+    font-size: 1.1em;
+    width: 5.5em;
+}
+
+.gohei-thread-action .gohei-last-updated {
+    margin-left: 0.4em;
+    font-size: smaller;
+}
+
+.gohei-thread-action .gohei-updating-msg,
+.gohei-thread-action .gohei-status-msg,
+.gohei-thread-action .gohei-update-detail {
+    margin-left: 1em;
+}
+
+.gohei-thread-action .gohei-update-detail > .gohei-msg {
+    margin-right: 0.5em;
+}
+
+.gohei-app-thread > main > .gohei-panel {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    z-index: 300;
+    background-color: #ffffee;
+}
+
+.gohei-app-thread .gohei-panel-icon {
+    width: 64px;
+    height: 64px;
+}
+
+.gohei-app-thread .gohei-panel-content {
+    width: 496px;
+    border: 2px solid #eeaa88;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-close-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 301;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tabsbar {
+    margin: 0 4px 4px 4px;
+    padding: 0;
+    border-top: 1px solid #eeaa88;
+    list-style: none;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tabsbar > .gohei-tab {
+    display: inline-block;
+    line-height: 1.5;
+    margin-top: -1px;
+    width: 5em;
+    border: 1px solid transparent;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tabsbar > .gohei-tab:hover {
+    text-decoration: underline;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tabsbar > .gohei-active {
+    border-color: #ffffee #eeaa88 #eeaa88;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tabsbar > .gohei-active:hover {
+    text-decoration: none;
+}
+
+.gohei-app-thread .gohei-panel-content > .gohei-tab-content {
+    margin: 4px;
+}
+
+.gohei-postform .gohei-row {
+    position: relative;
+    margin: 2px 0;
+    background-color: #eeaa88;
+}
+
+.gohei-postform .gohei-row .gohei-col1 {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 18%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gohei-postform .gohei-row .gohei-col2 {
+    margin-left: 18%;
+    padding-left: 2px;
+    background-color: #ffffee;
+}
+
+.gohei-postform .gohei-input-name,
+.gohei-postform .gohei-input-email {
+    width: 14em;
+}
+
+.gohei-postform .gohei-input-subject {
+    width: 17em;
+    margin-right: 8px;
+}
+
+.gohei-postform .gohei-input-comment {
+    box-sizing: border-box;
+    width: 100%;
+    height: 8em;
+}
+
+.gohei-postform .gohei-input-file {
+    width: 24em;
+}
+
+.gohei-postform .gohei-input-password {
+    width: 8em;
+    margin-right: 4px;
+}
+
+.gohei-postform .gohei-label-comment {
+    width: 4em;
+}
+
+.gohei-postform .gohei-drop-msg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color: #800000;
+    font-size: 2em;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gohei-postform .gohei-preview-img,
+.gohei-postform .gohei-preview-video {
+    max-width: 250px;
+    max-height: 250px;
+}
+
+.gohei-delreq > .gohei-left-pane,
+.gohei-delreq > .gohei-right-pane {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 0 4px;
+    width: 50%;
+    vertical-align: top;
+}
+
+.gohei-delreq .gohei-row {
+    margin: 4px 0;
+}
+
+.gohei-delreq .gohei-row.gohei-scroll {
+    height: 11em;
+    overflow-y: auto;
+}
+
+.gohei-delreq .gohei-delreq-list {
+    border-collapse: collapse;
+}
+
+.gohei-delreq .gohei-delreq-list .gohei-tr {
+    vertical-align: middle;
+}
+
+.gohei-delreq .gohei-delreq-list .gohei-tr > .gohei-td {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    padding: 0 0.3em;
+}
+
+.gohei-delreq .gohei-delreq-list .gohei-tr > .gohei-selectable {
+    cursor: pointer;
+}
+
+.gohei-delreq .gohei-delreq-list .gohei-tr:hover > .gohei-selectable {
+    border-bottom: 1px solid #800000;
+}
+
+.gohei-delreq .gohei-select-reason {
+    margin-left: 4.5em;
+}
+
+.gohei-delreq .gohei-delreq-btn {
+    position: relative;
+    width: 10em;
+    margin-left: 50%;
+    left: -5em;
+}
+
+.gohei-delreq .gohei-clear-btn {
+    margin-left: 4px;
+    font-size: smaller;
+}
+
+.gohei-delreq .gohei-reasons {
+    margin: 4px 0;
+}
+
+.gohei-delreq .gohei-reasons > .gohei-radio {
+    position: relative;
+    display: block;
+    margin: 2px 0;
+    padding-left: 1.2em;
+    cursor: pointer;
+}
+
+.gohei-delreq .gohei-reasons > .gohei-radio:hover {
+    text-decoration: underline;
+}
+
+.gohei-delreq .gohei-reasons > .gohei-radio > .gohei-radio-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -0.5em;
+}
+
+.gohei-popup-container > .gohei-popup {
+    position: absolute;
+    border: 1px solid #eeaa88;
+    padding: 2px;
+    box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.4);
+    z-index: 400;
+}
+
+.gohei-popup-container > .gohei-post-popup {
+    font-size: 0.9rem;
+    background-color: #ffffee;
+    max-width: 800px;
+    min-width: 30em; /* futaba css: .thre table { min-width: 480px } -> 1rem(16px) * 30 */
+}
+
+.gohei-popup-container > .gohei-post-popup .gohei-post {
+    margin: 2px;
+}
+
+.gohei-app-thread .gohei-notice {
+    width: 50%;
+    margin: 0 auto;
+    font-size: smaller;
+}
+
+.gohei-app-thread #gohei-ad-on-thread {
+    width: 728px;
+    margin: 4px auto;
+}
+
+.gohei-app-thread #gohei-ad-bottom {
+    text-align: center;
+}
+
+.gohei-reply-left-mark {
+    float: left;
+    margin: 0 4px;
+}
+
+.gohei-post {
+    margin: 4px 0;
+    padding: 4px 6px;
+    position: relative;
+}
+
+.gohei-reply {
+    display: table;
+    background-color: #f0e0d6;
+}
+
+.gohei-post-header {
+    line-height: 1.2;
+    vertical-align: top;
+}
+
+.gohei-post-header > .gohei-index,
+.gohei-post-header > .gohei-subject,
+.gohei-post-header > .gohei-name,
+.gohei-post-header > .gohei-mailto,
+.gohei-post-header > .gohei-date,
+.gohei-post-header > .gohei-no,
+.gohei-post-header > .gohei-id,
+.gohei-post-header > .gohei-ip,
+.gohei-post-header > .gohei-counter,
+.gohei-post-header > .gohei-del,
+.gohei-post-header > .gohei-sod {
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.gohei-post-header > .gohei-subject {
+    color: #cc1105;
+    font-weight: bolder;
+}
+
+.gohei-post-header > .gohei-name {
+    color: #117743;
+    font-weight: bolder;
+}
+
+.gohei-post-header > .gohei-mailto {
+    color: #0597cc;
+}
+
+.gohei-post-header > .gohei-link-btn {
+    line-height: 1.2;
+}
+
+.gohei-post-file .gohei-file-thumb {
+    float: left;
+    margin: 0 20px;
+}
+
+.gohei-reply .gohei-post-file .gohei-file-name {
+    margin-left: 20px;
+}
+
+.gohei-post-body {
+    margin-top: 0.8em;
+    margin-bottom: 1.2em;
+    max-width: 50em; /* futaba css: blockquote { max-width: 800px } -> 1rem(16px) * 50 */
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+.gohei-post-body .gohei-quote {
+    color: #789922;
+}
+
+.gohei-post-body .gohei-delete {
+    color: #ff0000;
+}
+
+.gohei-post-body .gohei-delete-na- {
+    color: #ff0000;
+    font-weight: bolder;
+}
+
+.gohei-post-action {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: #ffffee;
+    font-size: 0.9em;
+    border: 1px solid #eeaa88;
+    padding: 0.14em 0.5em;
+    border-radius: 1em;
+}
+
+.gohei-post-action .gohei-link-btn {
+    margin-left: 0.5em;
+}
+
+.gohei-footer .gohei-credits {
+    text-align: center;
+    font-size: smaller;
+}

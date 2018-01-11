@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "gohei-mochi",
+  "version": "0.0.0",
+
+  "description": "WebExtension to make futaba(2chan.net) life so-so good",
+
+  "permissions": [
+    "*://*/*",
+    "tabs", "webRequest", "webRequestBlocking"
+  ],
+
+  "background": {
+    "scripts": ["background/gohei-mochi.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.2chan.net/*"],
+      "js": ["content-scripts/gohei-mochi.js"],
+      "css": ["content-scripts/normalize.css", "content-scripts/gohei-mochi.css"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "web_accessible_resources": [
+    "resources/js-error-preventer.js"
+  ]
+}

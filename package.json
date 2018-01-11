@@ -1,0 +1,59 @@
+{
+  "name": "gohei-mochi",
+  "version": "0.0.1",
+  "description": "WebExtension to make futaba(2chan.net) life so-so good",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production ./tasks/build.sh",
+    "build-dev": "NODE_ENV=development ./tasks/build.sh",
+    "clean": "./tasks/clean.sh",
+    "dist": "NODE_ENV=production ./tasks/dist.sh",
+    "lint": "eslint --ext .js,.jsx src test tasks || exit 0",
+    "test": "mocha --recursive -r babel-register -r test/support/before-test.js",
+    "test-browser": "karma start test/support/karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toshiaki-gohei/gohei-mochi"
+  },
+  "homepage": "https://github.com/toshiaki-gohei/gohei-mochi",
+  "author": "toshiaki-gohei",
+  "license": "MPL-2.0",
+  "engines": {
+    "node": ">= 8.6.0"
+  },
+  "dependencies": {
+    "entities": "1.1.x",
+    "eventemitter3": "3.0.x",
+    "jconv": "0.1.x",
+    "js-cookie": "2.2.x",
+    "normalize.css": "7.0.x",
+    "preact": "8.2.x",
+    "redux": "3.7.x"
+  },
+  "devDependencies": {
+    "babel-plugin-root-import": "5.x",
+    "babel-plugin-transform-object-rest-spread": "6.26.x",
+    "babel-preset-es2015": "6.24.x",
+    "babel-preset-power-assert": "1.x",
+    "babel-preset-react": "6.24.x",
+    "babel-register": "6.26.x",
+    "babelify": "8.0.x",
+    "browserify": "15.0.x",
+    "envify": "4.x",
+    "eslint": "4.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react": "7.x",
+    "jsdom": "~11.x",
+    "karma": "2.0.x",
+    "karma-browserify": "5.1.x",
+    "karma-chrome-launcher": "2.x",
+    "karma-firefox-launcher": "1.x",
+    "karma-mocha": "1.3.x",
+    "licensify": "3.x",
+    "mocha": "4.x",
+    "node-fetch": "^2.0.0-alpha.9",
+    "power-assert": "1.x"
+  }
+}

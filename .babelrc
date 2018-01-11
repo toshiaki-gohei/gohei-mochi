@@ -1,0 +1,19 @@
+{
+  "presets": [
+    "es2015", "react"
+  ],
+  "plugins": [
+    "transform-object-rest-spread",
+    ["transform-react-jsx", { "pragma":"h" }],
+    ["root-import", [
+      { "rootPathSuffix":"src" },
+      { "rootPathPrefix": "@", "rootPathSuffix": "test"}]]
+  ],
+  "env": {
+    "development": {
+      "presets": [
+        "power-assert"
+      ]
+    }
+  }
+}

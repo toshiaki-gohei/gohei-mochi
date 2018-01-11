@@ -1,0 +1,47 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 2017,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "experimentalObjectRestSpread": true
+        }
+    },
+    "plugins": [ "react", "jsx-a11y" ],
+    "rules": {
+        "indent": [ "error", 4, {
+            "CallExpression": { "arguments": "first" },
+            "ArrayExpression": "first",
+            "ObjectExpression": "first",
+            "ignoredNodes": [ "JSXElement", "JSXAttribute" ]
+        } ],
+        "quotes": [ "error", "single" ],
+        "linebreak-style": [ "error", "unix" ],
+        "semi": [ "error", "always" ],
+
+        "import/no-named-as-default": "off",
+        "import/no-named-as-default-member": "off",
+        "import/no-unresolved": "off",
+
+        "react/no-unknown-property": [ "error", { ignore: [ "class" ] } ],
+        "react/prop-types": "off",
+        "react/react-in-jsx-scope": "off",
+
+        "jsx-a11y/media-has-caption": "off"
+    },
+    "settings": {
+        "react": { "pragma": "h" }
+    },
+    "env": {
+        "es6": true,
+        "node": true,
+        "browser": true,
+        "webextensions": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/errors", "plugin:import/warnings",
+        "plugin:react/recommended",
+        "plugin:jsx-a11y/recommended"
+    ]
+}
