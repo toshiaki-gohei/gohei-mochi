@@ -75,8 +75,8 @@ describe(__filename, () => {
             let b = new Post({
                 index: 1, no: '12301',
                 raw: {
-                    body: '<blockquote><span class="gohei-delete">書き込みをした人によって削除されました</span><br />after body</blockquote>',
-                    blockquote: 'after blockquote'
+                    body: '<blockquote><font color="#ff0000">書き込みをした人によって削除されました</font><br />after body</blockquote>',
+                    blockquote: '<span class="gohei-delete">書き込みをした人によって削除されました</span><br />after blockquote'
                 },
                 state: STATE.DELETE_BY_WRITER
             });
@@ -95,9 +95,9 @@ describe(__filename, () => {
                 ...b.object(),
                 raw: {
                     header: null,
-                    body: '<blockquote><span class="gohei-delete">書き込みをした人によって削除されました</span><br />after body</blockquote>',
+                    body: '<blockquote><font color="#ff0000">書き込みをした人によって削除されました</font><br />after body</blockquote>',
                     fileH: null, fileT: null,
-                    blockquote: 'after blockquote<br />before blockquote'
+                    blockquote: '<span class="gohei-delete">書き込みをした人によって削除されました</span><br />before blockquote'
                 },
                 state: STATE.DELETE_BY_WRITER
             };

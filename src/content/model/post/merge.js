@@ -41,7 +41,7 @@ function mergeBody(merged = {}, a, b) {
 
     if (b.state) {
         merged.state = b.state;
-        merged.raw.blockquote = `${b.raw.blockquote}${BR_TAG}${a.raw.blockquote}`;
+        merged.raw.blockquote = mergeBlockquote(a, b);
         isChanged = true;
     }
     merged.raw.body = b.raw.body;
@@ -61,4 +61,11 @@ function mergeFile(merged = {}, a, b) {
     }
 
     return isChanged;
+}
+
+function mergeBlockquote(a, b) {
+    let lines = b.raw.blockquote.split(BR_TAG);
+    let deleteMessage = lines[0];
+
+    return `${deleteMessage}${BR_TAG}${a.raw.blockquote}`;
 }
