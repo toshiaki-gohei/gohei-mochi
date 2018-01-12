@@ -154,25 +154,27 @@ function parseBlockquote(body) {
     let bqlines = blockquote.split('<br>');
     let lines = [];
 
-    for (let i = 0, len = bqlines.length; i < len; ++i) {
-        if (i !== 0) lines.push(BR_TAG);
-        let bqline = bqlines[i];
-
-        let line = parseStaticBlockquote(bqline);
-        if (line != null) {
-            lines.push(line);
-            continue;
-        }
-
-        line = parseLineWithFont(bqline);
+    for (let bqline of bqlines) {
+        let line = parseLine(bqline);
         lines.push(line);
     }
 
-    return lines.join('');
+    return lines.join(BR_TAG);
 }
 
-function parseStaticBlockquote(blockquote) {
-    switch (blockquote) {
+function parseLine(line) {
+    let dm = parseDeleteMessage(line);
+    if (dm != null) return dm;
+
+    let ql = parseQuoteLine(line);
+    if (ql != null) return ql;
+
+    line = parseLineWithFont(line);
+    return line;
+}
+
+function parseDeleteMessage(line) {
+    switch (line) {
     case '<font color="#ff0000">書き込みをした人によって削除されました</font>':
         return `<span class="${CN.post.DELETE}">書き込みをした人によって削除されました</span>`;
     case '<font color="#ff0000">スレッドを立てた人によって削除されました</font>':
@@ -184,13 +186,13 @@ function parseStaticBlockquote(blockquote) {
     }
 }
 
+function parseQuoteLine(line) {
+    if (!/^<font color="#789922">(.+?)<\/font>$/.test(line)) return null;
+    return `<span class="${CN.post.QUOTE}">${RegExp.$1}</span>`;
+}
+
 function parseLineWithFont(line) {
     if (line == null) return line;
-
-    // quote
-    if (/^<font color="#789922">(.+?)<\/font>$/.test(line)) {
-        return `<span class="${CN.post.QUOTE}">${RegExp.$1}</span>`;
-    }
 
     // [・3・], dice
     return line.replace(/<font color="(.+?)">(.+?)<\/font>/g,
@@ -256,9 +258,10 @@ export const internal = {
     parseReply,
     parseOriginalPost,
     parseHeader,
-    parseState,
-    parseLineWithFont,
     parseBlockquote,
+    parseQuoteLine,
+    parseLineWithFont,
+    parseState,
     parseSoudane,
     parseFile,
     create

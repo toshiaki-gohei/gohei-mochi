@@ -56,18 +56,24 @@ describe(__filename, () => {
         });
     });
 
+    describe('parseQuoteLine()', () => {
+        const { parseQuoteLine } = internal;
+
+        it('should parse quote line', () => {
+            let line = '<font color="#789922">&gt;引用文</font>';
+            let got = parseQuoteLine(line);
+            let exp = '<span class="gohei-quote">&gt;引用文</span>';
+            assert(got === exp);
+        });
+    });
+
     describe('parseLineWithFont()', () => {
         const { parseLineWithFont } = internal;
 
         it('should parse line correctly', () => {
-            let line = '<font color="#789922">&gt;引用文</font>';
+            let line = 'foo<font color="blue">hoge</font>bar<font color="red">fuga</font>baz';
             let got = parseLineWithFont(line);
-            let exp = '<span class="gohei-quote">&gt;引用文</span>';
-            assert(got === exp);
-
-            line = 'foo<font color="blue">hoge</font>bar<font color="red">fuga</font>baz';
-            got = parseLineWithFont(line);
-            exp = 'foo<span style="color: blue;">hoge</span>bar<span style="color: red;">fuga</span>baz';
+            let exp = 'foo<span style="color: blue;">hoge</span>bar<span style="color: red;">fuga</span>baz';
             assert(got === exp);
         });
 
