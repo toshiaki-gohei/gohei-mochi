@@ -1,5 +1,6 @@
 'use strict';
 import { h } from 'preact';
+import { Download } from '../../feather-icons.jsx';
 
 export default function File({ post }) {
     if (!post.hasFile()) return null;
@@ -11,12 +12,20 @@ export default function File({ post }) {
 <div class="gohei-post-file">
   <div>
     {label}
-    <a href={file.url} class="gohei-file-name" target="_blank">{file.name}</a>
+    <a href={file.url} class="gohei-file-name" target="_blank" download={file.name}>
+      <Icon {...post}/>
+      {file.name}
+    </a>
     <span class="gohei-file-size">({file.size} B)</span>
   </div>
   <Thumb {...{ file }} />
 </div>
     );
+}
+
+function Icon({ index }) {
+    if (index === 0) return null;
+    return <span class="gohei-inline-icon"><Download /></span>;
 }
 
 function Thumb({ file }) {

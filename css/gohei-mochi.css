@@ -589,6 +589,11 @@ input[type="file"] {
     margin-left: 20px;
 }
 
+.gohei-reply .gohei-post-file .gohei-file-name > .gohei-inline-icon {
+    position: relative;
+    top: -0.1em;
+}
+
 .gohei-post-body {
     margin-top: 0.8em;
     margin-bottom: 1.2em;

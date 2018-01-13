@@ -26,7 +26,7 @@ describe(__filename, () => {
             let exp = new RegExp(`
 <div class="gohei-post-file">
 <div>
-<a href="file-url" class="gohei-file-name" target="_blank">file-name</a>
+<a href="file-url" class="gohei-file-name" target="_blank" download="file-name"><span class="gohei-inline-icon">.+</span>file-name</a>
 <span class="gohei-file-size">\\(888 B\\)</span>
 </div>
 <a href="file-url" target="_blank">
@@ -45,7 +45,7 @@ describe(__filename, () => {
             let exp = new RegExp(`
 <div class="gohei-post-file">
 <div>
-画像ファイル名：<a href="file-url" class="gohei-file-name" target="_blank">file-name</a>
+画像ファイル名：<a href="file-url" class="gohei-file-name" target="_blank" download="file-name">file-name</a>
 <span class="gohei-file-size">\\(888 B\\)</span>
 </div>
 <a href="file-url" target="_blank">
