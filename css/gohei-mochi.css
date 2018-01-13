@@ -106,10 +106,6 @@ input[type="file"] {
 
 .gohei-inline-icon {
     display: inline-block;
-    width: 1em;
-    height: 1em;
-    position: relative;
-    top: -0.2em;
     vertical-align: middle;
 }
 
@@ -619,7 +615,6 @@ input[type="file"] {
     right: 0;
     bottom: 0;
     background-color: #ffffee;
-    font-size: 0.9em;
     border: 1px solid #eeaa88;
     padding: 0.14em 0.5em;
     border-radius: 1em;
@@ -627,6 +622,8 @@ input[type="file"] {
 
 .gohei-post-action .gohei-link-btn {
     margin-left: 0.5em;
+    font-size: 0.9em;
+    vertical-align: middle;
 }
 
 .gohei-footer .gohei-credits {
