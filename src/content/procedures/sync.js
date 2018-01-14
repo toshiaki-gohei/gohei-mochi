@@ -16,3 +16,8 @@ export function thread(store, url) {
 export function threadPosts(store, url) {
     return getThreadPosts(store, url);
 }
+
+export function preferences(store) {
+    let { ui } = store.getState();
+    return ui.preferences;
+}

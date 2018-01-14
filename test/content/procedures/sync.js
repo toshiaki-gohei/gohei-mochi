@@ -89,4 +89,15 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
     });
+
+    describe('preferences()', () => {
+        const { preferences } = procedures;
+
+        const store = createStore();
+
+        it('should return preferences', () => {
+            let got = preferences(store);
+            assert(got);
+        });
+    });
 });
