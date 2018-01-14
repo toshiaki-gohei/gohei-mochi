@@ -5,6 +5,7 @@ import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { CATALOG_SORT } from '~/content/constants';
+import cookie from 'js-cookie';
 
 describe(__filename, () => {
     before(() => setup());
@@ -114,21 +115,39 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
-        it('should commit procedure if click update', done => {
+        it('should commit procedure if click update', () => {
+            let set, update;
+            let p1 = new Promise(resolve => set = resolve);
+            let p2 = new Promise(resolve => update = resolve);
+
             let mock = procedures(null, {
-                'catalog/update': (url, { sort }) => {
-                    assert(url === 'http://example.net/?mode=cat');
-                    assert(sort === 1);
-                    done();
-                }
+                'preferences/set': set,
+                'catalog/update': (...args) => update(args)
             });
 
             props.catalog.sort = CATALOG_SORT.NEWEST;
+            cookie.set('cxyl', '15x10x5x1x2');
 
             let $el = render(<Nav {...{ ...props, commit: mock }} />);
 
             let $btn = $el.querySelector('.gohei-update-btn');
             $btn.dispatchEvent(new window.Event('click'));
+
+            return Promise.all([
+                p1.then(pref => {
+                    let got = pref.catalog;
+                    let exp = {
+                        colnum: 15, rownum: 10,
+                        title: { length: 5, position: 1 },
+                        thumb: { size: 2 }
+                    };
+                    assert.deepStrictEqual(got, exp);
+                }),
+                p2.then(([ url, { sort } ]) => {
+                    assert(url === 'http://example.net/?mode=cat');
+                    assert(sort === 1);
+                })
+            ]);
         });
 
         it('should commit procedure if click sort', done => {
