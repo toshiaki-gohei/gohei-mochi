@@ -8,10 +8,10 @@ import Main from '../views/catalog/index.jsx';
 import { nav, footer } from '../views/commons';
 import { parseAll } from '../parser/catalog';
 import * as preferences from '../model/preferences';
+import { getPreferences } from '../util/cookie';
 import { createElement, $ } from '../util/dom';
 import { cleanCatalogUrl } from '../util/url';
 import EventEmitter from '~/common/event-emitter';
-import jsCookie from 'js-cookie';
 import stopwatch from '~/common/stopwatch';
 
 export default class App {
@@ -124,14 +124,7 @@ function getSort(url) {
     return sort == null ? null : +sort;
 }
 
-function getPreferences() {
-    let cxyl = jsCookie.get('cxyl') || null;
-    let cookie = { cxyl };
-    return { cookie };
-}
-
 export const internal = {
     createInner,
-    getSort,
-    getPreferences
+    getSort
 };

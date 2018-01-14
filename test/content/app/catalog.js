@@ -119,28 +119,4 @@ describe(__filename, () => {
             assert(got === null);
         });
     });
-
-    describe('getPreferences()', () => {
-        const { getPreferences } = internal;
-
-        beforeEach(() => cookie.remove('cxyl'));
-
-        it('should get preferences', () => {
-            cookie.set('cxyl', '14x6x4x0x0');
-
-            let got = getPreferences();
-            let exp = {
-                cookie: { cxyl: '14x6x4x0x0' }
-            };
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should get preferences if no cookie', () => {
-            let got = getPreferences();
-            let exp = {
-                cookie: { cxyl: null }
-            };
-            assert.deepStrictEqual(got, exp);
-        });
-    });
 });
