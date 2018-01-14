@@ -23,6 +23,11 @@ export default class File {
         return obj;
     }
 
+    isWebm() {
+        if (/\.webm$/.test(this.url)) return true;
+        return false;
+    }
+
     static create(opts) {
         if (opts == null) return null;
         return new File(opts);

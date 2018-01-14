@@ -71,4 +71,21 @@ describe(__filename, () => {
             assert(got.thumb !== file.thumb);
         });
     });
+
+    describe('isWebm()', () => {
+        it('should return true if file is webm', () => {
+            let file = new File({ url: '/b/src/123001.webm' });
+            assert(file.isWebm() === true);
+        });
+
+        it('should return false if file is not webm', () => {
+            let file = new File({ url: '/b/src/123001.jpg' });
+            assert(file.isWebm() === false);
+        });
+
+        it('should return false if no url', () => {
+            let file = new File();
+            assert(file.isWebm() === false);
+        });
+    });
 });
