@@ -27,9 +27,9 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-panel" role="presentation">
-<button class="gohei-icon-btn gohei-panel-icon" style="">.+</button>
+<button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu" style=""></button>
 <div class="gohei-panel-content" style="display: none;">
-<button class="gohei-icon-btn gohei-close-btn">.+</button>
+<button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
 <div class="gohei-postform" style="display: none;">.+</div>
 <div class="gohei-delreq" style="display: none;">.+</div>
@@ -52,9 +52,9 @@ $`.replace(/\n/g, ''));
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-panel" role="presentation">
-<button class="gohei-icon-btn gohei-panel-icon" style="display: none;">.+</button>
+<button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu" style="display: none;"></button>
 <div class="gohei-panel-content" style="">
-<button class="gohei-icon-btn gohei-close-btn">.+</button>
+<button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
 <div class="gohei-postform" style="">.+</div>
 <div class="gohei-delreq" style="display: none;">.+</div>

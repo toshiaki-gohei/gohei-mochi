@@ -11,7 +11,7 @@ toshiaki-gohei
 
 Credits
 -------
-[feather-icons](https://github.com/toshiaki-gohei/gohei-mochi/blob/master/src/content/views/feather-icons.jsx): Copyright (c) 2013-2017 Cole Bemis  
+[feather icons](https://github.com/toshiaki-gohei/gohei-mochi/blob/master/images/feather/): Copyright (c) 2013-2017 Cole Bemis  
 [Feather](https://feathericons.com/) is licensed under the [MIT License](https://github.com/feathericons/feather/blob/master/LICENSE).
 
 License

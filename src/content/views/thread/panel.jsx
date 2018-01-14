@@ -2,7 +2,6 @@
 import { h, Component } from 'preact';
 import Postform from './form-post.jsx';
 import Delreq from './delreq.jsx';
-import { Menu, X } from '../feather-icons.jsx';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 
 export default class Panel extends Component {
@@ -35,7 +34,7 @@ export default class Panel extends Component {
         return (
 // eslint-disable-next-line jsx-a11y/click-events-have-key-events
 <div class="gohei-panel" onClick={stopPropagation} role="presentation">
-  <Icon {...{ panel, url: this._iconUrl, open: handlers.open }} />
+  <Icon {...{ panel, open: handlers.open }} />
   <Content {...{ commit, panel, app, handlers }} />
 </div>
         );
@@ -44,8 +43,8 @@ export default class Panel extends Component {
 
 function Icon({ panel, open }) {
     let style = panel.isOpen ? { display: 'none' } : null;
-    return <button class="gohei-icon-btn gohei-panel-icon" style={style}
-                   onClick={open}><Menu /></button>;
+    return <button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu"
+                   style={style} onClick={open} />;
 }
 
 function Content({ commit, panel, app, handlers }) {
@@ -56,7 +55,7 @@ function Content({ commit, panel, app, handlers }) {
 
     return(
 <div class="gohei-panel-content" style={style}>
-  <button class="gohei-icon-btn gohei-close-btn" onClick={close}><X /></button>
+  <button class="gohei-icon-btn gohei-close-btn gohei-icon-close" onClick={close} />
   <TabContent {...{ commit, panel, app }} />
   <TabsBar {...{ panel, handlers }} />
 </div>

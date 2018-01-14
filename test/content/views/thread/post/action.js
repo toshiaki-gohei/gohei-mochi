@@ -17,7 +17,7 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post-action">
-<span class="gohei-inline-icon">.+</span>
+<span class="gohei-inline-icon gohei-icon-edit"></span>
 <button class="gohei-link-btn" type="button">No\\.</button>
 <button class="gohei-link-btn" type="button">コメント</button>
 </div>
@@ -32,7 +32,7 @@ $`.replace(/\n/g, ''));
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post-action">
-<span class="gohei-inline-icon">.+</span>
+<span class="gohei-inline-icon gohei-icon-edit"></span>
 <button class="gohei-link-btn" type="button">No\\.</button>
 <button class="gohei-link-btn" type="button">コメント</button>
 <button class="gohei-link-btn" type="button">ファイル</button>

@@ -1,6 +1,5 @@
 'use strict';
 import { h } from 'preact';
-import { Edit } from '../../feather-icons.jsx';
 
 export default function Action({ post, handlers, isActive = true }) {
     if (!isActive) return null;
@@ -9,7 +8,7 @@ export default function Action({ post, handlers, isActive = true }) {
 
     return (
 <div class="gohei-post-action">
-  <span class="gohei-inline-icon"><Edit /></span>
+  <span class="gohei-inline-icon gohei-icon-edit" />
   <button class="gohei-link-btn" type="button" onClick={quoteNo}>No.</button>
   <button class="gohei-link-btn" type="button" onClick={quoteComment}>コメント</button>
   <QuoteFileBtn {...{ post, quoteFile }} />

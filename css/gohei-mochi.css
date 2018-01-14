@@ -104,9 +104,41 @@ input[type="file"] {
 }
 .gohei-icon-btn:hover { opacity: 0.7; }
 
+.gohei-icon-btn::after {
+    content: "";
+    display: inline-block;
+}
+
+.gohei-icon-btn.gohei-icon-close::after {
+    min-width: 24px;
+    min-height: 24px;
+    background: transparent url("moz-extension://__MSG_@@extension_id__/resources/images/feather/close.svg") no-repeat center / 100%;
+}
+
+.gohei-icon-btn.gohei-icon-menu::after {
+    min-width: 64px;
+    min-height: 64px;
+    background: transparent url("moz-extension://__MSG_@@extension_id__/resources/images/feather/menu.svg") no-repeat center / 100%;
+}
+
 .gohei-inline-icon {
     display: inline-block;
     vertical-align: middle;
+}
+
+.gohei-inline-icon::after {
+    content: "";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+}
+
+.gohei-inline-icon.gohei-icon-download::after {
+    background: transparent url("moz-extension://__MSG_@@extension_id__/resources/images/feather/download.svg") no-repeat center / 100%;
+}
+
+.gohei-inline-icon.gohei-icon-edit::after {
+    background: transparent url("moz-extension://__MSG_@@extension_id__/resources/images/feather/edit.svg") no-repeat center / 100%;
 }
 
 .gohei-float-left { float: left; }
