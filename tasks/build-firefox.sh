@@ -50,6 +50,11 @@ function build_css() {
     cat "css/$PKG_NAME.css" >> "$dist_file"
 }
 
+function copy_images() {
+    cp -r images "$ar_dir"
+}
+
 build_manifest
 build_js
 build_css
+copy_images
