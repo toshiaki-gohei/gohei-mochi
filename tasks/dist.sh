@@ -13,5 +13,5 @@ echo "test: done"
 npm run build
 echo "build: done"
 
-. ./tasks/pack-zip.sh
+./tasks/pack-zip.sh
 echo "pack-zip: done"

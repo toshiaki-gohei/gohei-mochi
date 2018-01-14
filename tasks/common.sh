@@ -19,16 +19,6 @@ function load_pkg_author() {
     node -e "console.log(require('$PACKAGE_JSON').author);"
 }
 
-function banner() {
-    local pkg_name pkg_version pkg_author
-    pkg_name=$(load_pkg_name)
-    pkg_version=$(load_pkg_version)
-    pkg_author=$(load_pkg_author)
-
-    echo "\
-/*!
- * $pkg_name $pkg_version
- * (C) 2017 $pkg_author
- */\
-"
-}
+readonly PKG_NAME=$(load_pkg_name)
+readonly PKG_VERSION=$(load_pkg_version)
+readonly PKG_AUTHOR=$(load_pkg_author)

@@ -3,19 +3,26 @@ set -eu
 
 . ./tasks/common.sh
 
-pkg_name=$(load_pkg_name)
-pkg_version=$(load_pkg_version)
+firefox_dir=$DIST_DIR/$PKG_NAME-firefox
+chrome_dir=$DIST_DIR/$PKG_NAME-chrome
 
-work_dir=$DIST_DIR
-src_dir=$pkg_name
-dist_file=$pkg_name-$pkg_version.zip
+function pack_zip() {
+    local src_dir work_dir
+    src_dir=$(basename "$1")
+    work_dir=$1/..
 
-cd $work_dir
+    cd "$work_dir"
 
-if [ ! -d "$src_dir" ]; then
-    echo "no such build-dir: $work_dir/$src_dir" >&2
-    exit 1
-fi
+    if [ ! -d "$src_dir" ]; then
+        echo "pack_zip: no such src_dir: $src_dir" >&2
+        return
+    fi
 
-rm -f "$dist_file"
-zip -r "$dist_file" "$src_dir"
+    local dist_file=$src_dir-$PKG_VERSION.zip
+
+    rm -f "$dist_file"
+    zip -qr "$dist_file" "$src_dir"
+}
+
+(pack_zip "$firefox_dir")
+(pack_zip "$chrome_dir")
