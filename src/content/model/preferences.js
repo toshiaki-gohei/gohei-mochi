@@ -1,34 +1,56 @@
 'use strict';
 import { F } from '~/common/util';
 
-// futaba cookie preferences
+// futaba preferences (cookie and localStorage)
 
 export function create(opts) {
-    let {
-        colnum = null,
-        rownum = null,
-        title: { length = null, position = null } = {},
-        thumb: { size = null } = {}
-    } = opts || {};
+    let { catalog } = opts || {};
 
-    return F({
-        colnum,
-        rownum,
-        title: F({ length, position }),
-        thumb: F({ size })
-    });
+    catalog = Catalog.create(catalog);
+
+    return F({ catalog });
 }
 
-export function load(cookie) {
-    if (cookie == null || cookie == '') cookie = '14x6x4x0x0';
+export function load(data) {
+    let { cookie } = data || {};
 
-    let values = cookie.split('x').map(value => +value);
-    let [ colnum, rownum, titleLength, titlePosition, thumbSize ] = values;
+    let catalog = Catalog.load(cookie);
 
-    let pref = create({
-        colnum, rownum,
-        title: { length: titleLength, position: titlePosition },
-        thumb: { size: thumbSize }
-    });
-    return pref;
+    return create({ catalog });
 }
+
+const Catalog = {
+    create(opts) {
+        let {
+            colnum = null,
+            rownum = null,
+            title: { length = null, position = null } = {},
+            thumb: { size = null } = {}
+        } = opts || {};
+
+        return F({
+            colnum,
+            rownum,
+            title: F({ length, position }),
+            thumb: F({ size })
+        });
+    },
+
+    load(cookie) {
+        let { cxyl } = cookie || {};
+        if (cxyl == null || cxyl == '') cxyl = '14x6x4x0x0';
+
+        let values = cxyl.split('x').map(value => +value);
+        let [ colnum, rownum, titleLength, titlePosition, thumbSize ] = values;
+
+        return this.create({
+            colnum, rownum,
+            title: { length: titleLength, position: titlePosition },
+            thumb: { size: thumbSize }
+        });
+    }
+};
+
+export const internal = {
+    Catalog
+};

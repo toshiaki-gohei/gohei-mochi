@@ -65,9 +65,12 @@ describe(__filename, () => {
                 p2.then(preferences => {
                     let got = preferences;
                     let exp = {
-                        colnum: 14, rownum: 6,
-                        title: { length: 4, position: 0 },
-                        thumb: { size: 0 }
+                        ...preferences,
+                        catalog: {
+                            colnum: 14, rownum: 6,
+                            title: { length: 4, position: 0 },
+                            thumb: { size: 0 }
+                        }
                     };
                     assert.deepStrictEqual(got, exp);
                 })
@@ -114,6 +117,30 @@ describe(__filename, () => {
 
             got = getSort('https://may.2chan.net/b/futaba.php?mode=cat');
             assert(got === null);
+        });
+    });
+
+    describe('getPreferences()', () => {
+        const { getPreferences } = internal;
+
+        beforeEach(() => cookie.remove('cxyl'));
+
+        it('should get preferences', () => {
+            cookie.set('cxyl', '14x6x4x0x0');
+
+            let got = getPreferences();
+            let exp = {
+                cookie: { cxyl: '14x6x4x0x0' }
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should get preferences if no cookie', () => {
+            let got = getPreferences();
+            let exp = {
+                cookie: { cxyl: null }
+            };
+            assert.deepStrictEqual(got, exp);
         });
     });
 });

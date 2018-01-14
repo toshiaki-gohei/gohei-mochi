@@ -11,7 +11,7 @@ import * as preferences from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { cleanCatalogUrl } from '../util/url';
 import EventEmitter from '~/common/event-emitter';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 import stopwatch from '~/common/stopwatch';
 
 export default class App {
@@ -67,7 +67,7 @@ export default class App {
         let contents = { url, catalog };
         commit('catalog/load', contents);
 
-        let pref = preferences.load(cookie.get('cxyl'));
+        let pref = preferences.load(getPreferences());
         commit('preferences/set', pref);
 
         stopwatch.start('first render');
@@ -124,7 +124,14 @@ function getSort(url) {
     return sort == null ? null : +sort;
 }
 
+function getPreferences() {
+    let cxyl = jsCookie.get('cxyl') || null;
+    let cookie = { cxyl };
+    return { cookie };
+}
+
 export const internal = {
     createInner,
-    getSort
+    getSort,
+    getPreferences
 };

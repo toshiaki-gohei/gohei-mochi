@@ -2,6 +2,7 @@
 import assert from 'assert';
 import * as procedures from '~/content/procedures/preferences';
 import createStore from '~/content/reducers';
+import { preferences } from '~/content/model';
 
 describe(__filename, () => {
     let store;
@@ -20,35 +21,37 @@ describe(__filename, () => {
         const getPreferences = () => store.getState().ui.preferences;
 
         it('should set preferences', () => {
-            let pref = {
-                colnum: 14,
-                title: { length: 4 }
-            };
+            let pref = preferences.create({
+                catalog: {
+                    colnum: 14,
+                    title: { length: 4 }
+                }
+            });
 
             set(store, pref);
 
             let got = getPreferences();
             let exp = {
-                colnum: 14, rownum: null,
-                title: { length: 4, position: null },
-                thumb: { size: null }
+                ...getPreferences(),
+                catalog: {
+                    colnum: 14, rownum: null,
+                    title: { length: 4, position: null },
+                    thumb: { size: null }
+                }
             };
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should not set preferences if pass null', () => {
-            set(store, { colnum: 14 });
+        it('should do nothing if pass null', () => {
+            let pref = preferences.create({
+                catalog: { colnum: 14 }
+            });
+            set(store, pref);
             let prev = getPreferences();
 
             set(store, null);
 
             let got = getPreferences();
-            let exp = {
-                colnum: 14, rownum: null,
-                title: { length: null, position: null },
-                thumb: { size: null }
-            };
-            assert.deepStrictEqual(got, exp);
             assert(got === prev);
         });
     });

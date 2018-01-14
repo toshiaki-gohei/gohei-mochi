@@ -22,9 +22,11 @@ describe(__filename, () => {
                 quotePopups: []
             },
             preferences: {
-                colnum: null, rownum: null,
-                title: { length: null, position: null },
-                thumb: { size: null }
+                catalog: {
+                    colnum: null, rownum: null,
+                    title: { length: null, position: null },
+                    thumb: { size: null }
+                }
             },
             popups: new Map()
         }

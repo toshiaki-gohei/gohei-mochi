@@ -34,7 +34,7 @@ export default class Main extends Component {
 
         let catalog = state.domain.catalogs.get(url);
         let app = state.app.catalogs.get(url);
-        let preferences = state.ui.preferences;
+        let { preferences } = state.ui;
 
         return (
 <main>

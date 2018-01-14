@@ -33,7 +33,7 @@ describe(__filename, () => {
         it('should render catalog correctly', () => {
             let catalog = { threads: urls };
 
-            let preferences = pref.create({ colnum: 3, rownum: 2 });
+            let preferences = pref.create({ catalog: { colnum: 3, rownum: 2 } });
             let $el = render(<Catalog {...{ commit, catalog, preferences }} />);
 
             let got = $el.outerHTML;
@@ -46,7 +46,7 @@ describe(__filename, () => {
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
 
-            preferences = pref.create({ colnum: 4, rownum: 3 });
+            preferences = pref.create({ catalog: { colnum: 4, rownum: 3 } });
             $el = render(<Catalog {...{ commit, catalog, preferences }} />);
             got = $el.outerHTML;
             attr = 'class="gohei-catalog-item" style="width: 25%;"';

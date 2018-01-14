@@ -13,13 +13,9 @@ function reduce(state = STATE, action) {
     let { preferences: pref } = action;
     if (pref == null) return state;
 
-    let { title, thumb } = pref;
-    title = { ...state.title, ...title };
-    thumb = { ...state.thumb, ...thumb };
+    let newState = pref;
 
-    let newState = { ...state, ...pref, title, thumb };
-
-    return preferences.create(newState);
+    return newState;
 }
 
 export const internal = {

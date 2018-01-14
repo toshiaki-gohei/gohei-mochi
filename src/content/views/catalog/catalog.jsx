@@ -2,12 +2,13 @@
 import { h } from 'preact';
 import { F } from '~/common/util';
 
-export default function Catalog({ commit, catalog = {}, preferences }) {
+export default function Catalog({ commit, catalog = {}, preferences = {} }) {
     if (commit == null) return null;
 
     let urls = catalog.threads;
 
-    let { colnum, rownum } = preferences || {};
+    preferences = preferences.catalog || {};
+    let { colnum, rownum } = preferences;
     if (colnum == null || rownum == null) urls = [];
 
     let threads = urls.slice(0, colnum * rownum).map(url => commit('sync/thread', url));

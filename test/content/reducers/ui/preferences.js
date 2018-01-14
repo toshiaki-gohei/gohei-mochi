@@ -5,11 +5,7 @@ import { preferences as pref } from '~/content/model';
 
 describe(__filename, () => {
     let state;
-    beforeEach(() => state = pref.create({
-        colnum: 14, rownum: 6,
-        title: { length: 4, position: 0 },
-        thumb: { size: 0 }
-    }));
+    beforeEach(() => state = pref.load());
 
     describe('export', () => {
         it('should export reducer', () => {
@@ -23,17 +19,22 @@ describe(__filename, () => {
         const { reduce } = internal;
 
         it('should reduce state', () => {
-            let preferences = {
-                rownum: 10,
-                title: { length: 5 }
-            };
+            let preferences = pref.create({
+                catalog: {
+                    rownum: 10,
+                    title: { length: 5 }
+                }
+            });
             let action = { preferences };
 
             let got = reduce(state, action);
             let exp = {
-                colnum: 14, rownum: 10,
-                title: { length: 5, position: 0 },
-                thumb: { size: 0 }
+                ...state,
+                catalog: {
+                    colnum: null, rownum: 10,
+                    title: { length: 5, position: null },
+                    thumb: { size: null }
+                }
             };
             assert.deepStrictEqual(got, exp);
         });
