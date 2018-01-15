@@ -11,10 +11,10 @@ export default class Post extends Component {
         super(props);
 
         this.state = {
-            isActive: false,
+            isActive: false
         };
 
-        this._handlers = makeHandlers(this);
+        this._handlers = makeHandlers.bind(this)();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -35,29 +35,26 @@ export default class Post extends Component {
     }
 }
 
-function makeHandlers(self) {
-    let { post } = self.props;
+function makeHandlers() {
+    let { post } = this.props;
     if (post == null) return null;
 
-    let popupQuote = handlePopupQuote.bind(self);
+    let popupQuote = handlePopupQuote.bind(this);
 
-    let quoteNo = handleQuote.bind(self, 'no');
-    let quoteComment = handleQuote.bind(self, 'comment');
-    let quoteFile = handleQuote.bind(self, 'file');
+    let quoteNo = handleQuote.bind(this, 'no');
+    let quoteComment = handleQuote.bind(this, 'comment');
+    let quoteFile = handleQuote.bind(this, 'file');
 
-    let delreq = handleDelreq.bind(self);
-    let soudane = handleSoudane.bind(self);
+    let delreq = handleDelreq.bind(this);
+    let soudane = handleSoudane.bind(this);
 
-    let displayAll = post.index === 0 ? handleDisplayAll.bind(self) : null;
-
-    let enter = () => self.setState({ isActive: true });
-    let leave = () => self.setState({ isActive: false });
+    let enter = () => this.setState({ isActive: true });
+    let leave = () => this.setState({ isActive: false });
 
     return {
         popupQuote,
         quoteNo, quoteComment, quoteFile,
         delreq, soudane,
-        displayAll,
         enter, leave
     };
 }
@@ -107,9 +104,4 @@ async function handleSoudane(event) {
     if (!res.ok) {
         console.error(res.status, res.statusText); // eslint-disable-line no-console
     }
-}
-
-function handleDisplayAll() {
-    let { commit } = this.props;
-    commit('thread/setDisplayThreshold', null);
 }

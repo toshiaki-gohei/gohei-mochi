@@ -162,22 +162,6 @@ $`.replace(/\n/g, ''));
             let $btn = $el.querySelector('.gohei-post-header .gohei-sod');
             $btn.dispatchEvent(new window.Event('click'));
         });
-
-        it('should handle to display all', done => {
-            let mock = procedures(null, {
-                'thread/setDisplayThreshold': threshold => {
-                    assert(threshold === null);
-                    done();
-                }
-            });
-
-            post = new ModelPost({ ...post, index: 0 });
-            let app = { displayThreshold: 200 };
-            let $el = render(<Post {...{ commit: mock, post, app }} />);
-
-            let $btn = $el.querySelector('.gohei-display-all-btn');
-            $btn.dispatchEvent(new window.Event('click'));
-        });
     });
 
     describe('popup quote event', () => {

@@ -2,6 +2,7 @@
 import assert from 'assert';
 import Op from '~/content/views/thread/post/original.jsx';
 import { h, render } from 'preact';
+import procedures from '~/content/procedures';
 import { setup, teardown } from '@/support/dom';
 import { Post } from '~/content/model';
 
@@ -115,14 +116,16 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
-        let handlers;
-        beforeEach(() => handlers = {});
-
         it('should handle to display all', done => {
-            let app = { displayThreshold: 200 };
-            handlers.displayAll = () => done();
+            let mock = procedures(null, {
+                'thread/setDisplayThreshold': threshold => {
+                    assert(threshold === null);
+                    done();
+                }
+            });
 
-            let $el = render(<Op {...{ post, app, handlers }} />);
+            let app = { displayThreshold: 200 };
+            let $el = render(<Op {...{ commit: mock, post, app }} />);
 
             let $btn = $el.querySelector('.gohei-display-all-btn');
             $btn.dispatchEvent(new window.Event('click'));

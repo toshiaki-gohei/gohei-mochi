@@ -1,5 +1,5 @@
 'use strict';
-import { h } from 'preact';
+import { h, Component } from 'preact';
 import { CLASS_NAME as CN } from '~/content/constants';
 import Header from './header.jsx';
 import Body from './body.jsx';
@@ -7,16 +7,25 @@ import File from './file.jsx';
 import Action from './action.jsx';
 import { isThreadLazyDisplay } from '../../util';
 
-export default function OriginalPost(props) {
-    let { commit, post, expire, app, handlers, isActive = false } = props;
-    if (post == null) return null;
+export default class OriginalPost extends Component {
+    constructor(props) {
+        super(props);
 
-    let { messages, idipIndex } = app || {};
+        this._displayAll = handleDisplayAll.bind(this);
+    }
 
-    let { enter, leave, displayAll, ...rest } = handlers || {};
-    handlers = rest;
+    render(props) {
+        let { commit, post, expire, app, handlers, isActive = false } = props;
+        if (post == null) return null;
 
-    return (
+        let { messages, idipIndex } = app || {};
+
+        let { enter, leave, ...rest } = handlers || {};
+        handlers = rest;
+
+        let displayAll = this._displayAll;
+
+        return (
 <div class={classes} onMouseenter={enter} onMouseleave={leave}>
   <File {...{ commit, post }} />
   <Header {...{ post, idipIndex, handlers }} />
@@ -28,7 +37,8 @@ export default function OriginalPost(props) {
   <DeletedPostCount {...messages} />
   <DisplayAllBtn {...{ app, displayAll }} />
 </div>
-    );
+        );
+    }
 }
 
 const classes = `${CN.POST} gohei-op`;
@@ -57,4 +67,9 @@ function DisplayAllBtn({ app, displayAll }) {
     if (!isThreadLazyDisplay(app)) return null;
     return <button class="gohei-link-btn gohei-display-all-btn" type="button"
                    onClick={displayAll}>スレを全て表示</button>;
+}
+
+function handleDisplayAll() {
+    let { commit } = this.props;
+    commit('thread/setDisplayThreshold', null);
 }
