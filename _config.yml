@@ -2,6 +2,6 @@ theme: jekyll-theme-minimal
 title: gohei-mochi
 description: 虹裏ライフをそこそこいい感じにする WebExtension
 show_downloads: true
-chrome_zip_url:
-firefox_zip_url: https://github.com/toshiaki-gohei/gohei-mochi/releases/download/0.0.3/gohei-mochi-0.0.3.zip
+chrome_zip_url: https://github.com/toshiaki-gohei/gohei-mochi/releases/download/0.0.4/gohei-mochi-chrome-0.0.4.zip
+firefox_zip_url: https://github.com/toshiaki-gohei/gohei-mochi/releases/download/0.0.4/gohei-mochi-firefox-0.0.4.zip
 history: https://github.com/toshiaki-gohei/gohei-mochi/releases
