@@ -26,7 +26,8 @@ describe(__filename, () => {
                     colnum: null, rownum: null,
                     title: { length: null, position: null },
                     thumb: { size: null }
-                }
+                },
+                video: { loop: null, muted: null, volume: null }
             },
             popups: new Map()
         }

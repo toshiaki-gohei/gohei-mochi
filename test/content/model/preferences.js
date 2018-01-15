@@ -18,7 +18,8 @@ describe(__filename, () => {
                     colnum: null, rownum: null,
                     title: { length: null, position: null },
                     thumb: { size: null }
-                }
+                },
+                video: { loop: null, muted: null, volume: null }
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -28,9 +29,11 @@ describe(__filename, () => {
         const { load } = pref;
 
         afterEach(() => cookie.remove('cxyl'));
+        afterEach(() => window.localStorage.clear());
 
         it('should load preferences from storage', () => {
             cookie.set('cxyl', '15x10x5x1x2');
+            window.localStorage.setItem('futabavideo', '0.8,true,false');
 
             let got = load();
             let exp = {
@@ -38,7 +41,8 @@ describe(__filename, () => {
                     colnum: 15, rownum: 10,
                     title: { length: 5, position: 1 },
                     thumb: { size: 2 }
-                }
+                },
+                video: { loop: false, muted: true, volume: 0.8 }
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -50,7 +54,8 @@ describe(__filename, () => {
                     colnum: 14, rownum: 6,
                     title: { length: 4, position: 0 },
                     thumb: { size: 0 }
-                }
+                },
+                video: { loop: true, muted: false, volume: 0.5 }
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -112,6 +117,62 @@ describe(`${__filename}: Catalog`, () => {
                 colnum: 14, rownum: 6,
                 title: { length: 4, position: 0 },
                 thumb: { size: 0 }
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+    });
+});
+
+describe(`${__filename}: Video`, () => {
+    const { Video } = pref.internal;
+
+    describe('create()', () => {
+        it('should create preferences', () => {
+            let got = Video.create();
+            let exp = {
+                loop: null,
+                muted: null,
+                volume: null
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should create preferences if pass opts', () => {
+            let got = Video.create({ loop: false, volume: 0.8 });
+            let exp = {
+                loop: false,
+                muted: null,
+                volume: 0.8
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should ignore unknown properties', () => {
+            let got = Video.create({
+                foo: 'ignore'
+            });
+            let exp = Video.create();
+            assert.deepStrictEqual(got, exp);
+        });
+    });
+
+    describe('load()', () => {
+        it('should create preferences from cookie', () => {
+            let got = Video.load({ futabavideo: '0.8,true,false' });
+            let exp = {
+                loop: false,
+                muted: true,
+                volume: 0.8
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should create default preferences if no cookie', () => {
+            let got = Video.load();
+            let exp = {
+                loop: true,
+                muted: false,
+                volume: 0.5
             };
             assert.deepStrictEqual(got, exp);
         });

@@ -28,15 +28,7 @@ describe(__filename, () => {
             let action = { preferences };
 
             let got = reduce(state, action);
-            let exp = {
-                ...state,
-                catalog: {
-                    colnum: null, rownum: 10,
-                    title: { length: 5, position: null },
-                    thumb: { size: null }
-                }
-            };
-            assert.deepStrictEqual(got, exp);
+            assert(got === preferences);
         });
 
         it('should return state as it is if action is empty', () => {
