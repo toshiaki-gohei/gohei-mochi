@@ -86,7 +86,7 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
-        it('should handle display more', done => {
+        it('should handle to display more', done => {
             let mock = procedures(null, {
                 ...funs,
                 'thread/setDisplayThreshold': threshold => {

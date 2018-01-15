@@ -118,7 +118,7 @@ $`.replace(/\n/g, ''));
         let handlers;
         beforeEach(() => handlers = {});
 
-        it('should handle display all', done => {
+        it('should handle to display all', done => {
             let app = { displayThreshold: 200 };
             handlers.displayAll = () => done();
 

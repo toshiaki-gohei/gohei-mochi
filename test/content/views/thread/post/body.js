@@ -98,7 +98,7 @@ describe(__filename, () => {
         let handlers;
         beforeEach(() => handlers = {});
 
-        it('should handle popup quote', done => {
+        it('should handle to popup quote', done => {
             let blockquote = '<span class="gohei-quote">&gt;引用文</span><br />通常文';
             let post = new Post({ raw: { blockquote } });
 

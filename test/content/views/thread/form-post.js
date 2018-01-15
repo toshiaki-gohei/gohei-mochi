@@ -81,10 +81,8 @@ $`.replace(/\n/g, ''));
 
         it('should render error message if set state.errmsg', () => {
             let $el = render(<Postform {...props} />);
-            let c = $el._component;
 
-            c.setState({ errmsg: 'test errmsg' });
-            c.forceUpdate(() => {
+            $el._component.setState({ errmsg: 'test errmsg' }, () => {
                 let got = $el.querySelector('.gohei-err-msg').innerHTML;
                 assert(got === 'test errmsg');
             });
@@ -162,8 +160,7 @@ $`.replace(/\n/g, ''));
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
-            component().setState({ errmsg: 'test errmsg' });
-            component().forceUpdate(() => {
+            component().setState({ errmsg: 'test errmsg' }, () => {
                 let $form = $el.querySelector('form');
                 $form.dispatchEvent(new window.Event('submit'));
             });
@@ -263,8 +260,7 @@ $`.replace(/\n/g, ''));
             select('form input[name=name]').value = 'test name';
             select('form input[name=pwd]').value = 'test pwd';
 
-            component().setState({ errmsg: 'test errmsg' });
-            component().forceUpdate(() => {
+            component().setState({ errmsg: 'test errmsg' }, () => {
                 let $form = $el.querySelector('form');
                 $form.dispatchEvent(new window.Event('submit'));
             });

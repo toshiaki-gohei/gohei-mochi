@@ -75,32 +75,31 @@ $`.replace(/\n/g, ''));
 
             assert(c.state.isActive === false);
 
-            c.componentDidUpdate = () => {
+            $el.dispatchEvent(new window.Event('mouseenter'));
+
+            setTimeout(() => {
                 assert(c.state.isActive === true);
                 done();
-            };
-
-            $el.dispatchEvent(new window.Event('mouseenter'));
+            }, 5);
         });
 
         it('should be inactive if mosue leave', done => {
             let $el = render(<Post {...{ post }} />);
             let c = $el._component;
 
-            c.setState({ isActive: true });
-            c.forceUpdate(() => {
+            c.setState({ isActive: true }, () => {
                 assert(c.state.isActive === true);
+
+                $el.dispatchEvent(new window.Event('mouseleave'));
             });
 
-            c.componentDidUpdate = () => {
+            setTimeout(() => {
                 assert(c.state.isActive === false);
                 done();
-            };
-
-            $el.dispatchEvent(new window.Event('mouseleave'));
+            }, 5);
         });
 
-        it('should handle popup quote', done => {
+        it('should handle to popup quote', done => {
             let mock = procedures(null, {
                 'thread/openQuotePopup': ({ component, index, quote, event }) => {
                     assert(typeof component === 'function');
@@ -164,7 +163,7 @@ $`.replace(/\n/g, ''));
             $btn.dispatchEvent(new window.Event('click'));
         });
 
-        it('should handle display all', done => {
+        it('should handle to display all', done => {
             let mock = procedures(null, {
                 'thread/setDisplayThreshold': threshold => {
                     assert(threshold === null);
@@ -194,12 +193,11 @@ $`.replace(/\n/g, ''));
             });
         });
 
-        it('should handle quote no', () => {
+        it('should handle to quote no', () => {
             let $el = render(<Post {...{ commit: mock, post }} />);
             let c = $el._component;
 
-            c.setState({ isActive: true });
-            c.forceUpdate(() => {
+            c.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[0];
                 $btn.dispatchEvent(new window.Event('click'));
             });
@@ -215,12 +213,11 @@ $`.replace(/\n/g, ''));
             ]);
         });
 
-        it('should handle quote comment', () => {
+        it('should handle to quote comment', () => {
             let $el = render(<Post {...{ commit: mock, post }} />);
             let c = $el._component;
 
-            c.setState({ isActive: true });
-            c.forceUpdate(() => {
+            c.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[1];
                 $btn.dispatchEvent(new window.Event('click'));
             });
@@ -236,15 +233,14 @@ $`.replace(/\n/g, ''));
             ]);
         });
 
-        it('should handle quote file', () => {
+        it('should handle to quote file', () => {
             let file = { url: 'file url' };
             post = new ModelPost({ ...post, file });
 
             let $el = render(<Post {...{ commit: mock, post }} />);
             let c = $el._component;
 
-            c.setState({ isActive: true });
-            c.forceUpdate(() => {
+            c.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[2];
                 $btn.dispatchEvent(new window.Event('click'));
             });

@@ -54,7 +54,7 @@ $`.replace(/\n/g, ''));
         let handlers;
         beforeEach(() => handlers = {});
 
-        it('should handle quote by no button', done => {
+        it('should handle to quote by no button', done => {
             handlers.quoteNo = () => done();
             let $el = render(<Action {...{ post, handlers }} />);
 
@@ -62,7 +62,7 @@ $`.replace(/\n/g, ''));
             $btn.dispatchEvent(new window.Event('click'));
         });
 
-        it('should handle quote by comment button', done => {
+        it('should handle to quote by comment button', done => {
             handlers.quoteComment = () => done();
             let $el = render(<Action {...{ post, handlers }} />);
 
@@ -70,7 +70,7 @@ $`.replace(/\n/g, ''));
             $btn.dispatchEvent(new window.Event('click'));
         });
 
-        it('should handle quote by file button', done => {
+        it('should handle to quote by file button', done => {
             handlers.quoteFile = () => done();
             let $el = render(<Action {...{ post, handlers }} />);
 
