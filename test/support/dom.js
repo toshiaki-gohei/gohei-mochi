@@ -21,6 +21,8 @@ export function setup() {
     window.Response = fetch.Response;
     window.Headers = fetch.Headers;
 
+    window.localStorage = new LocalStorage();
+
     require('./chrome');
 }
 
@@ -60,4 +62,15 @@ function nodeFetchWrapper(fetch) {
             return fetch(url, opts);
         });
     };
+}
+
+// cf. https://github.com/tmpvar/jsdom/issues/1137#issuecomment-173039751
+class LocalStorage {
+    constructor() {
+        this._data = new Map();
+    }
+    getItem(key) { return this._data.has(key) ? this._data.get(key) : null; }
+    setItem(key, value) { this._data.set(key, value); }
+    removeItem(key) { this._data.delete(key); }
+    clear() { this._data = new Map(); }
 }
