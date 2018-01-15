@@ -38,7 +38,7 @@ export default class Main extends Component {
 
         return (
 <main>
-  <Nav {...{ commit, catalog, app, preferences }} />
+  <Nav {...{ commit, catalog, app }} />
   <h2 class="gohei-mode-title">カタログモード</h2>
   <Catalog {...{ commit, catalog, app, preferences }} />
 </main>

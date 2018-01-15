@@ -1,15 +1,14 @@
 'use strict';
 import { h, Component } from 'preact';
-import * as pref from '../../model/preferences';
 import { CATALOG_SORT } from '~/content/constants';
-import { getPreferences } from '~/content/util/cookie';
 import { catalogUrl } from '~/content/util/url';
+import * as pref from '~/content/model/preferences';
 
 const { BUMP_ORDER, NEWEST, OLDEST, POSTNUM_DESC, POSTNUM_ASC, HISTORY } = CATALOG_SORT;
 
 export default class Nav extends Component {
-    constructor({ commit, catalog, app, preferences }) {
-        super({ commit, catalog, app, preferences });
+    constructor({ commit, catalog, app }) {
+        super({ commit, catalog, app });
 
         this._handleUpdate = handleUpdate.bind(this);
         this._sortBy = {
@@ -93,11 +92,9 @@ function catsetUrl(catalog) {
 }
 
 function handleUpdate() {
-    let { commit, catalog, preferences } = this.props;
+    let { commit, catalog } = this.props;
 
-    let { catalog: latest } = pref.load(getPreferences());
-    preferences = pref.create({ ...preferences, catalog: latest });
-    commit('preferences/set', preferences);
+    commit('preferences/set', pref.load());
 
     commit('catalog/update', catalog.url, { sort: catalog.sort });
 }

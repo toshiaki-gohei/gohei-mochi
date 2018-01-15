@@ -1,8 +1,13 @@
 'use strict';
 import assert from 'assert';
 import * as pref from '~/content/model/preferences';
+import { setup, teardown } from '@/support/dom';
+import cookie from 'js-cookie';
 
 describe(__filename, () => {
+    before(() => setup());
+    after(() => teardown());
+
     describe('create()', () => {
         const { create } = pref;
 
@@ -22,12 +27,12 @@ describe(__filename, () => {
     describe('load()', () => {
         const { load } = pref;
 
-        it('should create preferences from loaded data', () => {
-            let data = {
-                cookie: { cxyl: '15x10x5x1x2' }
-            };
+        afterEach(() => cookie.remove('cxyl'));
 
-            let got = load(data);
+        it('should load preferences from storage', () => {
+            cookie.set('cxyl', '15x10x5x1x2');
+
+            let got = load();
             let exp = {
                 catalog: {
                     colnum: 15, rownum: 10,
@@ -38,7 +43,7 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should create preferences if no argument', () => {
+        it('should load preferences if storage is empty', () => {
             let got = load();
             let exp = {
                 catalog: {

@@ -7,8 +7,7 @@ import { initializeBodyStyle, removeChildNodes } from './util';
 import Main from '../views/catalog/index.jsx';
 import { nav, footer } from '../views/commons';
 import { parseAll } from '../parser/catalog';
-import * as preferences from '../model/preferences';
-import { getPreferences } from '../util/cookie';
+import * as pref from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { cleanCatalogUrl } from '../util/url';
 import EventEmitter from '~/common/event-emitter';
@@ -67,8 +66,7 @@ export default class App {
         let contents = { url, catalog };
         commit('catalog/load', contents);
 
-        let pref = preferences.load(getPreferences());
-        commit('preferences/set', pref);
+        commit('preferences/set', pref.load());
 
         stopwatch.start('first render');
 

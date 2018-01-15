@@ -1,5 +1,6 @@
 'use strict';
 import { F } from '~/common/util';
+import jsCookie from 'js-cookie';
 
 // futaba preferences (cookie and localStorage)
 
@@ -11,12 +12,17 @@ export function create(opts) {
     return F({ catalog });
 }
 
-export function load(data) {
-    let { cookie } = data || {};
+export function load() {
+    let cookie = loadCookie();
 
     let catalog = Catalog.load(cookie);
 
     return create({ catalog });
+}
+
+function loadCookie() {
+    let cxyl = jsCookie.get('cxyl') || null;
+    return { cxyl };
 }
 
 const Catalog = {
@@ -52,5 +58,6 @@ const Catalog = {
 };
 
 export const internal = {
+    loadCookie,
     Catalog
 };
