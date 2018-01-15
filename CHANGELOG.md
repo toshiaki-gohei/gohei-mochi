@@ -1,3 +1,11 @@
+## 0.0.4 (2017-01-16)
+
+* display webm movie with inline
+* modify to get latest catalog preferences before update catalog
+* change structore of model/preferences and to handle state.ui.preferences
+* change to handle icons as file rather than js code
+* change build tasks
+
 ## 0.0.3 (2017-01-14)
 
 * change to download a post image when click a image filename
