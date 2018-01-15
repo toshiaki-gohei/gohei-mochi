@@ -1,10 +1,10 @@
 'use strict';
 import assert from 'assert';
-import * as prefs from '~/content/model/preferences';
+import * as preferences from '~/content/model/preferences';
 import { setup, teardown } from '@/support/dom';
 import cookie from 'js-cookie';
 
-const { Catalog, Video } = prefs.internal;
+const { Catalog, Video } = preferences.internal;
 
 describe(__filename, () => {
     before(() => setup());
@@ -13,7 +13,7 @@ describe(__filename, () => {
     afterEach(() => dispose());
 
     describe('create()', () => {
-        const { create } = prefs;
+        const { create } = preferences;
 
         it('should create preferences', () => {
             let got = create();
@@ -30,7 +30,7 @@ describe(__filename, () => {
     });
 
     describe('load()', () => {
-        const { load } = prefs;
+        const { load } = preferences;
 
         it('should load preferences from storage', () => {
             cookie.set('cxyl', '15x10x5x1x2');
@@ -59,6 +59,26 @@ describe(__filename, () => {
                 video: { loop: true, muted: false, volume: 0.5 }
             };
             assert.deepStrictEqual(got, exp);
+        });
+    });
+
+    describe('store()', () => {
+        const { store, load } = preferences;
+
+        const prefs = load();
+
+        it('should store video preferences', () => {
+            store(prefs, 'video');
+
+            let got = window.localStorage.getItem('futabavideo');
+            let exp = '0.5,false,true';
+            assert(got === exp);
+        });
+
+        it('should throw exception if unknown type', () => {
+            let got;
+            try { store(null, 'unknown type'); } catch (e) { got = e.message; }
+            assert(got === 'unknown type: unknown type');
         });
     });
 });
@@ -191,6 +211,17 @@ describe(`${__filename}: Video`, () => {
                 volume: 0.5
             };
             assert.deepStrictEqual(got, exp);
+        });
+    });
+
+    describe('store()', () => {
+        it('should store preferences in localStorage', () => {
+            let prefs = Video.load();
+            Video.store(prefs);
+
+            let got = window.localStorage.getItem('futabavideo');
+            let exp = '0.5,false,true';
+            assert(got === exp);
         });
     });
 });

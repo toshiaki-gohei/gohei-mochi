@@ -21,6 +21,16 @@ export function load() {
     return create({ catalog, video });
 }
 
+export function store(prefs, type) {
+    switch (type) {
+    case 'video':
+        Video.store(prefs.video);
+        break;
+    default:
+        throw new Error(`unknown type: ${type}`);
+    }
+}
+
 const Catalog = {
     create(opts) {
         let {
@@ -74,6 +84,14 @@ const Video = {
         loop = loop === 'true' ? true : false;
 
         return this.create({ loop, muted, volume });
+    },
+
+    store(prefs) {
+        let { loop, muted, volume } = prefs;
+        let video = [ volume, muted, loop ].join(',');
+
+        let storage = new LocalStorage();
+        storage.set('futabavideo', video);
     }
 };
 

@@ -151,6 +151,8 @@ function handleSetVideoPrefs() {
     prefs = preferences.create({ ...prefs, video });
 
     commit('preferences/set', prefs);
+
+    preferences.store(prefs, 'video');
 }
 
 export const internal = {
