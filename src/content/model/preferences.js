@@ -15,24 +15,10 @@ export function create(opts) {
 }
 
 export function load() {
-    let cookie = loadCookie();
-    let storage = loadLocalStorage();
-
-    let catalog = Catalog.load(cookie);
-    let video = Video.load(storage);
+    let catalog = Catalog.load();
+    let video = Video.load();
 
     return create({ catalog, video });
-}
-
-function loadCookie() {
-    let cxyl = jsCookie.get('cxyl') || null;
-    return { cxyl };
-}
-
-function loadLocalStorage() {
-    let storage = new LocalStorage();
-    let futabavideo = storage.get('futabavideo');
-    return { futabavideo };
 }
 
 const Catalog = {
@@ -51,8 +37,8 @@ const Catalog = {
         });
     },
 
-    load(cookie) {
-        let { cxyl } = cookie || {};
+    load() {
+        let cxyl = jsCookie.get('cxyl') || null;
         if (cxyl == null || cxyl == '') cxyl = '14x6x4x0x0';
 
         let values = cxyl.split('x').map(value => +value);
@@ -77,8 +63,9 @@ const Video = {
         return F({ loop, muted, volume });
     },
 
-    load(storage) {
-        let { futabavideo: video } = storage || {};
+    load() {
+        let storage = new LocalStorage();
+        let video = storage.get('futabavideo');
         if (video == null || video == '') video = '0.5,false,true';
 
         let [ volume, muted, loop ] = video.split(',').map(value => value);
@@ -91,8 +78,6 @@ const Video = {
 };
 
 export const internal = {
-    loadCookie,
-    loadLocalStorage,
     Catalog,
     Video
 };

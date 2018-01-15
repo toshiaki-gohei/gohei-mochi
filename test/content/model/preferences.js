@@ -4,9 +4,13 @@ import * as prefs from '~/content/model/preferences';
 import { setup, teardown } from '@/support/dom';
 import cookie from 'js-cookie';
 
+const { Catalog, Video } = prefs.internal;
+
 describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
+
+    afterEach(() => dispose());
 
     describe('create()', () => {
         const { create } = prefs;
@@ -27,9 +31,6 @@ describe(__filename, () => {
 
     describe('load()', () => {
         const { load } = prefs;
-
-        afterEach(() => cookie.remove('cxyl'));
-        afterEach(() => window.localStorage.clear());
 
         it('should load preferences from storage', () => {
             cookie.set('cxyl', '15x10x5x1x2');
@@ -62,8 +63,16 @@ describe(__filename, () => {
     });
 });
 
+function dispose() {
+    cookie.remove('cxyl');
+    window.localStorage.clear();
+}
+
 describe(`${__filename}: Catalog`, () => {
-    const { Catalog } = prefs.internal;
+    before(() => setup());
+    after(() => teardown());
+
+    afterEach(() => dispose());
 
     describe('create()', () => {
         it('should create preferences', () => {
@@ -101,8 +110,10 @@ describe(`${__filename}: Catalog`, () => {
     });
 
     describe('load()', () => {
-        it('should create preferences from cookie', () => {
-            let got = Catalog.load({ cxyl: '15x10x5x1x2' });
+        it('should load preferences from cookie', () => {
+            cookie.set('cxyl', '15x10x5x1x2');
+
+            let got = Catalog.load();
             let exp = {
                 colnum: 15, rownum: 10,
                 title: { length: 5, position: 1 },
@@ -111,7 +122,7 @@ describe(`${__filename}: Catalog`, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should create default preferences if no cookie', () => {
+        it('should load default preferences if no cookie', () => {
             let got = Catalog.load();
             let exp = {
                 colnum: 14, rownum: 6,
@@ -124,7 +135,10 @@ describe(`${__filename}: Catalog`, () => {
 });
 
 describe(`${__filename}: Video`, () => {
-    const { Video } = prefs.internal;
+    before(() => setup());
+    after(() => teardown());
+
+    afterEach(() => dispose());
 
     describe('create()', () => {
         it('should create preferences', () => {
@@ -157,8 +171,10 @@ describe(`${__filename}: Video`, () => {
     });
 
     describe('load()', () => {
-        it('should create preferences from cookie', () => {
-            let got = Video.load({ futabavideo: '0.8,true,false' });
+        it('should load preferences from localStorage', () => {
+            window.localStorage.setItem('futabavideo', '0.8,true,false');
+
+            let got = Video.load();
             let exp = {
                 loop: false,
                 muted: true,
