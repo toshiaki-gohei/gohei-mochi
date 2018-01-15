@@ -7,6 +7,7 @@ import { sendMessage, initializeBodyStyle, removeChildNodes } from './util';
 import Main from '../views/thread/index.jsx';
 import { nav, footer } from '../views/commons';
 import { parseAll } from '../parser/thread';
+import * as prefs from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { DISPLAY_THRESHOLD, THREAD_PANEL_TYPE as P_TYPE } from '../constants';
 import EventEmitter from '~/common/event-emitter';
@@ -79,6 +80,8 @@ export default class App {
             lastModified: document.lastModified
         };
         commit('thread/load', contents);
+
+        commit('preferences/set', prefs.load());
 
         commit('thread/setPanel', { isOpen: false, type: P_TYPE.FORM_POST });
 

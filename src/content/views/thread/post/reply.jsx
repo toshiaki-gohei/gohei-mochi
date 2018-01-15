@@ -6,7 +6,8 @@ import Body from './body.jsx';
 import File from './file.jsx';
 import Action from './action.jsx';
 
-export default function Reply({ post, app, handlers, isActive = false }) {
+export default function Reply(props) {
+    let { commit, post, app, handlers, isActive = false } = props;
     if (post == null) return null;
 
     let { idipIndex } = app || {};
@@ -17,7 +18,7 @@ export default function Reply({ post, app, handlers, isActive = false }) {
     return (
 <div class={classes} onMouseenter={enter} onMouseleave={leave}>
   <Header {...{ post, idipIndex, handlers }} />
-  <File {...{ post }} />
+  <File {...{ commit, post }} />
   <Body {...{ post, handlers }} />
   <Action {...{ post, handlers, isActive }} />
 </div>

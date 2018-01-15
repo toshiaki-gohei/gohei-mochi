@@ -22,13 +22,15 @@ describe(__filename, () => {
 
     describe('run()', () => {
         it('should commit correctly', () => {
-            let load, setPanel;
+            let load, set, setPanel;
             let p1 = new Promise(resolve => load = resolve);
-            let p2 = new Promise(resolve => setPanel = resolve);
+            let p2 = new Promise(resolve => set = resolve);
+            let p3 = new Promise(resolve => setPanel = resolve);
 
             let store = createStore();
             let mock = procedures(store, {
                 'thread/load': load,
+                'preferences/set': set,
                 'thread/setPanel': setPanel,
                 'sync/threadPosts': () => []
             });
@@ -37,6 +39,8 @@ describe(__filename, () => {
             app._url = 'https://may.2chan.net/b/res/123456789.htm';
             app._store = store;
             app._commit = mock;
+
+            window.localStorage.setItem('futabavideo', '0.8,true,false');
 
             app.run();
 
@@ -62,7 +66,15 @@ describe(__filename, () => {
 
             return Promise.all([
                 p1,
-                p2.then(panel => {
+                p2.then(preferences => {
+                    let got = preferences;
+                    let exp = {
+                        ...preferences,
+                        video: { loop: false, muted: true, volume: 0.8 }
+                    };
+                    assert.deepStrictEqual(got, exp);
+                }),
+                p3.then(panel => {
                     let got = panel;
                     let exp = { isOpen: false, type: 'FORM_POST' };
                     assert.deepStrictEqual(got, exp);

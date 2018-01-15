@@ -7,7 +7,8 @@ import File from './file.jsx';
 import Action from './action.jsx';
 import { isThreadLazyDisplay } from '../../util';
 
-export default function OriginalPost({ post, expire, app, handlers, isActive = false }) {
+export default function OriginalPost(props) {
+    let { commit, post, expire, app, handlers, isActive = false } = props;
     if (post == null) return null;
 
     let { messages, idipIndex } = app || {};
@@ -17,7 +18,7 @@ export default function OriginalPost({ post, expire, app, handlers, isActive = f
 
     return (
 <div class={classes} onMouseenter={enter} onMouseleave={leave}>
-  <File {...{ post }} />
+  <File {...{ commit, post }} />
   <Header {...{ post, idipIndex, handlers }} />
   <Body {...{ post, handlers }} />
   <Action {...{ post, handlers, isActive }} />

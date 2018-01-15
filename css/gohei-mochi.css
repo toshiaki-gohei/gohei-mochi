@@ -612,16 +612,35 @@ input[type="file"] {
     line-height: 1.2;
 }
 
-.gohei-post-file .gohei-file-thumb {
+.gohei-post-file .gohei-thumb-image {
     float: left;
     margin: 0 20px;
 }
 
-.gohei-reply .gohei-post-file .gohei-file-name {
+.gohei-post-file > .gohei-video-container {
+    position: relative;
+    display: inline-block;
+}
+
+.gohei-post-file > .gohei-video-container > .gohei-button-area {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px;
+    background-color: #f0e0d6;
+    opacity: 0.7;
+    z-index: 301;
+}
+
+.gohei-op > .gohei-post-file > .gohei-video-container > .gohei-button-area {
+    background-color: #ffffee;
+}
+
+.gohei-reply > .gohei-post-file .gohei-file-name {
     margin-left: 20px;
 }
 
-.gohei-reply .gohei-post-file .gohei-file-name > .gohei-inline-icon {
+.gohei-reply > .gohei-post-file .gohei-file-name > .gohei-inline-icon {
     position: relative;
     top: -0.1em;
 }

@@ -10,41 +10,56 @@ export default class Post extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { isActive: false };
-
-        this._handlers = {
-            popupQuote: handlePopupQuote.bind(this),
-
-            quoteNo: handleQuote.bind(this, 'no'),
-            quoteComment: handleQuote.bind(this, 'comment'),
-            quoteFile: handleQuote.bind(this, 'file'),
-
-            delreq: handleDelreq.bind(this),
-            soudane: handleSoudane.bind(this),
-
-            displayAll: handleDisplayAll.bind(this),
-
-            enter: () => this.setState({ isActive: true }),
-            leave: () => this.setState({ isActive: false })
+        this.state = {
+            isActive: false,
         };
+
+        this._handlers = makeHandlers(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         return hasChanged(this, nextProps, nextState);
     }
 
-    render({ post, app, thread }, state) {
+    render({ commit, post, app, thread }, state) {
         if (post == null) return null;
         let { isActive } = state;
 
         let handlers = this._handlers;
 
-        let props = { post, app, handlers, isActive };
+        let props = { commit, post, app, handlers, isActive };
         let { expire } = thread || {};
 
         if (post.index === 0) return <OriginalPost {...{ ...props, expire }} />;
         return <Reply {...props} />;
     }
+}
+
+function makeHandlers(self) {
+    let { post } = self.props;
+    if (post == null) return null;
+
+    let popupQuote = handlePopupQuote.bind(self);
+
+    let quoteNo = handleQuote.bind(self, 'no');
+    let quoteComment = handleQuote.bind(self, 'comment');
+    let quoteFile = handleQuote.bind(self, 'file');
+
+    let delreq = handleDelreq.bind(self);
+    let soudane = handleSoudane.bind(self);
+
+    let displayAll = post.index === 0 ? handleDisplayAll.bind(self) : null;
+
+    let enter = () => self.setState({ isActive: true });
+    let leave = () => self.setState({ isActive: false });
+
+    return {
+        popupQuote,
+        quoteNo, quoteComment, quoteFile,
+        delreq, soudane,
+        displayAll,
+        enter, leave
+    };
 }
 
 function handlePopupQuote(event) {
