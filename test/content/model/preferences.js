@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as pref from '~/content/model/preferences';
+import * as prefs from '~/content/model/preferences';
 import { setup, teardown } from '@/support/dom';
 import cookie from 'js-cookie';
 
@@ -9,7 +9,7 @@ describe(__filename, () => {
     after(() => teardown());
 
     describe('create()', () => {
-        const { create } = pref;
+        const { create } = prefs;
 
         it('should create preferences', () => {
             let got = create();
@@ -26,7 +26,7 @@ describe(__filename, () => {
     });
 
     describe('load()', () => {
-        const { load } = pref;
+        const { load } = prefs;
 
         afterEach(() => cookie.remove('cxyl'));
         afterEach(() => window.localStorage.clear());
@@ -63,7 +63,7 @@ describe(__filename, () => {
 });
 
 describe(`${__filename}: Catalog`, () => {
-    const { Catalog } = pref.internal;
+    const { Catalog } = prefs.internal;
 
     describe('create()', () => {
         it('should create preferences', () => {
@@ -124,7 +124,7 @@ describe(`${__filename}: Catalog`, () => {
 });
 
 describe(`${__filename}: Video`, () => {
-    const { Video } = pref.internal;
+    const { Video } = prefs.internal;
 
     describe('create()', () => {
         it('should create preferences', () => {

@@ -21,14 +21,14 @@ describe(__filename, () => {
         const getPreferences = () => store.getState().ui.preferences;
 
         it('should set preferences', () => {
-            let pref = preferences.create({
+            let prefs = preferences.create({
                 catalog: {
                     colnum: 14,
                     title: { length: 4 }
                 }
             });
 
-            set(store, pref);
+            set(store, prefs);
 
             let got = getPreferences();
             let exp = {
@@ -43,10 +43,10 @@ describe(__filename, () => {
         });
 
         it('should do nothing if pass null', () => {
-            let pref = preferences.create({
+            let prefs = preferences.create({
                 catalog: { colnum: 14 }
             });
-            set(store, pref);
+            set(store, prefs);
             let prev = getPreferences();
 
             set(store, null);

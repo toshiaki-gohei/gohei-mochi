@@ -38,8 +38,8 @@ function Item({ thread, preferences }) {
     );
 }
 
-function Thumb({ url, thumb, preferences: pref }) {
-    let size = THUMB_SIZE[pref.thumb.size] + 'px';
+function Thumb({ url, thumb, preferences: prefs }) {
+    let size = THUMB_SIZE[prefs.thumb.size] + 'px';
     return (
 <a href={url} target="_blank"
    class="gohei-thread-thumb" style={{ width: size, height: size }}>

@@ -134,8 +134,8 @@ $`.replace(/\n/g, ''));
             $btn.dispatchEvent(new window.Event('click'));
 
             return Promise.all([
-                p1.then(pref => {
-                    let got = pref.catalog;
+                p1.then(prefs => {
+                    let got = prefs.catalog;
                     let exp = {
                         colnum: 15, rownum: 10,
                         title: { length: 5, position: 1 },

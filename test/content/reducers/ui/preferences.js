@@ -1,16 +1,16 @@
 'use strict';
 import assert from 'assert';
 import reducer, { internal } from '~/content/reducers/ui/preferences';
-import { preferences as pref } from '~/content/model';
+import { preferences as prefs } from '~/content/model';
 
 describe(__filename, () => {
     let state;
-    beforeEach(() => state = pref.load());
+    beforeEach(() => state = prefs.load());
 
     describe('export', () => {
         it('should export reducer', () => {
             let got = reducer();
-            let exp = pref.create();
+            let exp = prefs.create();
             assert.deepStrictEqual(got, exp);
         });
     });
@@ -19,7 +19,7 @@ describe(__filename, () => {
         const { reduce } = internal;
 
         it('should reduce state', () => {
-            let preferences = pref.create({
+            let preferences = prefs.create({
                 catalog: {
                     rownum: 10,
                     title: { length: 5 }

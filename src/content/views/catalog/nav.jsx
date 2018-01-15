@@ -2,7 +2,7 @@
 import { h, Component } from 'preact';
 import { CATALOG_SORT } from '~/content/constants';
 import { catalogUrl } from '~/content/util/url';
-import * as pref from '~/content/model/preferences';
+import * as prefs from '~/content/model/preferences';
 
 const { BUMP_ORDER, NEWEST, OLDEST, POSTNUM_DESC, POSTNUM_ASC, HISTORY } = CATALOG_SORT;
 
@@ -94,7 +94,7 @@ function catsetUrl(catalog) {
 function handleUpdate() {
     let { commit, catalog } = this.props;
 
-    commit('preferences/set', pref.load());
+    commit('preferences/set', prefs.load());
 
     commit('catalog/update', catalog.url, { sort: catalog.sort });
 }

@@ -10,10 +10,10 @@ export default createReducer(STATE, {
 });
 
 function reduce(state = STATE, action) {
-    let { preferences: pref } = action;
-    if (pref == null) return state;
+    let { preferences: prefs } = action;
+    if (prefs == null) return state;
 
-    let newState = pref;
+    let newState = prefs;
 
     return newState;
 }

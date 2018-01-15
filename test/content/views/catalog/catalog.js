@@ -5,7 +5,7 @@ import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import createStore from '~/content/reducers';
-import { preferences as pref } from '~/content/model';
+import { preferences as prefs } from '~/content/model';
 
 describe(__filename, () => {
     before(() => setup());
@@ -33,7 +33,7 @@ describe(__filename, () => {
         it('should render catalog correctly', () => {
             let catalog = { threads: urls };
 
-            let preferences = pref.create({ catalog: { colnum: 3, rownum: 2 } });
+            let preferences = prefs.create({ catalog: { colnum: 3, rownum: 2 } });
             let $el = render(<Catalog {...{ commit, catalog, preferences }} />);
 
             let got = $el.outerHTML;
@@ -46,7 +46,7 @@ describe(__filename, () => {
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
 
-            preferences = pref.create({ catalog: { colnum: 4, rownum: 3 } });
+            preferences = prefs.create({ catalog: { colnum: 4, rownum: 3 } });
             $el = render(<Catalog {...{ commit, catalog, preferences }} />);
             got = $el.outerHTML;
             attr = 'class="gohei-catalog-item" style="width: 25%;"';
