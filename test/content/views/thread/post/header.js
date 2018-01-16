@@ -11,7 +11,8 @@ describe(__filename, () => {
 
     let post;
     beforeEach(() => post = new Post({
-        index: 1, subject: '無念', name: 'としあき', mailto: null,
+        id: 'post01', index: 1,
+        subject: '無念', name: 'としあき', mailto: null,
         date: '17/01/01(日)01:23:45', no: '123000001', userId: null, userIp: null,
         del: 'del', sod: 2
     }));
@@ -115,7 +116,7 @@ $`.replace(/\n/g, ''));
             let post1 = new Post({
                 ...post, userId: 'XXXXXXXX', userIp: '192.168.*(example.net)'
             });
-            let post2 = new Post({ index: 2, userIp: '192.168.*(example.net)' });
+            let post2 = new Post({ id: 'post02', index: 2, userIp: '192.168.*(example.net)' });
             let idipIndex = new thread.IdipIndex([ post1, post2 ]);
 
             let $el = render(<Header {...{ post: post1, idipIndex }} />);

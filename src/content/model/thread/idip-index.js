@@ -21,18 +21,18 @@ export default class Index {
         return this[map].get(idOrIp) || [];
     }
 
-    countUp(idOrIp, postIndex) {
-        if (idOrIp == null || postIndex == null) return null;
-        let indexes = this.retrieve(idOrIp);
-        if (indexes == null || indexes.length === 0) return null;
+    countUp(idOrIp, postId) {
+        if (idOrIp == null || postId == null) return null;
+        let ids = this.retrieve(idOrIp);
+        if (ids == null || ids.length === 0) return null;
 
         let count = 1;
-        for (let index of indexes) {
-            if (index === postIndex) break;
+        for (let id of ids) {
+            if (id === postId) break;
             ++count;
         }
 
-        let total = indexes.length;
+        let total = ids.length;
         if (count > total) return null;
 
         return { current: count, total };
@@ -42,16 +42,16 @@ export default class Index {
         let start = this[loadedPostCount];
 
         for (let i = start, len = posts.length; i < len; ++i) {
-            let { index, userId, userIp } = posts[i];
-            if (userId != null) this._add(userId, index);
-            if (userIp != null) this._add(userIp, index);
+            let { id, userId, userIp } = posts[i];
+            if (userId != null) this._add(userId, id);
+            if (userIp != null) this._add(userIp, id);
             ++this[loadedPostCount];
         }
     }
 
-    _add(idOrIp, postIndex) {
+    _add(idOrIp, postId) {
         if (idOrIp == null) return;
         if (this[map].get(idOrIp) == null) this[map].set(idOrIp, []);
-        this[map].get(idOrIp).push(postIndex);
+        this[map].get(idOrIp).push(postId);
     }
 }

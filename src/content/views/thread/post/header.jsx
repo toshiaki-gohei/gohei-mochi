@@ -3,7 +3,7 @@ import { h } from 'preact';
 import { marginLeftForThumb } from './file.jsx';
 
 export default function Header({ post, idipIndex, handlers }) {
-    let { index, no, date, userId, userIp, del, sod, file } = post || {};
+    let { id, index, no, date, userId, userIp, del, sod, file } = post || {};
     let { delreq, soudane } = handlers || {};
 
     let marginLeft = index === 0 ? marginLeftForThumb(file) : null;
@@ -18,9 +18,9 @@ export default function Header({ post, idipIndex, handlers }) {
   <span class="gohei-date">{date}</span>
   <span class="gohei-no">No.{no}</span>
   <UserId {...post} />
-  <Counter {...{ idipIndex, idOrIp: userId, index }} />
+  <Counter {...{ idipIndex, idOrIp: userId, id }} />
   <UserIp {...post} />
-  <Counter {...{ idipIndex, idOrIp: userIp, index }} />
+  <Counter {...{ idipIndex, idOrIp: userIp, id }} />
   <Del {...{ del, delreq }} />
   <Sod {...{ sod, soudane }} />
 </div>
@@ -75,11 +75,11 @@ function Sod({ sod, soudane }) {
 
 const sodStyle = { paddingLeft: '4px', paddingRight: '4px' };
 
-function Counter({ idipIndex, idOrIp, index }) {
+function Counter({ idipIndex, idOrIp, id }) {
     if (idipIndex == null) return null;
     if (idOrIp == null) return null;
 
-    let count = idipIndex.countUp(idOrIp, index);
+    let count = idipIndex.countUp(idOrIp, id);
     if (count == null) return null;
     let { current, total } = count;
 
