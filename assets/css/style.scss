@@ -2,3 +2,28 @@
 ---
 
 @import "{{ site.theme }}";
+
+section {
+    line-height: 1.3;
+
+    h3, h4, h5, h6 {
+        margin: 1em 0;
+    }
+
+    p, ul, ol, table, pre, dl {
+        margin: 0.8em 0;
+    }
+
+    ol, ul {
+        padding-left: 1.5em;
+    }
+
+    ol > li {
+        padding-left: 0.1em;
+    }
+
+    li > ol,
+    li > ul {
+        margin: 0;
+    }
+}
