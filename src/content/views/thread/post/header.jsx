@@ -79,7 +79,7 @@ function Counter({ idipIndex, idOrIp, index }) {
     if (idipIndex == null) return null;
     if (idOrIp == null) return null;
 
-    let count = idipIndex.retrieve(idOrIp, index);
+    let count = idipIndex.countUp(idOrIp, index);
     if (count == null) return null;
     let { current, total } = count;
 

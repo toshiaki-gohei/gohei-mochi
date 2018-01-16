@@ -16,9 +16,14 @@ export default class Index {
     get map() { return this[map]; }
     get loadedPostCount() { return this[loadedPostCount]; }
 
-    retrieve(idOrIp, postIndex) {
+    retrieve(idOrIp) {
+        if (idOrIp == null) return [];
+        return this[map].get(idOrIp) || [];
+    }
+
+    countUp(idOrIp, postIndex) {
         if (idOrIp == null || postIndex == null) return null;
-        let indexes = this[map].get(idOrIp);
+        let indexes = this.retrieve(idOrIp);
         if (indexes == null || indexes.length === 0) return null;
 
         let count = 1;
@@ -31,11 +36,6 @@ export default class Index {
         if (count > total) return null;
 
         return { current: count, total };
-    }
-
-    lookup(idOrIp) {
-        if (idOrIp == null) return [];
-        return this[map].get(idOrIp) || [];
     }
 
     update(posts = []) {

@@ -100,7 +100,7 @@ describe(__filename, () => {
         });
     });
 
-    describe('retrieve()', () => {
+    describe('countUp()', () => {
         let posts = [
             { index: 1, userId: 'id01', userIp: 'ip01' },
             { index: 2, userId: 'id02', userIp: null },
@@ -109,17 +109,17 @@ describe(__filename, () => {
             { index: 5, userId: 'id01', userIp: 'ip01' }
         ];
 
-        it('should return count correctly', () => {
+        it('should count up correctly', () => {
             let index = new Index(posts);
 
-            let got = index.retrieve('id01', 1);
+            let got = index.countUp('id01', 1);
             let exp = { current: 1, total: 2 };
             assert.deepStrictEqual(got, exp);
-            got = index.retrieve('id01', 5);
+            got = index.countUp('id01', 5);
             exp = { current: 2, total: 2 };
             assert.deepStrictEqual(got, exp);
 
-            got = index.retrieve('id01', 2);
+            got = index.countUp('id01', 2);
             exp = null;
             assert.deepStrictEqual(got, exp);
         });
@@ -127,7 +127,7 @@ describe(__filename, () => {
         it('should return null if id or ip is unknown', () => {
             let index = new Index(posts);
 
-            let got = index.retrieve('id03', 1);
+            let got = index.countUp('id03', 1);
             let exp = null;
             assert.deepStrictEqual(got, exp);
         });
@@ -135,16 +135,16 @@ describe(__filename, () => {
         it('should return null if args contain null', () => {
             let index = new Index(posts);
 
-            assert(index.retrieve(null, 1) === null);
-            assert(index.retrieve('id', null) === null);
-            assert(index.retrieve(null, null) === null);
+            assert(index.countUp(null, 1) === null);
+            assert(index.countUp('id', null) === null);
+            assert(index.countUp(null, null) === null);
 
-            assert(index.retrieve('id') === null);
-            assert(index.retrieve() === null);
+            assert(index.countUp('id') === null);
+            assert(index.countUp() === null);
         });
     });
 
-    describe('lookup()', () => {
+    describe('retrieve()', () => {
         const posts = [
             { index: 1, userId: 'id01', userIp: 'ip01' },
             { index: 2, userId: 'id02', userIp: null },
@@ -152,18 +152,18 @@ describe(__filename, () => {
             { index: 5, userId: 'id01', userIp: 'ip01' }
         ];
 
-        it('should lookup', () => {
+        it('should retrieve', () => {
             let index = new Index(posts);
 
-            let got = index.lookup('id01');
+            let got = index.retrieve('id01');
             let exp = [ 1, 5 ];
             assert.deepStrictEqual(got, exp);
 
-            got = index.lookup('id03');
+            got = index.retrieve('id03');
             exp = [];
             assert.deepStrictEqual(got, exp);
 
-            got = index.lookup();
+            got = index.retrieve();
             exp = [];
             assert.deepStrictEqual(got, exp);
         });
