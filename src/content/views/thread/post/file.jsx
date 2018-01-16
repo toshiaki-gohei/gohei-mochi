@@ -76,7 +76,6 @@ function handleSetVisibleVideo(isVisibleVideo, event) {
     this.setState({ isVisibleVideo });
 }
 
-
 export function marginLeftForThumb(file) {
     if (file == null || file.thumb == null) return null;
     if (file.thumb.width == null) return null;
@@ -92,7 +91,8 @@ class Video extends Component {
         super(props);
 
         this.state = {
-            isActive: false
+            isActive: false,
+            styleVideo: { display: 'none' }
         };
 
         this._$video = null;
@@ -100,6 +100,7 @@ class Video extends Component {
         let setVideoPrefs = handleSetVideoPrefs.bind(this);
 
         this._handlers = {
+            loadedMetadata: () => this._adjustSize(),
             enter: () => this.setState({ isActive: true }),
             leave: () => {
                 setVideoPrefs();
@@ -112,28 +113,49 @@ class Video extends Component {
         };
     }
 
+    _adjustSize() {
+        if (!this.props.isVisibleVideo) return;
+        if (this._$video == null) return;
+
+        let { left } = this._$video.getBoundingClientRect();
+        let $thre = document.querySelector('.gohei-thread');
+        let maxWidth = ($thre ? $thre.clientWidth : 800) - left - 60;
+
+        let { videoWidth: w, videoHeight: h } = this._$video;
+        if (w > maxWidth) {
+            let ratio = maxWidth / w;
+            [ w, h ] = [ maxWidth, h * ratio ];
+        }
+
+        let styleVideo = {
+            display: null, maxWidth: w + 'px', maxHeight: h + 'px'
+        };
+        this.setState({ styleVideo });
+    }
+
     render({ commit, file, isVisibleVideo }, state) {
         if (!isVisibleVideo) return null;
-        let { isActive } = state;
+        let { isActive, styleVideo } = state;
 
         let { video } = commit('sync/preferences');
         let { loop, muted, volume } = video;
 
-        let { enter, leave, close } = this._handlers;
+        let { loadedMetadata, enter, leave, close } = this._handlers;
 
         let webmUrl = file.url;
         let mp4Url = file.url.replace(/\.webm$/, '.mp4');
 
-        let style = isActive ? null : { display: 'none' };
+        let styleBtn = isActive ? null : { display: 'none' };
 
         return (
 <div class="gohei-video-container" onMouseenter={enter} onMouseleave={leave}>
-  <video class="gohei-video" autoPlay={true} controls={true}
-         loop={loop} muted={muted} volume={volume} ref={$el => this._$video = $el}>
+  <video class="gohei-video" style={styleVideo} ref={$el => this._$video = $el}
+         autoPlay={true} controls={true} loop={loop} muted={muted} volume={volume}
+         onLoadedMetadata={loadedMetadata}>
     <source src={webmUrl} type="video/webm" />
     <source src={mp4Url} type="video/mp4" />
   </video>
-  <div class="gohei-button-area" style={style}>
+  <div class="gohei-button-area" style={styleBtn}>
     <button class="gohei-icon-btn gohei-close-btn gohei-icon-close" onClick={close} />
   </div>
 </div>

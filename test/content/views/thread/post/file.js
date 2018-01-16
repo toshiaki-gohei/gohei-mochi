@@ -97,7 +97,7 @@ describe(__filename, () => {
 <span class="gohei-file-size">\\(888 B\\)</span>
 </div>
 <div class="gohei-video-container">
-<video class="gohei-video" autoplay="true" controls="" loop="">
+<video class="gohei-video" (?=.*style="display: none;")(?=.*autoplay="true" controls="" loop="").*>
 <source src="/b/src/123001.webm" type="video/webm">
 <source src="/b/src/123001.mp4" type="video/mp4">
 </video>
