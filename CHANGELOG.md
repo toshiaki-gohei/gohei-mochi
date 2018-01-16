@@ -1,3 +1,7 @@
+## 0.0.5 (2017-01-16)
+* adjust video size when display video
+* update a document
+
 ## 0.0.4 (2017-01-16)
 
 * display webm movie with inline
