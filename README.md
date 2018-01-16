@@ -5,6 +5,35 @@ WebExtension to make futaba(2chan.net) life so-so good
 
 [japanese home page](https://toshiaki-gohei.github.io/gohei-mochi/)
 
+How to build
+------------
+Install dependence modules.
+```bash
+$ npm install
+```
+
+Build WebExtension and Chrome Extension in `dist` directory.
+```bash
+$ npm run dist
+```
+
+How to test
+-----------
+Run all unit tests:
+```bash
+$ npm test
+```
+
+Run a unit test:
+```bash
+$ npm test <test-filename>
+```
+
+Run all unit tests on Browser:
+```bash
+$ npm run browser-test
+```
+
 Author
 ------
 toshiaki-gohei
