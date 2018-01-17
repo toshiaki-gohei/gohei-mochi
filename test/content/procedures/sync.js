@@ -90,6 +90,34 @@ describe(__filename, () => {
         });
     });
 
+    describe('appThread()', () => {
+        const { appThread } = procedures;
+
+        const threads = new Map([
+            [ 'url-thread01', { url: 'url-thread01' } ],
+            [ 'url-thread02', { url: 'url-thread02' } ],
+            [ 'url-thread03', { url: 'url-thread03' } ]
+        ]);
+        const store = createStore({ app: { threads } });
+
+        it('should return app thread', () => {
+            let got = appThread(store, 'url-thread01');
+            let exp = { url: 'url-thread01' };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return null if not find thread', () => {
+            let got = appThread(store, 'url-thread09');
+            assert(got === null);
+        });
+
+        it('should throw exception if not pass url', () => {
+            let got;
+            try { appThread(store); } catch (e) { got = e.message; }
+            assert(got === 'thread url is required');
+        });
+    });
+
     describe('preferences()', () => {
         const { preferences } = procedures;
 

@@ -17,6 +17,12 @@ export function threadPosts(store, url) {
     return getThreadPosts(store, url);
 }
 
+export function appThread(store, url) {
+    if (url == null) throw new Error('thread url is required');
+    let { app } = store.getState();
+    return app.threads.get(url) || null;
+}
+
 export function preferences(store) {
     let { ui } = store.getState();
     return ui.preferences;
