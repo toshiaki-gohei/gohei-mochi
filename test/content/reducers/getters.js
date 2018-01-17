@@ -79,42 +79,42 @@ describe(__filename, () => {
         });
     });
 
-    describe('getCurrentThreadApp()', () => {
-        const { getCurrentThreadApp } = getter;
+    describe('getCurrentAppThread()', () => {
+        const { getCurrentAppThread } = getter;
 
-        const threadApps = new Map([
+        const appThread = new Map([
             [ 'url-thread01', { postform: { action: 'thread01' } } ],
             [ 'url-thread02', { postform: { action: 'thread02' } } ],
             [ 'url-thread03', { postform: { action: 'thread03' } } ]
         ]);
 
-        it('should return current thread app', () => {
+        it('should return current app thread', () => {
             let store = createStore({
-                app: { threads: threadApps, current: { thread: 'url-thread01' } }
+                app: { threads: appThread, current: { thread: 'url-thread01' } }
             });
-            let got = getCurrentThreadApp(store);
+            let got = getCurrentAppThread(store);
             let exp = { postform: { action: 'thread01' } };
             assert.deepStrictEqual(got, exp);
         });
 
         it('should throw exception if there is no current thread', () => {
             let store = createStore({
-                app: { threads: threadApps, current: { thread: null } }
+                app: { threads: appThread, current: { thread: null } }
             });
             let got;
-            try { getCurrentThreadApp(store); } catch (e) { got = e.message; }
+            try { getCurrentAppThread(store); } catch (e) { got = e.message; }
 
             assert(got === 'no current thread');
         });
 
-        it('should throw exception if not find current thread app', () => {
+        it('should throw exception if not find current app thread', () => {
             let store = createStore({
-                app: { threads: threadApps, current: { thread: 'url-thread09' } }
+                app: { threads: appThread, current: { thread: 'url-thread09' } }
             });
             let got;
-            try { getCurrentThreadApp(store); } catch (e) { got = e.message; }
+            try { getCurrentAppThread(store); } catch (e) { got = e.message; }
 
-            assert(got === 'current thread app not found: url-thread09');
+            assert(got === 'current app thread not found: url-thread09');
         });
     });
 });

@@ -17,11 +17,11 @@ export function getCurrentThread(store) {
     return thread;
 }
 
-export function getCurrentThreadApp(store) {
+export function getCurrentAppThread(store) {
     let { app } = store.getState();
     let url = app.current.thread;
     if (url == null) throw new Error('no current thread');
-    let threadApp = app.threads.get(url);
-    if (threadApp == null) throw new Error(`current thread app not found: ${url}`);
-    return threadApp;
+    let appThread = app.threads.get(url);
+    if (appThread == null) throw new Error(`current app thread not found: ${url}`);
+    return appThread;
 }

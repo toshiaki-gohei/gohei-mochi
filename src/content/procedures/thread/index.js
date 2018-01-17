@@ -1,6 +1,6 @@
 'use strict';
 import * as actions from '../../reducers/actions';
-import { getCurrentThreadApp } from '../../reducers/getters';
+import { getCurrentAppThread } from '../../reducers/getters';
 import * as model from '../../model';
 
 export { addDelreqs, removeDelreqs, clearDelreqs, registerDelreqTasks } from './delreq';
@@ -35,13 +35,13 @@ export function load(store, contents) {
 
 
 export function setDisplayThreshold(store, displayThreshold) {
-    let { url } = getCurrentThreadApp(store);
+    let { url } = getCurrentAppThread(store);
     store.dispatch(setAppThreads({ url, displayThreshold }));
 }
 
 
 export function setComment(store, comment) {
-    let { url, postform } = getCurrentThreadApp(store);
+    let { url, postform } = getCurrentAppThread(store);
     if (postform.comment === comment) return;
     postform = { comment };
     store.dispatch(setAppThreads({ url, postform }));
