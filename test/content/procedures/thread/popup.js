@@ -2,25 +2,61 @@
 import assert from 'assert';
 import * as popup from '~/content/procedures/thread/popup';
 import createStore from '~/content/reducers';
+import { setDomainPosts, setDomainThreads } from '~/content/reducers/actions';
 import { Post } from '~/content/model';
 import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
     let store;
     beforeEach(() => {
+        let thread01 = { url: 'url-thread01', posts: [] };
         let popups = new Map([
-            [ 'popup01', { id: 'popup01' } ],
-            [ 'popup02', { id: 'popup02' } ],
-            [ 'popup03', { id: 'popup03' } ]
+            [ 'popup01', { id: 'popup01', component: 'POPUP01' } ],
+            [ 'popup02', { id: 'popup02', component: 'POPUP02' } ],
+            [ 'popup03', { id: 'popup03', component: 'POPUP03' } ]
         ]);
-        let thread = {
-            quotePopups: [ 'popup01', 'popup03' ]
-        };
-        store = createStore({ ui: { thread, popups } });
+
+        store = createStore({
+            domain: {
+                threads: new Map([ [ thread01.url, thread01 ] ])
+            },
+            app: {
+                current: { thread: thread01.url },
+                threads: new Map([
+                    [ thread01.url, { idipIndex: 'instance of IdipIndex' } ]
+                ])
+            },
+            ui: {
+                popups,
+                thread: {
+                    postsPopups: [ 'popup01', 'popup03' ]
+                }
+            }
+        });
     });
 
     const getPopups = () => store.getState().ui.popups;
-    const quotePopupIds = () => store.getState().ui.thread.quotePopups;
+    const postsPopupIds = () => store.getState().ui.thread.postsPopups;
+
+    describe('openPostsPopup()', () => {
+        const { openPostsPopup } = popup;
+
+        it('should open popups', () => {
+            let id10 = openPostsPopup(store, { component: 'POPUP10' });
+            let id11 = openPostsPopup(store, { component: 'POPUP11' });
+
+            let got = pluck(getPopups(), 'id');
+            let exp = [
+                { id: 'popup01' }, { id: 'popup02' }, { id: 'popup03' },
+                { id: id10 }, { id: id11 }
+            ].sort();
+            assert.deepStrictEqual(got, exp);
+
+            got = postsPopupIds();
+            exp = [ 'popup01', 'popup03', id10, id11 ];
+            assert.deepStrictEqual(got, exp);
+        });
+    });
 
     describe('openQuotePopup()', () => {
         const { openQuotePopup } = popup;
@@ -28,72 +64,43 @@ describe(__filename, () => {
         it('should open quote popup', () => {
             let posts = [ '100', '101', '102' ]
                 .map((no, index) => new Post({ id: `may/b/${no}`, index, no }));
-            let thread01 = { url: 'url-thread01', posts: posts.map(({ id }) => id) };
-            store = createStore({
-                domain: {
-                    posts: new Map(posts.map(post => [ post.id, post ])),
-                    threads: new Map([ [ thread01.url, thread01 ] ])
-                },
-                app: {
-                    current: { thread: 'url-thread01' },
-                    threads: new Map([
-                        [ 'url-thread01', { idipIndex: 'instance of IdipIndex' } ]
-                    ])
-                }
-            });
+            store.dispatch(setDomainPosts(posts));
+            store.dispatch(setDomainThreads({
+                url: 'url-thread01', posts: posts.map(({ id }) => id)
+            }));
 
             let opts = {
-                component: 'popup01',
-                index: 2, quote: '> No.100', event: 'event01'
+                component: 'POPUP10',
+                index: 2, quote: '> No.100', event: 'mouseover'
             };
 
             openQuotePopup(store, opts);
 
-            let got = pluck(getPopups(), 'component', 'props')[0];
+            let got = pluck(getPopups(), 'component', 'props')[3];
             let exp = {
-                component: 'popup01',
+                component: 'POPUP10',
                 props: {
                     posts: [ posts[0] ],
                     app: { idipIndex: 'instance of IdipIndex' },
-                    thread: thread01,
-                    event: 'event01'
+                    thread: store.getState().domain.threads.get('url-thread01'),
+                    event: 'mouseover'
                 }
             };
             assert.deepStrictEqual(got, exp);
         });
     });
 
-    describe('_open()', () => {
-        const { _open } = popup.internal;
-
-        it('should open popups', () => {
-            let id1 = _open(store, { component: 'popup10' });
-            let id2 = _open(store, { component: 'popup11' });
-
-            let got = pluck(getPopups(), 'id');
-            let exp = [
-                { id: 'popup01' }, { id: 'popup02' }, { id: 'popup03' },
-                { id: id1 }, { id: id2 }
-            ].sort();
-            assert.deepStrictEqual(got, exp);
-
-            got = quotePopupIds();
-            exp = [ 'popup01', 'popup03', id1, id2 ];
-            assert.deepStrictEqual(got, exp);
-        });
-    });
-
-    describe('closeQuotePopup()', () => {
-        const { closeQuotePopup } = popup;
+    describe('closePostsPopup()', () => {
+        const { closePostsPopup } = popup;
 
         it('should close last popup', () => {
-            closeQuotePopup(store);
+            closePostsPopup(store);
 
             let got = pluck(getPopups(), 'id');
             let exp = [ { id: 'popup01' }, { id: 'popup02' } ];
             assert.deepStrictEqual(got, exp);
 
-            got = quotePopupIds();
+            got = postsPopupIds();
             exp = [ 'popup01' ];
             assert.deepStrictEqual(got, exp);
         });
@@ -101,52 +108,52 @@ describe(__filename, () => {
         it('should do nothing if ui.popups is empty', () => {
             store = createStore();
             let popups = store.getState().ui.popups;
-            let quotePopups = store.getState().ui.thread.quotePopups;
+            let postsPopups = store.getState().ui.thread.postsPopups;
 
-            closeQuotePopup(store);
+            closePostsPopup(store);
 
             let got = getPopups();
             assert(got.size === 0);
-            got = quotePopupIds();
+            got = postsPopupIds();
             assert(got.length === 0);
 
             got = store.getState().ui.popups;
             assert(got === popups);
-            got = store.getState().ui.thread.quotePopups;
-            assert(got === quotePopups);
+            got = store.getState().ui.thread.postsPopups;
+            assert(got === postsPopups);
         });
     });
 
-    describe('clearQuotePopup()', () => {
-        const { clearQuotePopup } = popup;
+    describe('clearPostsPopup()', () => {
+        const { clearPostsPopup } = popup;
 
         it('should clear popups', () => {
-            clearQuotePopup(store);
+            clearPostsPopup(store);
 
             let got = pluck(getPopups(), 'id');
             let exp = [ { id: 'popup02' } ];
             assert.deepStrictEqual(got, exp);
 
-            got = quotePopupIds();
+            got = postsPopupIds();
             assert(got.length === 0);
         });
 
         it('should do nothing if popups is empty', () => {
             store = createStore();
             let popups = store.getState().ui.popups;
-            let quotePopups = store.getState().ui.thread.quotePopups;
+            let postsPopups = store.getState().ui.thread.postsPopups;
 
-            clearQuotePopup(store);
+            clearPostsPopup(store);
 
             let got = getPopups();
             assert(got.size === 0);
-            got = quotePopupIds();
+            got = postsPopupIds();
             assert(got.length === 0);
 
             got = store.getState().ui.popups;
             assert(got === popups);
-            got = store.getState().ui.thread.quotePopups;
-            assert(got === quotePopups);
+            got = store.getState().ui.thread.postsPopups;
+            assert(got === postsPopups);
         });
     });
 });

@@ -68,11 +68,11 @@ function handleClose(event) {
 
     // mouse went back from popup to previous(under) popup
     if (isOnPopup($related)) {
-        commit('thread/closeQuotePopup');
+        commit('thread/closePostsPopup');
         return;
     }
 
-    commit('thread/clearQuotePopup');
+    commit('thread/clearPostsPopup');
 }
 
 const OVERHANG_WIDTH = 40;

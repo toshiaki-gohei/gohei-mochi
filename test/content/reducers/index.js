@@ -19,7 +19,7 @@ describe(__filename, () => {
         ui: {
             thread: {
                 panel: { isOpen: null, type: null },
-                quotePopups: []
+                postsPopups: []
             },
             preferences: {
                 catalog: {

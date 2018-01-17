@@ -6,7 +6,7 @@ describe(__filename, () => {
     let state;
     beforeEach(() => state = create({
         panel: { isOpen: false, type: 'FORM_POST' },
-        quotePopups: [ 'popup1' ]
+        postsPopups: [ 'popup1' ]
     }));
 
     describe('export', () => {
@@ -23,17 +23,17 @@ describe(__filename, () => {
         it('should reduce state', () => {
             let ui = {
                 panel: { isOpen: true },
-                quotePopups: [ 'popup1', 'popup2' ]
+                postsPopups: [ 'popup1', 'popup2' ]
             };
             let action = { ui };
 
             let got = reduce(state, action);
             let exp = {
                 panel: { isOpen: true, type: 'FORM_POST' },
-                quotePopups: [ 'popup1', 'popup2' ]
+                postsPopups: [ 'popup1', 'popup2' ]
             };
             assert.deepStrictEqual(got, exp);
-            assert(got.quotePopups === ui.quotePopups);
+            assert(got.postsPopups === ui.postsPopups);
         });
 
         it('should ignore unknown properties', () => {
@@ -46,7 +46,7 @@ describe(__filename, () => {
             let got = reduce(state, action);
             let exp = {
                 panel: { isOpen: true, type: 'FORM_POST' },
-                quotePopups: [ 'popup1' ]
+                postsPopups: [ 'popup1' ]
             };
             assert.deepStrictEqual(got, exp);
         });

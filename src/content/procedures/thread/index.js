@@ -4,7 +4,7 @@ import { getCurrentThreadApp } from '../../reducers/getters';
 import * as model from '../../model';
 
 export { addDelreqs, removeDelreqs, clearDelreqs, registerDelreqTasks } from './delreq';
-export { openQuotePopup, closeQuotePopup, clearQuotePopup } from './popup';
+export { openQuotePopup, openPostsPopup, closePostsPopup, clearPostsPopup } from './popup';
 export { quote } from './quote';
 export { soudane } from './soudane';
 export { submit } from './submit';

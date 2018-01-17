@@ -71,7 +71,7 @@ $`.replace(/\n/g, ''));
 
         it('should commit procedure if left mouse', done => {
             let mock = procedures(null, {
-                'thread/clearQuotePopup': done
+                'thread/clearPostsPopup': done
             });
             let props = { commit: mock, ...makeProps(1) };
 
@@ -83,7 +83,7 @@ $`.replace(/\n/g, ''));
 
         it('should commit procedure if mouse went back from popup to previous(under) popup', done => {
             let mock = procedures(null, {
-                'thread/closeQuotePopup': done
+                'thread/closePostsPopup': done
             });
             let props1 = { ...makeProps(1) };
             let props2 = { commit: mock, ...makeProps(2) };
@@ -98,8 +98,8 @@ $`.replace(/\n/g, ''));
 
         it('should not commit procedure if mouse moved from popup to next(overlap) popup', done => {
             let mock = procedures(null, {
-                'thread/closeQuotePopup': () => { throw new Error('should not commit close'); },
-                'thread/clearquotePopup': () => { throw new Error('should not commit clear'); }
+                'thread/closePostsPopup': () => { throw new Error('not commit close'); },
+                'thread/clearPostsPopup': () => { throw new Error('not commit clear'); }
             });
             let props1 = { commit: mock, ...makeProps(1) };
             let props2 = { commit: mock, ...makeProps(2) };

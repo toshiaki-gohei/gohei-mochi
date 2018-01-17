@@ -7,13 +7,13 @@ const STATE = create();
 export function create(opts) {
     let {
         panel: { isOpen = null, type = null } = {},
-        quotePopups = []
+        postsPopups = []
     } = opts || {};
 
     let panel = F({ isOpen, type });
-    F(quotePopups);
+    F(postsPopups);
 
-    return F({ panel, quotePopups });
+    return F({ panel, postsPopups });
 }
 
 export default createReducer(STATE, {

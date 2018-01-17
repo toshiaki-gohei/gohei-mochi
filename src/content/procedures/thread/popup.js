@@ -5,61 +5,61 @@ import { add, remove } from '../popup';
 import { findQuotedPost } from '../../model/thread';
 import { removeQuoteMark } from '../../util/html';
 
+export function openPostsPopup(store, opts) {
+    let { component, posts, event } = opts;
+
+    let state = store.getState();
+    let thread = getCurrentThread(store);
+    let app = state.app.threads.get(thread.url);
+
+    let props = { posts, app, thread, event };
+    return _open(store, { component, props });
+}
+
 export function openQuotePopup(store, opts) {
     let { component, index, quote, event } = opts;
 
     let thread = getCurrentThread(store);
-    let { url } = thread;
 
-    let posts = getThreadPosts(store, url);
+    let posts = getThreadPosts(store, thread.url);
     quote = removeQuoteMark(quote);
 
     let quotedPost = findQuotedPost(posts, { index, quote });
     if (quotedPost == null) return;
 
-    let { app } = store.getState();
-    app = app.threads.get(url);
-
-    let props = { posts: [ quotedPost ], app, thread, event };
-    _open(store, { component, props });
+    openPostsPopup(store, { component, posts: [ quotedPost ], event });
 }
 
 function _open(store, opts) {
     let popupId = add(store, opts);
 
     let { ui } = store.getState();
-    let quotePopups = ui.thread.quotePopups.concat(popupId);
+    let postsPopups = ui.thread.postsPopups.concat(popupId);
 
-    store.dispatch(setUiThread({ quotePopups }));
+    store.dispatch(setUiThread({ postsPopups }));
 
     return popupId;
 }
 
-export function closeQuotePopup(store) {
+export function closePostsPopup(store) {
     let { ui } = store.getState();
 
-    let popups = ui.thread.quotePopups;
+    let popups = ui.thread.postsPopups;
     if (popups.length === 0) return;
 
     popups = popups.slice();
     let id = popups.pop();
 
-    store.dispatch(setUiThread({ quotePopups: popups }));
-
     remove(store, id);
+    store.dispatch(setUiThread({ postsPopups: popups }));
 }
 
-export function clearQuotePopup(store) {
+export function clearPostsPopup(store) {
     let { ui } = store.getState();
 
-    let popups = ui.thread.quotePopups;
+    let popups = ui.thread.postsPopups;
     if (popups.length === 0) return;
 
     remove(store, popups);
-
-    store.dispatch(setUiThread({ quotePopups: [] }));
+    store.dispatch(setUiThread({ postsPopups: [] }));
 }
-
-export const internal = {
-    _open
-};
