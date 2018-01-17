@@ -7,7 +7,7 @@ import * as thread from './thread';
 import * as worker from './worker';
 import * as sync from './sync';
 
-function defaultMap(store) {
+export function defaultMap(store) {
     return {
         ...makeMap(store, 'catalog', catalog),
         ...makeMap(store, 'delreq', delreq),
@@ -48,6 +48,5 @@ function makeMap(store, namespace, functions) {
 }
 
 export const internal = {
-    defaultMap,
     makeMap
 };

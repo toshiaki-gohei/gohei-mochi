@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import procedures, { internal } from '~/content/procedures';
+import procedures, { defaultMap, internal } from '~/content/procedures';
 
 describe(__filename, () => {
     const STORE = 'test store';
@@ -31,8 +31,6 @@ describe(__filename, () => {
     });
 
     describe('defaultMap()', () => {
-        const { defaultMap } = internal;
-
         it('should return default map', () => {
             let map = defaultMap(STORE);
             let got = Object.values(map).every(fn => typeof fn === 'function');
