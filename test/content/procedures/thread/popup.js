@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as popup from '~/content/procedures/thread/popup-quote';
+import * as popup from '~/content/procedures/thread/popup';
 import createStore from '~/content/reducers';
 import { Post } from '~/content/model';
 import { pluckFromMap as pluck } from '@/support/util';
