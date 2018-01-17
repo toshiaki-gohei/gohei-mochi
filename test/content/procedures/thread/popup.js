@@ -21,10 +21,7 @@ describe(__filename, () => {
                 threads: new Map([ [ thread01.url, thread01 ] ])
             },
             app: {
-                current: { thread: thread01.url },
-                threads: new Map([
-                    [ thread01.url, { idipIndex: 'instance of IdipIndex' } ]
-                ])
+                current: { thread: thread01.url }
             },
             ui: {
                 popups,
@@ -80,9 +77,8 @@ describe(__filename, () => {
             let exp = {
                 component: 'POPUP10',
                 props: {
-                    posts: [ posts[0] ],
-                    app: { idipIndex: 'instance of IdipIndex' },
-                    thread: store.getState().domain.threads.get('url-thread01'),
+                    posts: [ posts[0].id ],
+                    thread: 'url-thread01',
                     event: 'mouseover'
                 }
             };

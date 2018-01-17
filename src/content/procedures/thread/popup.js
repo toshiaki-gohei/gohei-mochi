@@ -6,28 +6,26 @@ import { findQuotedPost } from '../../model/thread';
 import { removeQuoteMark } from '../../util/html';
 
 export function openPostsPopup(store, opts) {
-    let { component, posts, event } = opts;
+    let { component, posts, thread, event } = opts;
 
-    let state = store.getState();
-    let thread = getCurrentThread(store);
-    let app = state.app.threads.get(thread.url);
+    if (thread == null) thread = getCurrentThread(store).url;
 
-    let props = { posts, app, thread, event };
+    let props = { posts, thread, event };
     return _open(store, { component, props });
 }
 
 export function openQuotePopup(store, opts) {
     let { component, index, quote, event } = opts;
 
-    let thread = getCurrentThread(store);
+    let { url } = getCurrentThread(store);
+    let posts = getThreadPosts(store, url);
 
-    let posts = getThreadPosts(store, thread.url);
     quote = removeQuoteMark(quote);
 
     let quotedPost = findQuotedPost(posts, { index, quote });
     if (quotedPost == null) return;
 
-    openPostsPopup(store, { component, posts: [ quotedPost ], event });
+    openPostsPopup(store, { component, posts: [ quotedPost.id ], thraed: url, event });
 }
 
 function _open(store, opts) {

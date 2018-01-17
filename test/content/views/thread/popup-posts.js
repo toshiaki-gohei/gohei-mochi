@@ -3,20 +3,42 @@ import assert from 'assert';
 import Popup from '~/content/views/thread/popup-posts.jsx';
 import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
-import procedures from '~/content/procedures';
+import procedures, { defaultMap } from '~/content/procedures';
+import createStore from '~/content/reducers';
+import * as actions from '~/content/reducers/actions';
 import { Post } from '~/content/model';
+
+const { setDomainPosts, setDomainThreads, setAppThreads, setAppCurrent } = actions;
 
 describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
+    let store, commit;
+    beforeEach(() => {
+        let url = 'url-thread01';
+        store = createStore();
+        store.dispatch(setDomainThreads({ url }));
+        store.dispatch(setAppThreads({ url }));
+        store.dispatch(setAppCurrent({ thread: url }));
+
+        commit = procedures(store);
+    });
+
+    const newPosts = ids => ids.map(index => new Post({ id: `post0${index}`, index }));
+
     describe('render()', () => {
         it('should render popup', () => {
+            let post01 = new Post({ id: 'post01', index: 1 });
+            store.dispatch(setDomainPosts(post01));
+
             let props = {
+                commit,
                 id: 'popup1',
                 class: 'class1',
                 style: { left: '100px' },
-                posts: [ new Post({ index: 1 }) ]
+                posts: [ 'post01' ],
+                thread: 'url-thread01'
             };
             let $el = render(<Popup {...props} />);
 
@@ -30,8 +52,13 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render popup containing posts', () => {
+            let posts = newPosts([ 1, 0, 2 ]);
+            store.dispatch(setDomainPosts(posts));
+
             let props = {
-                posts: [ 1, 0, 2 ].map(index => new Post({ index }))
+                commit,
+                posts: posts.map(({ id }) => id),
+                thread: 'url-thread01'
             };
             let $el = render(<Popup {...props} />);
 
@@ -47,7 +74,11 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render popup if posts is empty', () => {
-            let props = { posts: [] };
+            let props = {
+                commit,
+                posts: [],
+                thread: 'url-thread01'
+            };
             let $el = render(<Popup {...props} />);
 
             let got = $el.outerHTML;
@@ -55,22 +86,25 @@ $`.replace(/\n/g, ''));
             assert(got === exp);
         });
 
-        it('should render popup if no props', () => {
-            let $el = render(<Popup />);
-
-            let got = $el.outerHTML;
-            let exp = '<div class="gohei-post-popup" style=""></div>';
-            assert(got === exp);
+        it('should throw exception if no props', done => {
+            try { render(<Popup />); } catch (e) {
+                done();
+            }
         });
     });
 
     describe('event', () => {
         const makeProps = index => {
-            return { id: `popup${index}`, class: 'gohei-popup', posts: [ new Post({ index }) ] };
+            let posts = newPosts([ index ]);
+            store.dispatch(setDomainPosts(posts));
+            let postIds = posts.map(({ id }) => id);
+            let thread = 'url-thread01';
+            return { id: `popup${index}`, class: 'gohei-popup', posts: postIds, thread };
         };
 
         it('should commit procedure if left mouse', done => {
-            let mock = procedures(null, {
+            let mock = procedures(store, {
+                ...defaultMap(store),
                 'thread/clearPostsPopup': done
             });
             let props = { commit: mock, ...makeProps(1) };
@@ -82,10 +116,11 @@ $`.replace(/\n/g, ''));
         });
 
         it('should commit procedure if mouse went back from popup to previous(under) popup', done => {
-            let mock = procedures(null, {
+            let mock = procedures(store, {
+                ...defaultMap(store),
                 'thread/closePostsPopup': done
             });
-            let props1 = { ...makeProps(1) };
+            let props1 = { commit: mock, ...makeProps(1) };
             let props2 = { commit: mock, ...makeProps(2) };
 
             let $el = render(<div><Popup {...props1} /><Popup {...props2} /></div>);
@@ -97,7 +132,8 @@ $`.replace(/\n/g, ''));
         });
 
         it('should not commit procedure if mouse moved from popup to next(overlap) popup', done => {
-            let mock = procedures(null, {
+            let mock = procedures(store, {
+                ...defaultMap(store),
                 'thread/closePostsPopup': () => { throw new Error('not commit close'); },
                 'thread/clearPostsPopup': () => { throw new Error('not commit clear'); }
             });

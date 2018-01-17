@@ -37,14 +37,18 @@ export default class Popup extends Component {
     }
 
     render(props, state) {
-        let { commit, id, class: className, posts = [], app, thread } = props;
+        let { commit, id, class: className, posts = [], thread: threadUrl } = props;
         let { style } = state;
 
         if (this._vanishes) {
             style = { ...style, display: 'none' };
         }
 
-        let $posts = posts.map(post => {
+        let thread = commit('sync/thread', threadUrl);
+        let app = commit('sync/appThread', threadUrl);
+
+        let $posts = posts.map(postId => {
+            let post = commit('sync/post', postId);
             return <Post {...{ commit, post, app, thread }} key={post.index} />;
         });
 
