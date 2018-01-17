@@ -3,7 +3,7 @@ import { h, Component } from 'preact';
 import { CLASS_NAME as CN, THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 import OriginalPost from './original.jsx';
 import Reply from './reply.jsx';
-import Popup from '../popup.jsx';
+import Popup from '../popup-posts.jsx';
 import { hasChanged } from '../../util';
 
 export default class Post extends Component {

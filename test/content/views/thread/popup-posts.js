@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import Popup from '~/content/views/thread/popup.jsx';
+import Popup from '~/content/views/thread/popup-posts.jsx';
 import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
