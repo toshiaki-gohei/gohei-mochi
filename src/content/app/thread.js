@@ -66,6 +66,8 @@ export default class App {
         let $el = createInner({ url, title, notice });
         this._mount($el);
 
+        displayTabIcon(thread.posts[0]);
+
         let { _store: store, _commit: commit, _emitter: emitter } = this;
         let displayThreshold = getDisplayThreshold(thread.posts);
 
@@ -168,6 +170,16 @@ function getDisplayThreshold(posts) {
     let threshold = DISPLAY_THRESHOLD.INITIAL;
     if (posts.length < threshold) return null;
     return threshold;
+}
+
+function displayTabIcon(op) {
+    if (op == null || op.file == null) return;
+
+    let $link = createElement('link', {
+        rel: 'icon',
+        href: op.file.thumb.url
+    });
+    document.head.appendChild($link);
 }
 
 function registerScroll() {
