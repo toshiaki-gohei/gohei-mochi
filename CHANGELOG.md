@@ -1,3 +1,10 @@
+## 0.1.0 (2018-01-18)
+* add to popup posts by userId or userIp
+* use a original post thumb to display tab icon
+* improve to display ads
+* change DEL and soudane so that text can be selected with mouse
+* modify to return true on a listener passed to onMessage() in background
+
 ## 0.0.5 (2018-01-16)
 * adjust video size when display video
 * update a document
