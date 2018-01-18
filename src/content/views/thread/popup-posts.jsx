@@ -82,9 +82,9 @@ function handleClose(event) {
 const OVERHANG_WIDTH = 40;
 
 function calcX({ event: { pageX }, $el: { offsetWidth } }) {
-    let style = {};
-    let ww = window.innerWidth;
+    let { innerWidth: ww } = window;
 
+    let style = {};
     if (pageX + offsetWidth - OVERHANG_WIDTH < ww) {
         style.left = (pageX - OVERHANG_WIDTH) + 'px';
     } else {
@@ -95,14 +95,16 @@ function calcX({ event: { pageX }, $el: { offsetWidth } }) {
 }
 
 function calcY({ event: { target: $target }, $el: { offsetHeight } }) {
-    let style = {};
-    let rect = $target.getBoundingClientRect();
+    let { top, bottom } = $target.getBoundingClientRect();
+    let { pageYOffset } = window;
 
     // ceil(): overlap rect and $popup slightly for mouseleave event
-    let y = Math.ceil(rect.top + window.pageYOffset);
-    style.top = (y - offsetHeight) + 'px';
+    let y = Math.ceil(top + pageYOffset);
 
-    return style;
+    y -= offsetHeight; // display above
+    if (y < 0) y = Math.floor(bottom + pageYOffset); // display below
+
+    return { top: y + 'px' };
 }
 
 function isOnPopup($el) {
