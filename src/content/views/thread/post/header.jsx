@@ -4,7 +4,7 @@ import { marginLeftForThumb } from './file.jsx';
 
 export default function Header({ post, idipIndex, handlers }) {
     let { id, index, no, date, userId, userIp, del, sod, file } = post || {};
-    let { delreq, soudane } = handlers || {};
+    let { popupPostsById, popupPostsByIp, delreq, soudane } = handlers || {};
 
     let marginLeft = index === 0 ? marginLeftForThumb(file) : null;
     let style = marginLeft ? { marginLeft } : null;
@@ -18,9 +18,9 @@ export default function Header({ post, idipIndex, handlers }) {
   <span class="gohei-date">{date}</span>
   <span class="gohei-no">No.{no}</span>
   <UserId {...post} />
-  <Counter {...{ idipIndex, idOrIp: userId, id }} />
+  <Counter {...{ idipIndex, idOrIp: userId, id, popupPostsBy: popupPostsById }} />
   <UserIp {...post} />
-  <Counter {...{ idipIndex, idOrIp: userIp, id }} />
+  <Counter {...{ idipIndex, idOrIp: userIp, id, popupPostsBy: popupPostsByIp }} />
   <Del {...{ del, delreq }} />
   <Sod {...{ sod, soudane }} />
 </div>
@@ -75,7 +75,7 @@ function Sod({ sod, soudane }) {
 
 const sodStyle = { paddingLeft: '4px', paddingRight: '4px' };
 
-function Counter({ idipIndex, idOrIp, id }) {
+function Counter({ idipIndex, idOrIp, id, popupPostsBy }) {
     if (idipIndex == null) return null;
     if (idOrIp == null) return null;
 
@@ -83,5 +83,6 @@ function Counter({ idipIndex, idOrIp, id }) {
     if (count == null) return null;
     let { current, total } = count;
 
-    return <span class="gohei-counter">[{current}/{total}]</span>;
+    return <span class="gohei-counter"
+                 onMouseenter={popupPostsBy}>[{current}/{total}]</span>;
 }

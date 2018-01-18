@@ -168,6 +168,30 @@ $`.replace(/\n/g, ''));
         let handlers;
         beforeEach(() => handlers = {});
 
+        it('should handle to popup posts by userId if mouse enter counter', done => {
+            handlers.popupPostsById = () => done();
+
+            post = new Post({ ...post, userId: 'XXXXXXXX' });
+            let idipIndex = new thread.IdipIndex([ post ]);
+
+            let $el = render(<Header {...{ post, idipIndex, handlers }} />);
+
+            let $counter = $el.querySelector('.gohei-counter');
+            $counter.dispatchEvent(new window.Event('mouseenter'));
+        });
+
+        it('should handle to popup posts by userIp if mouse enter counter', done => {
+            handlers.popupPostsByIp = () => done();
+
+            post = new Post({ ...post, userIp: '192.168.*(example.net)' });
+            let idipIndex = new thread.IdipIndex([ post ]);
+
+            let $el = render(<Header {...{ post, idipIndex, handlers }} />);
+
+            let $counter = $el.querySelector('.gohei-counter');
+            $counter.dispatchEvent(new window.Event('mouseenter'));
+        });
+
         it('should handle delreq if click del', done => {
             handlers.delreq = () => done();
             let $el = render(<Header {...{ post, handlers }} />);

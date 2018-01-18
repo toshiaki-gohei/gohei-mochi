@@ -39,6 +39,8 @@ function makeHandlers() {
     let { post } = this.props;
     if (post == null) return null;
 
+    let popupPostsById = handlePopupPostsById.bind(this);
+    let popupPostsByIp = handlePopupPostsByIp.bind(this);
     let popupQuote = handlePopupQuote.bind(this);
 
     let quoteNo = handleQuote.bind(this, 'no');
@@ -52,11 +54,23 @@ function makeHandlers() {
     let leave = () => this.setState({ isActive: false });
 
     return {
-        popupQuote,
+        popupPostsById, popupPostsByIp, popupQuote,
         quoteNo, quoteComment, quoteFile,
         delreq, soudane,
         enter, leave
     };
+}
+
+function handlePopupPostsById(event) {
+    let { commit, post, app } = this.props;
+    let posts = app.idipIndex.retrieve(post.userId);
+    commit('thread/openPostsPopup', { component: Popup, posts, event });
+}
+
+function handlePopupPostsByIp(event) {
+    let { commit, post, app } = this.props;
+    let posts = app.idipIndex.retrieve(post.userIp);
+    commit('thread/openPostsPopup', { component: Popup, posts, event });
 }
 
 function handlePopupQuote(event) {

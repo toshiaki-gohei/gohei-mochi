@@ -527,7 +527,6 @@ input[type="file"] {
 .gohei-popup-container > .gohei-popup {
     position: absolute;
     border: 1px solid #eeaa88;
-    padding: 2px;
     box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.4);
     z-index: 400;
 }
@@ -540,7 +539,7 @@ input[type="file"] {
 }
 
 .gohei-popup-container > .gohei-post-popup .gohei-post {
-    margin: 2px;
+    margin: 4px;
 }
 
 .gohei-app-thread .gohei-notice {
@@ -606,6 +605,10 @@ input[type="file"] {
 
 .gohei-post-header > .gohei-mailto {
     color: #0597cc;
+}
+
+.gohei-post-header > .gohei-counter {
+    color: #789922;
 }
 
 .gohei-post-header > .gohei-link-btn {

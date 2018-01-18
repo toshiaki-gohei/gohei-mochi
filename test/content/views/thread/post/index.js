@@ -4,7 +4,7 @@ import Post from '~/content/views/thread/post/index.jsx';
 import { h, render } from 'preact';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
-import { Post as ModelPost } from '~/content/model';
+import { Post as ModelPost, thread as modelThread } from '~/content/model';
 import Body from '~/content/views/thread/post/body.jsx';
 
 describe(__filename, () => {
@@ -97,6 +97,58 @@ $`.replace(/\n/g, ''));
                 assert(c.state.isActive === false);
                 done();
             }, 5);
+        });
+
+        it('should handle to popup posts by id', done => {
+            let mock = procedures(null, {
+                'thread/openPostsPopup': ({ component, posts, event }) => {
+                    assert(typeof component === 'function');
+                    assert.deepStrictEqual(posts, [ 'post01' ]);
+                    assert(event);
+                    done();
+                }
+            });
+
+            const posts = [
+                { id: 'post01', userId: 'id01' },
+                { id: 'post02', userId: 'id02'},
+                { id: 'post03', userId: null }
+            ];
+            let app = {
+                idipIndex: new modelThread.IdipIndex(posts)
+            };
+            post = new ModelPost(posts[0]);
+
+            let $el = render(<Post {...{ commit: mock, post, app }} />);
+
+            let $counter = $el.querySelector('.gohei-post-header .gohei-counter');
+            $counter.dispatchEvent(new window.Event('mouseenter'));
+        });
+
+        it('should handle to popup posts by ip', done => {
+            let mock = procedures(null, {
+                'thread/openPostsPopup': ({ component, posts, event }) => {
+                    assert(typeof component === 'function');
+                    assert.deepStrictEqual(posts, [ 'post01' ]);
+                    assert(event);
+                    done();
+                }
+            });
+
+            const posts = [
+                { id: 'post01', userIp: 'ip01' },
+                { id: 'post02', userIp: 'ip02'},
+                { id: 'post03', userIp: null }
+            ];
+            let app = {
+                idipIndex: new modelThread.IdipIndex(posts)
+            };
+            post = new ModelPost(posts[0]);
+
+            let $el = render(<Post {...{ commit: mock, post, app }} />);
+
+            let $counter = $el.querySelector('.gohei-post-header .gohei-counter');
+            $counter.dispatchEvent(new window.Event('mouseenter'));
         });
 
         it('should handle to popup quote', done => {
