@@ -70,7 +70,7 @@ export default class App {
 
         stopwatch.start('first render');
 
-        emitter.once('thread:loaded', () => {
+        emitter.once('catalog:did-mount', () => {
             this._$bucket = null;
             if (process.env.NODE_ENV === 'development') return;
             this._displayAds(ads);

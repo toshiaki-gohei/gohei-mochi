@@ -87,7 +87,7 @@ export default class App {
 
         stopwatch.start('first render');
 
-        emitter.once('thread:loaded', () => {
+        emitter.once('thread:did-mount', () => {
             this._$bucket = null;
             if (process.env.NODE_ENV === 'development') return;
             this._displayAds(ads);
@@ -104,7 +104,7 @@ export default class App {
     }
 
     _initEventListener() {
-        this._emitter.once('thread:loaded', () => {
+        this._emitter.once('thread:did-mount', () => {
             stopwatch.stop('first render');
             adjustScroll();
             stopwatch.log('parse thread');

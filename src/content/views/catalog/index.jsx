@@ -20,10 +20,10 @@ export default class Main extends Component {
     }
 
     componentDidMount() {
-        if (this._emitter) this._emitter.emit('thread:loaded');
+        if (this._emitter) this._emitter.emit('catalog:did-mount');
     }
     componentDidUpdate() {
-        // if (this._emitter) this._emitter.emit('thread:loaded');
+        if (this._emitter) this._emitter.emit('catalog:did-update');
     }
     componentWillUnmount() {
         this._unsubscribe();
