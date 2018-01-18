@@ -28,10 +28,12 @@ function handleMessage(store, message, sender, sendResponse) {
     switch (type) {
     case 'store':
         handleStore(store, { message, sender, callback: sendResponse });
-        return;
+        break;
     default:
         throw new TypeError(`unknown type: ${type}`);
     }
+
+    return true;
 }
 
 function handleStore(store, { message, sender, callback }) {
