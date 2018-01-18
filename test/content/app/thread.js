@@ -110,9 +110,11 @@ describe(__filename, () => {
 <div class="gohei-ad" id="gohei-ad-under-postform"></div>
 <hr>
 <div class="gohei-ad" id="gohei-ad-on-thread"></div>
+<div class="gohei-ad-right-container">
+<div class="gohei-ad" id="gohei-ad-right"></div>
+</div>
 <div id="mount-point-of-main"></div>
 <hr>
-<div class="gohei-ad" id="gohei-ad-right"></div>
 <div class="gohei-ad" id="gohei-ad-on-delform"></div>
 <div class="gohei-ad" id="gohei-ad-bottom"></div>
 <footer class="gohei-footer">

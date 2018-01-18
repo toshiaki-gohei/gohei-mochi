@@ -553,6 +553,16 @@ input[type="file"] {
     margin: 4px auto;
 }
 
+.gohei-app-thread .gohei-ad-right-container {
+    position: absolute;
+    right: 10px;
+}
+
+.gohei-app-thread #gohei-ad-right {
+    position: sticky;
+    top: 20px;
+}
+
 .gohei-app-thread #gohei-ad-bottom {
     text-align: center;
 }

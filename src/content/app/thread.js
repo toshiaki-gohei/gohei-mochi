@@ -106,9 +106,16 @@ export default class App {
     _initEventListener() {
         this._emitter.once('thread:did-mount', () => {
             stopwatch.stop('first render');
+
+            adjustAds();
             adjustScroll();
+
             stopwatch.log('parse thread');
             stopwatch.log('first render');
+        });
+
+        this._emitter.on('thread:did-update', () => {
+            adjustAds();
         });
 
         window.addEventListener('beforeunload', () => {
@@ -144,9 +151,11 @@ ${nav({ url })}
 <div class="gohei-ad" id="${ID_ADS.UNDER_POSTFORM}"></div>
 <hr>
 <div class="gohei-ad" id="${ID_ADS.ON_THREAD}"></div>
+<div class="gohei-ad-right-container">
+<div class="gohei-ad" id="${ID_ADS.RIGHT}"></div>
+</div>
 <div id="${ID_MP_MAIN}"></div>
 <hr>
-<div class="gohei-ad" id="${ID_ADS.RIGHT}"></div>
 <div class="gohei-ad" id="${ID_ADS.ON_DELFORM}"></div>
 <div class="gohei-ad" id="${ID_ADS.BOTTOM}"></div>
 ${footer()}
@@ -189,6 +198,15 @@ function displayAds(ads) {
     if (right) $(ID_ADS.RIGHT).innerHTML = right;
     if (onDelForm) $(ID_ADS.ON_DELFORM).innerHTML = onDelForm;
     if (bottom) $(ID_ADS.BOTTOM).innerHTML = bottom;
+}
+
+function adjustAds() {
+    let $main = document.querySelector('main');
+    if ($main == null) return;
+
+    let { clientHeight } = $main;
+    let $container = document.querySelector('.gohei-ad-right-container');
+    $container.style.height = clientHeight + 'px';
 }
 
 class JsErrorPreventer {
