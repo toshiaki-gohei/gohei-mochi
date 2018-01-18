@@ -90,7 +90,7 @@ export default class App {
         emitter.once('thread:did-mount', () => {
             this._$bucket = null;
             if (process.env.NODE_ENV === 'development') return;
-            this._displayAds(ads);
+            displayAds(ads);
         });
 
         let $main = createComponent(Main, { store, commit, emitter });
@@ -114,17 +114,6 @@ export default class App {
         window.addEventListener('beforeunload', () => {
             registerScroll();
         }, { once: true });
-    }
-
-    _displayAds(ads) {
-        let { top, underPostForm, onThread, right, onDelForm, bottom } = ads || {};
-
-        if (top) $(ID_ADS.TOP).innerHTML = top;
-        if (underPostForm) $(ID_ADS.UNDER_POSTFORM).innerHTML = underPostForm;
-        if (onThread) $(ID_ADS.ON_THREAD).innerHTML = onThread;
-        if (right) $(ID_ADS.RIGHT).innerHTML = right;
-        if (onDelForm) $(ID_ADS.ON_DELFORM).innerHTML = onDelForm;
-        if (bottom) $(ID_ADS.BOTTOM).innerHTML = bottom;
     }
 }
 
@@ -189,6 +178,17 @@ async function adjustScroll() {
     if (url !== window.location.href) return;
 
     window.scroll(pageXOffset, pageYOffset);
+}
+
+function displayAds(ads) {
+    let { top, underPostForm, onThread, right, onDelForm, bottom } = ads || {};
+
+    if (top) $(ID_ADS.TOP).innerHTML = top;
+    if (underPostForm) $(ID_ADS.UNDER_POSTFORM).innerHTML = underPostForm;
+    if (onThread) $(ID_ADS.ON_THREAD).innerHTML = onThread;
+    if (right) $(ID_ADS.RIGHT).innerHTML = right;
+    if (onDelForm) $(ID_ADS.ON_DELFORM).innerHTML = onDelForm;
+    if (bottom) $(ID_ADS.BOTTOM).innerHTML = bottom;
 }
 
 class JsErrorPreventer {

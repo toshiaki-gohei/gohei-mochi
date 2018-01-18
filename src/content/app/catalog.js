@@ -73,7 +73,7 @@ export default class App {
         emitter.once('catalog:did-mount', () => {
             this._$bucket = null;
             if (process.env.NODE_ENV === 'development') return;
-            this._displayAds(ads);
+            displayAds(ads);
         });
 
         let $main = createComponent(Main, { store, commit, emitter });
@@ -84,13 +84,6 @@ export default class App {
         let body = document.body;
         body.insertBefore($el, body.firstChild);
         this._$el = $el;
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    _displayAds(ads) {
-        let { bottom } = ads || {};
-
-        if (bottom) $(ID_ADS.BOTTOM).innerHTML = bottom;
     }
 }
 
@@ -120,6 +113,12 @@ function getSort(url) {
     url = new window.URL(url);
     let sort = url.searchParams.get('sort');
     return sort == null ? null : +sort;
+}
+
+function displayAds(ads) {
+    let { bottom } = ads || {};
+
+    if (bottom) $(ID_ADS.BOTTOM).innerHTML = bottom;
 }
 
 export const internal = {
