@@ -623,6 +623,7 @@ input[type="file"] {
 
 .gohei-post-header > .gohei-link-btn {
     line-height: 1.2;
+    -moz-user-select: auto;
 }
 
 .gohei-post-file .gohei-thumb-image {
