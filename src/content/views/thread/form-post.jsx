@@ -148,11 +148,11 @@ function Submit({ isPosting }) {
 }
 
 function LabelComment({ handlers }) {
-    let { oekaki } = handlers;
+    let { oekaki } = handlers; // eslint-disable-line no-unused-vars
     return (
 <div className="gohei-label-comment">
   コメント
-  <button className="gohei-link-btn" type="button" onClick={oekaki}>手書き</button>
+  {/*<button className="gohei-link-btn" type="button" onClick={oekaki}>手書き</button>*/}
 </div>
     );
 }
