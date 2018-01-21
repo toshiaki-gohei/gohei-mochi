@@ -47,6 +47,13 @@ export function setComment(store, comment) {
     store.dispatch(setAppThreads({ url, postform }));
 }
 
+export function setFile(store, file) {
+    let { url, postform } = getCurrentAppThread(store);
+    if (postform.file === file) return;
+    postform = { file };
+    store.dispatch(setAppThreads({ url, postform }));
+}
+
 
 export function openPanel(store, type) {
     let panel = { isOpen: true };

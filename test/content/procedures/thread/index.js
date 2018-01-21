@@ -65,7 +65,7 @@ describe(__filename, () => {
                 },
                 postform: {
                     action: 'http://example.net/post',
-                    hiddens: [], comment: null
+                    hiddens: [], comment: null, file: null
                 },
                 updateHttpRes: {
                     status: null, statusText: null,
@@ -121,6 +121,35 @@ describe(__filename, () => {
             let prev = store.getState();
 
             setComment(store, [ 'foo', 'bar' ].join(' '));
+
+            let got = store.getState();
+            assert(got === prev);
+        });
+    });
+
+    describe('setFile()', () => {
+        const { setFile } = procedures;
+
+        const url = 'http://example.net/thread01';
+        const getFile = () => store.getState().app.threads.get(url).postform.file;
+
+        beforeEach(() => {
+            store = createStore({ app: { current: { thread: url } } });
+            store.dispatch(setAppThreads({ url }));
+        });
+
+        it('should set a file', () => {
+            setFile(store, 'file object');
+
+            let got = getFile();
+            assert(got === 'file object');
+        });
+
+        it('should not set a file if not change a file', () => {
+            setFile(store, 'file object');
+            let prev = store.getState();
+
+            setFile(store, 'file object');
 
             let got = store.getState();
             assert(got === prev);

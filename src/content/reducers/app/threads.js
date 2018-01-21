@@ -47,9 +47,10 @@ export function create(opts) {
 }
 
 function createPostform(opts) {
-    let { action = null, hiddens = [], comment = null } = opts || {};
+    let { action = null, hiddens = [], comment = null, file = null } = opts || {};
     F(hiddens);
-    return F({ action, hiddens, comment });
+    //F(file); // TypeError: can't prevent extensions on this proxy object
+    return F({ action, hiddens, comment, file });
 }
 
 function createDelform(opts) {
