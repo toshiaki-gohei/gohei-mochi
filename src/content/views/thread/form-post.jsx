@@ -40,9 +40,9 @@ export default class Postform extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        let prev = prevProps.panel;
-        let next = this.props.panel;
-        if (!prev.isOpen && next.isOpen) this._focusComment();
+        let prev = prevProps;
+        let next = this.props;
+        if (!prev.panel.isOpen && next.isOpen) this._focusComment();
     }
 
     _focusComment() {
@@ -76,7 +76,7 @@ export default class Postform extends Component {
 
     render() {
         let { commit, panel, postform } = this.props;
-        let { files, errmsg, styleDropMsg } = this.state;
+        let { name, files, errmsg, styleDropMsg } = this.state;
 
         if (panel == null || postform == null) return null;
 
@@ -94,15 +94,22 @@ export default class Postform extends Component {
     <Hiddens {...{ hiddens }} />
     <div className="gohei-row">
       <div className="gohei-col1">おなまえ</div>
-      <div className="gohei-col2"><Name {...this.state} /></div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-name" name="name" defaultValue={name} />
+      </div>
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">E-mail</div>
-      <div className="gohei-col2"><Email /></div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-email" name="email" />
+      </div>
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">題名</div>
-      <div className="gohei-col2"><Subject /><Submit {...this.state} /></div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-subject" name="sub" />
+        <Submit {...this.state} />
+      </div>
     </div>
     <div className="gohei-row">
       <div className="gohei-col1"><LabelComment {...{ handlers }} /></div>
@@ -131,18 +138,6 @@ function Hiddens({ hiddens }) {
         return <input type="hidden" name={name} value={value} key={name} />;
     });
     return <div className="gohei-hiddens">{$hiddens}</div>;
-}
-
-function Name({ name }) {
-    return <input type="text" className="gohei-input-name" name="name" defaultValue={name} />;
-}
-
-function Email() {
-    return <input type="text" className="gohei-input-email" name="email" />;
-}
-
-function Subject() {
-    return <input type="text" className="gohei-input-subject" name="sub" />;
 }
 
 function Submit({ isPosting }) {
@@ -364,12 +359,10 @@ class Preview extends Component {
         let styleImage = image ? null : { display: 'none' };
         let styleVideo = video ? null : { display: 'none' };
 
-        // eslint-disable-next-line jsx-a11y/alt-text
-        let $img = <img src={image} className="gohei-preview-img" style={styleImage} />;
-
         return (
-<div className="gohei-preview">
-  {$img}
+<div className="gohei-preview">{
+    // eslint-disable-next-line jsx-a11y/alt-text
+} <img src={image} className="gohei-preview-img" style={styleImage} />
   <video src={video} className="gohei-preview-video" style={styleVideo} />
 </div>
         );
