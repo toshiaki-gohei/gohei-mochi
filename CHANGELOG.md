@@ -1,3 +1,6 @@
+## 0.1.1 (2018-01-21)
+* modify to adjust a popup position
+
 ## 0.1.0 (2018-01-18)
 * add to popup posts by userId or userIp
 * use a original post thumb to display tab icon
