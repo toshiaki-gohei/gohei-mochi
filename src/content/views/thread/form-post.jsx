@@ -12,19 +12,16 @@ export default class Postform extends Component {
         this.state = {
             name: cookie.get('namec'),
             pwd: cookie.get('pwdc'),
+            files: null,
 
             isPosting: false,
             errmsg: null,
 
-            styleDropMsg: { display: 'none' },
-
-            previewImage: null,
-            previewVideo: null
+            styleDropMsg: { display: 'none' }
         };
 
         this._$form = null;
         this._$comment = null;
-        this._$inputFile = null;
 
         this._isInsideDropBox = false;
         this._isInsideChildren = false;
@@ -32,12 +29,9 @@ export default class Postform extends Component {
         this._handlers = {
             submit: handleSubmit.bind(this),
             oekaki: () => alert('not implement: oekaki'),
-            changeInputFile: handleChangeInputFile.bind(this),
-            changeComment: handleChangeComment.bind(this),
-            detachFile: () => this._detachFile(),
 
+            changeComment: handleChangeComment.bind(this),
             setRefComment: $el => this._$comment = $el,
-            setRefFile: $el => this._$inputFile = $el,
 
             dragEnter: handleDragEnter.bind(this),
             dragLeave: handleDragLeave.bind(this),
@@ -55,43 +49,13 @@ export default class Postform extends Component {
         setTimeout(() => { this._$comment.focus(); }, 10);
     }
 
-    _hasAttachedFile() {
-        if (this._$inputFile == null) return false;
-        return this._$inputFile.files.length === 0 ? false : true;
-    }
-
-    _detachFile() {
-        if (!this._hasAttachedFile) return;
-        this._$inputFile.value = null;
-        this._hidePreview();
-    }
-
-    async _showPreview(file) {
-        if (file == null) return;
-        let dataUrl = await readAsDataUrl(file);
-
-        this._hidePreview();
-
-        switch (true) {
-        case /^image\//.test(file.type):
-            this.setState({ previewImage: dataUrl });
-            break;
-        case /^video\//.test(file.type):
-            this.setState({ previewVideo: dataUrl });
-            break;
-        default:
-            break;
-        }
-    }
-
-    _hidePreview() {
-        this.setState({ previewImage: null, previewVideo: null });
-    }
-
     _isEmptyForm(formdata) {
         let comment = formdata.get('com');
         if (comment != null && comment !== '') return false;
-        if (this._hasAttachedFile()) return false;
+
+        let { file } = this.props.postform;
+        if (file != null) return false;
+
         return true;
     }
 
@@ -100,7 +64,6 @@ export default class Postform extends Component {
         this._$form.reset();
         commit('thread/setComment', null);
         commit('thread/setFile', null);
-        this._hidePreview();
     }
 
     _setCookie(formdata) {
@@ -112,8 +75,8 @@ export default class Postform extends Component {
     }
 
     render() {
-        let { panel, postform } = this.props;
-        let { errmsg, styleDropMsg } = this.state;
+        let { commit, panel, postform } = this.props;
+        let { files, errmsg, styleDropMsg } = this.state;
 
         if (panel == null || postform == null) return null;
 
@@ -123,7 +86,7 @@ export default class Postform extends Component {
         let { dragEnter, dragLeave, drop, submit, ...handlers } = this._handlers;
 
         return (
-<div className="gohei-postform" style={stylePostForm} ref={$el => this._$el = $el}
+<div className="gohei-postform" style={stylePostForm}
      onDragEnter={dragEnter} onDragLeave={dragLeave} onDragOver={preventDefault} onDrop={drop}>
   <div className="gohei-err-msg gohei-text-error">{errmsg}</div>
   <form action={action} method="POST" encType="multipart/form-data"
@@ -150,7 +113,7 @@ export default class Postform extends Component {
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">添付File</div>
-      <File {...{ state: this.state, file, handlers }} />
+      <File {...{ commit, file, files }} />
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">削除キー</div>
@@ -206,24 +169,6 @@ function Comment({ comment, handlers }) {
                      ref={setRefComment} onChange={changeComment} />;
 }
 
-function File({ state, file, handlers }) {
-    let { previewImage, previewVideo } = state;
-    let { changeInputFile, detachFile, setRefFile } = handlers;
-    let styleDetachFileBtn = file ? null : { display: 'none' };
-
-    return (
-<div className="gohei-col2">
-  <input type="file" className="gohei-input-file" name="upfile"
-         ref={setRefFile} onChange={changeInputFile} />
-  <div className="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
-  <div style={styleDetachFileBtn}>
-    <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
-  </div>
-  <Preview {...{ image: previewImage, video: previewVideo }} />
-</div>
-    );
-}
-
 function DeleteKey({ pwd }) {
     return (
 <div className="gohei-col2">
@@ -231,21 +176,6 @@ function DeleteKey({ pwd }) {
          maxLength="12" defaultValue={pwd} />
   <span className="gohei-font-smaller">(削除用。英数字で8字以内)</span>
   <object type="application/x-shockwave-flash" id="cnt" data="/bin/count.swf" width="0" height="0" aria-label="" aria-hidden="true"></object>
-</div>
-    );
-}
-
-function Preview({ image, video }) {
-    let styleImage = image ? null : { display: 'none' };
-    let styleVideo = video ? null :  { display: 'none' };
-
-    // eslint-disable-next-line jsx-a11y/alt-text
-    let $img = <img src={image} className="gohei-preview-img" style={styleImage} />;
-
-    return (
-<div className="gohei-preview">
-  {$img}
-  <video src={video} className="gohei-preview-video" style={styleVideo} />
 </div>
     );
 }
@@ -285,16 +215,6 @@ async function handleSubmit(event) {
     commit('thread/update');
 }
 
-function handleChangeInputFile(event) {
-    let { files } = event.target;
-    let { commit } = this.props;
-
-    let file = files.length === 0 ? null : files[0];
-    commit('thread/setFile', file);
-
-    this._showPreview(file);
-}
-
 function handleChangeComment(event) {
     let { commit } = this.props;
     commit('thread/setComment', event.target.value);
@@ -328,21 +248,132 @@ function handleDrop(event) {
 
     this._isInsideDropBox = false;
     this._isInsideChildren = false;
-    this.setState({ styleDropMsg: { display: 'none' } });
 
     let { files } = event.dataTransfer;
-    let $el = this._$inputFile;
 
-    // Chrome : emit change event when set files to $inputFile
-    // Firefox: not emit change event when set files to $inputFile
-    $el.files = files;
-
-    // show file preview through change event of $inputFile
-    if (isFirefox()) $el.dispatchEvent(new window.Event('change'));
+    this.setState({ files, styleDropMsg: { display: 'none' } });
 }
 
 function preventDefault(event) {
     event.preventDefault();
+}
+
+class File extends Component {
+    constructor(props) {
+        super(props);
+
+        this._$inputFile = null;
+
+        this._handlers = {
+            changeInputFile: handleChangeInputFile.bind(this),
+            detachFile: () => this._detachFile()
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let prev = this.props;
+        let next = nextProps;
+
+        if (prev.files !== next.files) {
+            let $el = this._$inputFile;
+
+            // Chrome : emit change event when set files to $inputFile
+            // Firefox: not emit change event when set files to $inputFile
+            $el.files = next.files;
+
+            // show file preview through change event of $inputFile
+            if (isFirefox()) $el.dispatchEvent(new window.Event('change'));
+        }
+    }
+
+    _detachFile() {
+        let { commit, file } = this.props;
+        if (file == null) return;
+
+        this._$inputFile.value = null;
+        commit('thread/setFile', null);
+    }
+
+    render() {
+        let { file } = this.props;
+        let { changeInputFile, detachFile } = this._handlers;
+
+        let styleDetachFileBtn = file ? null : { display: 'none' };
+
+        return (
+<div className="gohei-col2">
+  <input type="file" className="gohei-input-file" name="upfile"
+         ref={$el => this._$inputFile = $el} onChange={changeInputFile} />
+  <div className="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
+  <div style={styleDetachFileBtn}>
+    <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
+  </div>
+  <Preview {...{ file }} />
+</div>
+        );
+    }
+}
+
+function handleChangeInputFile(event) {
+    let { files } = event.target;
+    let { commit } = this.props;
+
+    let file = files.length === 0 ? null : files[0];
+    commit('thread/setFile', file);
+}
+
+class Preview extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { image: null, video: null };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let prev = this.props;
+        let next = nextProps;
+        if (prev.file !== next.file) {
+            this._setPreview(next.file);
+        }
+    }
+
+    async _setPreview(file) {
+        let image = null, video = null;
+
+        if (file == null) {
+            this.setState({ image, video });
+            return;
+        }
+
+        let dataUrl = await readAsDataUrl(file);
+
+        switch (true) {
+        case /^image\//.test(file.type):
+            image = dataUrl;
+            break;
+        case /^video\//.test(file.type):
+            video = dataUrl;
+            break;
+        }
+
+        this.setState({ image, video });
+    }
+
+    render() {
+        let { image, video } = this.state;
+
+        let styleImage = image ? null : { display: 'none' };
+        let styleVideo = video ? null : { display: 'none' };
+
+        // eslint-disable-next-line jsx-a11y/alt-text
+        let $img = <img src={image} className="gohei-preview-img" style={styleImage} />;
+
+        return (
+<div className="gohei-preview">
+  {$img}
+  <video src={video} className="gohei-preview-video" style={styleVideo} />
+</div>
+        );
+    }
 }
 
 function readAsDataUrl(file) {

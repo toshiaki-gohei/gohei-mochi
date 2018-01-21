@@ -102,8 +102,8 @@ $`.replace(/\n/g, ''));
         it('shoudl set elements', () => {
             let $el = render(<Postform {...props} />);
 
-            let got = $el._$inputFile;
-            let exp = $el.querySelector('input[type=file]');
+            let got = $el._$form;
+            let exp = $el.querySelector('form');
             assert(got === exp);
 
             got = $el._$comment;
