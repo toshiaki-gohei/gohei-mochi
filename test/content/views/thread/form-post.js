@@ -1,8 +1,8 @@
 'use strict';
 import assert from 'assert';
-import Postform from '~/content/views/thread/form-post.jsx';
+import Postform, { internal } from '~/content/views/thread/form-post.jsx';
 import React from 'react';
-import { render, simulate } from '@/support/react';
+import { render, simulate, unmount } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { create as createApp } from '~/content/reducers/app/threads';
 import { create as createUi } from '~/content/reducers/ui/thread';
@@ -39,7 +39,7 @@ describe(__filename, () => {
 <div class="gohei-row">.+</div>
 <div class="gohei-row">.+</div>
 </form>
-<div class="gohei-drop-msg" style="display: none;">ここにファイルをドロップ</div>
+<div class="gohei-drop-box">ここにファイルをドロップ</div>
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
@@ -334,55 +334,87 @@ $`.replace(/\n/g, ''));
             assert(errmsg === '何か書いて下さい');
         });
     });
+});
+
+describe(`${__filename}: DropBox`, () => {
+    const { DropBox } = internal;
+
+    before(() => setup());
+    after(() => teardown());
+
+    describe('event', () => {
+        it('should handle drop event', done => {
+            let handlers = {
+                setFiles: files => {
+                    assert(files === 'dummy files');
+                    done();
+                }
+            };
+
+            let $el = render(<DropBox {...{ handlers }} />);
+            let dataTransfer = { files: 'dummy files' };
+            simulate.drop($el.querySelector('.gohei-drop-box'), { dataTransfer });
+        });
+    });
 
     describe('drag & drop event', () => {
+        let $el;
+        before(() => {
+            document.body.innerHTML = '<main></main>';
+            $el = render(<DropBox />, document.body.querySelector('main'));
+        });
+        afterEach(() => {
+            unmount(document.body.querySelector('main'));
+            document.body.innerHTML = '';
+        });
+
         it('should set state correctly if dragenter -> dragover -> dragleave', async () => {
-            let $el = render(<Postform {...props} />);
-
-            assert($el._isInsideDropBox === false);
+            assert($el._isInsideDragArea === false);
             assert($el._isInsideChildren === false);
+            assert($el.state.isVisible === false);
 
-            // dragenter($postform) ->
-            // dragover: dragenter($child1) -> dragleave($postform) ->
-            // dragover: dragenter($child2) -> dragleave($child1) ->
-            // dragover: dragenter($postform) -> dragleave($child2) ->
-            // dragleave($postform)
+            // dragenter($body) ->
+            // dragover: dragenter($dropbox) -> dragleave($body) ->
+            // dragover: dragenter($body) -> dragleave($dropbox) ->
+            // dragleave($body)
+            let $body = document.body;
+            let $box = $el.querySelector('.gohei-drop-box');
 
-            simulate.dragEnter($el.querySelector('.gohei-postform'));
+            $body.dispatchEvent(new window.Event('dragenter'));
             await sleep(1);
-            assert($el._isInsideDropBox === true);
+            assert($el._isInsideDragArea === true);
             assert($el._isInsideChildren === false);
-            assert($el.state.styleDropMsg === null);
+            assert($el.state.isVisible === true);
 
-            simulate.dragEnter($el.querySelector('textarea'));
+            $box.dispatchEvent(new window.Event('dragenter', { bubbles: true }));
             await sleep(1);
-            assert($el._isInsideDropBox === true);
+            assert($el._isInsideDragArea === true);
             assert($el._isInsideChildren === true);
-            assert($el.state.styleDropMsg === null);
+            assert($el.state.isVisible === true);
 
-            simulate.dragLeave($el.querySelector('.gohei-postform'));
+            $body.dispatchEvent(new window.Event('dragleave'));
             await sleep(1);
-            assert($el._isInsideDropBox === true);
+            assert($el._isInsideDragArea === true);
             assert($el._isInsideChildren === false);
-            assert($el.state.styleDropMsg === null);
+            assert($el.state.isVisible === true);
 
-            simulate.dragEnter($el.querySelector('.gohei-postform'));
+            $body.dispatchEvent(new window.Event('dragenter'));
             await sleep(1);
-            assert($el._isInsideDropBox === true);
+            assert($el._isInsideDragArea === true);
             assert($el._isInsideChildren === true);
-            assert($el.state.styleDropMsg === null);
+            assert($el.state.isVisible === true);
 
-            simulate.dragLeave($el.querySelector('textarea'));
+            $box.dispatchEvent(new window.Event('dragleave', { bubbles: true }));
             await sleep(1);
-            assert($el._isInsideDropBox === true);
+            assert($el._isInsideDragArea === true);
             assert($el._isInsideChildren === false);
-            assert($el.state.styleDropMsg === null);
+            assert($el.state.isVisible === true);
 
-            simulate.dragLeave($el.querySelector('.gohei-postform'));
+            $body.dispatchEvent(new window.Event('dragleave'));
             await sleep(1);
-            assert($el._isInsideDropBox === false);
+            assert($el._isInsideDragArea === false);
             assert($el._isInsideChildren === false);
-            assert.deepStrictEqual($el.state.styleDropMsg, { display: 'none' });
+            assert($el.state.isVisible === false);
         });
     });
 });

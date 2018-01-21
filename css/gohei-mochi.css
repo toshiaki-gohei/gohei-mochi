@@ -424,12 +424,13 @@ input[type="file"] {
     width: 4em;
 }
 
-.gohei-postform .gohei-drop-msg {
+.gohei-postform .gohei-drop-box {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
+    width: 0;
+    height: 0;
+    overflow: hidden;
     color: #800000;
     font-size: 2em;
     font-weight: bold;

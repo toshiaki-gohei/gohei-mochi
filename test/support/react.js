@@ -5,11 +5,11 @@ import { Simulate } from 'react-dom/test-utils';
 
 export const simulate = Simulate;
 
-export function render($component) {
+export function render($component, $container) {
     let $c = $component;
     if (isFunctional($c)) $c = createWrappedComponent($c);
 
-    let $container = document.createElement('div');
+    $container = $container || document.createElement('div');
 
     // eslint-disable-next-line react/no-render-return-value
     let $inst = ReactDOM.render($c, $container);
@@ -46,4 +46,8 @@ function elementify($instance, $container) {
     $inst.querySelectorAll = query => $container.querySelectorAll(query);
 
     return $inst;
+}
+
+export function unmount($container) {
+    ReactDOM.unmountComponentAtNode($container);
 }
