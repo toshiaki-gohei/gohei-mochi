@@ -36,9 +36,12 @@ export default class Postform extends Component {
             changeComment: handleChangeComment.bind(this),
             detachFile: () => this._detachFile(),
 
+            setRefComment: $el => this._$comment = $el,
+            setRefFile: $el => this._$inputFile = $el,
+
             dragEnter: handleDragEnter.bind(this),
             dragLeave: handleDragLeave.bind(this),
-            drop: handleDrop.bind(this),
+            drop: handleDrop.bind(this)
         };
     }
 
@@ -63,8 +66,8 @@ export default class Postform extends Component {
         this._hidePreview();
     }
 
-    async _showPreview() {
-        let [ file ] = this._$inputFile.files;
+    async _showPreview(file) {
+        if (file == null) return;
         let dataUrl = await readAsDataUrl(file);
 
         this._hidePreview();
@@ -96,6 +99,7 @@ export default class Postform extends Component {
         let { commit } = this.props;
         this._$form.reset();
         commit('thread/setComment', null);
+        commit('thread/setFile', null);
         this._hidePreview();
     }
 
@@ -115,8 +119,8 @@ export default class Postform extends Component {
 
         let stylePostForm = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
 
-        let { action, hiddens, comment } = postform || {};
-        let { dragEnter, dragLeave, drop, submit } = this._handlers;
+        let { action, hiddens, comment, file } = postform || {};
+        let { dragEnter, dragLeave, drop, submit, ...handlers } = this._handlers;
 
         return (
 <div className="gohei-postform" style={stylePostForm} ref={$el => this._$el = $el}
@@ -138,15 +142,15 @@ export default class Postform extends Component {
       <div className="gohei-col2"><Subject /><Submit {...this.state} /></div>
     </div>
     <div className="gohei-row">
-      <div className="gohei-col1"><LabelComment {...{ ctx: this }} /></div>
+      <div className="gohei-col1"><LabelComment {...{ handlers }} /></div>
       <div className="gohei-col2">
         <div id="swfContents"></div>
-        <Comment {...{ comment, ctx: this }} />
+        <Comment {...{ comment, handlers }} />
       </div>
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">添付File</div>
-      <File {...{ state: this.state, ctx: this }} />
+      <File {...{ state: this.state, file, handlers }} />
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">削除キー</div>
@@ -185,8 +189,8 @@ function Submit({ isPosting }) {
                    disabled={disabledSubmit}>{labelSubmit}</button>;
 }
 
-function LabelComment({ ctx }) {
-    let { oekaki } = ctx._handlers;
+function LabelComment({ handlers }) {
+    let { oekaki } = handlers;
     return (
 <div className="gohei-label-comment">
   コメント
@@ -195,22 +199,22 @@ function LabelComment({ ctx }) {
     );
 }
 
-function Comment({ comment, ctx }) {
-    let { changeComment } = ctx._handlers;
+function Comment({ comment, handlers }) {
+    let { changeComment, setRefComment } = handlers;
     let value = comment == null ? '' : comment;
     return <textarea className="gohei-input-comment" name="com" value={value}
-                     ref={$el => ctx._$comment = $el} onChange={changeComment} />;
+                     ref={setRefComment} onChange={changeComment} />;
 }
 
-function File({ state, ctx }) {
+function File({ state, file, handlers }) {
     let { previewImage, previewVideo } = state;
-    let { changeInputFile, detachFile } = ctx._handlers;
-    let styleDetachFileBtn = ctx._hasAttachedFile() ? null : { display: 'none' };
+    let { changeInputFile, detachFile, setRefFile } = handlers;
+    let styleDetachFileBtn = file ? null : { display: 'none' };
 
     return (
 <div className="gohei-col2">
   <input type="file" className="gohei-input-file" name="upfile"
-         ref={$el => ctx._$inputFile = $el} onChange={changeInputFile} />
+         ref={setRefFile} onChange={changeInputFile} />
   <div className="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
   <div style={styleDetachFileBtn}>
     <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
@@ -252,7 +256,10 @@ async function handleSubmit(event) {
     let $form = event.target;
     let url = $form.action;
 
+    let { commit, postform: { file } } = this.props;
+
     let fd = new FormData($form);
+    if (file) fd.set('upfile', file, file.name);
     fd.set('js', 'on');
 
     if (this._isEmptyForm(fd)) {
@@ -263,7 +270,6 @@ async function handleSubmit(event) {
 
     this.setState({ isPosting: true, errmsg: null });
 
-    let { commit } = this.props;
     let res = await commit('thread/submit', { url, formdata: fd });
 
     this.setState({ isPosting: false });
@@ -281,8 +287,12 @@ async function handleSubmit(event) {
 
 function handleChangeInputFile(event) {
     let { files } = event.target;
-    if (files.length === 0) return;
-    this._showPreview();
+    let { commit } = this.props;
+
+    let file = files.length === 0 ? null : files[0];
+    commit('thread/setFile', file);
+
+    this._showPreview(file);
 }
 
 function handleChangeComment(event) {

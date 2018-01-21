@@ -53,7 +53,8 @@ $`.replace(/\n/g, ''));
                         { name: 'hidden1', value: 'test hidden1' },
                         { name: 'hidden2', value: 'test hidden2' }
                     ],
-                    comment: 'test comment'
+                    comment: 'test comment',
+                    file: null
                 }
             });
             cookie.set('namec', 'cookie name');
@@ -126,13 +127,27 @@ $`.replace(/\n/g, ''));
             $textarea.value = 'test com';
             simulate.change($textarea);
         });
+
+        it('should set a file if change a file', done => {
+            let mock = procedures(null, {
+                'thread/setFile': file => {
+                    assert(file === null);
+                    done();
+                }
+            });
+
+            let $el = render(<Postform {...{ ...props, commit: mock }} />);
+
+            let $inputFile = $el.querySelector('form input[type=file]');
+            simulate.change($inputFile);
+        });
     });
 
     describe('submit event', () => {
         let $el;
 
         it('should commit procedures correctly', () => {
-            let submit, setComment, update;
+            let submit, setComment, setFile, update;
             let p1 = new Promise(resolve => {
                 submit = async args => {
                     await sleep(1);
@@ -142,11 +157,13 @@ $`.replace(/\n/g, ''));
                 };
             });
             let p2 = new Promise(resolve => setComment = resolve);
-            let p3 = new Promise(resolve => update = resolve);
+            let p3 = new Promise(resolve => setFile = resolve);
+            let p4 = new Promise(resolve => update = resolve);
 
             let mock = procedures(null, {
                 'thread/submit': submit,
                 'thread/setComment': setComment,
+                'thread/setFile': setFile,
                 'thread/update': update
             });
 
@@ -175,7 +192,10 @@ $`.replace(/\n/g, ''));
                 p2.then(comment => {
                     assert(comment === null);
                 }),
-                p3.then(() => {
+                p3.then(file => {
+                    assert(file === null);
+                }),
+                p4.then(() => {
                     let { isPosting } = $el.state;
                     assert(isPosting === false);
                 })
@@ -183,20 +203,19 @@ $`.replace(/\n/g, ''));
         });
 
         it('should set formdata correctly', () => {
-            let submit, setComment, update;
-            let p1 = new Promise(resolve => {
+            let submit;
+            let p = new Promise(resolve => {
                 submit = args => {
                     resolve(args);
                     return { ok: true };
                 };
             });
-            let p2 = new Promise(resolve => setComment = resolve);
-            let p3 = new Promise(resolve => update = resolve);
 
             let mock = procedures(null, {
                 'thread/submit': submit,
-                'thread/setComment': setComment,
-                'thread/update': update
+                'thread/setComment': () => {},
+                'thread/setFile': () => {},
+                'thread/update': () => {}
             });
 
             let { postform } = createApp({
@@ -205,7 +224,8 @@ $`.replace(/\n/g, ''));
                     hiddens: [
                         { name: 'hidden1', value: 'test hidden1' },
                         { name: 'hidden2', value: 'test hidden2' }
-                    ]
+                    ],
+                    file: 'dummy file'
                 }
             });
 
@@ -220,24 +240,22 @@ $`.replace(/\n/g, ''));
             let $form = $el.querySelector('form');
             $form.dispatchEvent(new window.Event('submit'));
 
-            return Promise.all([
-                p1.then(({ url, formdata }) => {
-                    assert(url === 'http://example.net/submit-url');
-                    let got = formdata.entries();
-                    let exp = [
-                        [ 'hidden1', 'test hidden1' ],
-                        [ 'hidden2', 'test hidden2' ],
-                        [ 'name', 'test name' ],
-                        [ 'email', 'test email' ],
-                        [ 'sub', 'test sub' ],
-                        [ 'com', 'test com' ],
-                        [ 'pwd', 'test pwd' ],
-                        [ 'js', 'on' ]
-                    ];
-                    assert.deepStrictEqual(got, exp);
-                }),
-                p2, p3
-            ]);
+            return p.then(({ url, formdata }) => {
+                assert(url === 'http://example.net/submit-url');
+                let got = formdata.entries();
+                let exp = [
+                    [ 'hidden1', 'test hidden1' ],
+                    [ 'hidden2', 'test hidden2' ],
+                    [ 'name', 'test name' ],
+                    [ 'email', 'test email' ],
+                    [ 'sub', 'test sub' ],
+                    [ 'com', 'test com' ],
+                    [ 'pwd', 'test pwd' ],
+                    [ 'upfile', 'dummy file' ],
+                    [ 'js', 'on' ]
+                ];
+                assert.deepStrictEqual(got, exp);
+            });
         });
 
         it('should set cookie', () => {
@@ -247,6 +265,7 @@ $`.replace(/\n/g, ''));
             let mock = procedures(null, {
                 'thread/submit': () => ({ ok: true }),
                 'thread/setComment': () => {},
+                'thread/setFile': () => {},
                 'thread/update': update
             });
 
@@ -282,6 +301,7 @@ $`.replace(/\n/g, ''));
             let mock = procedures(null, {
                 'thread/submit': () => ({ ok: false, statusText: 'error message' }),
                 'thread/setComment': () => {},
+                'thread/setFile': () => {},
                 'thread/update': update
             });
 
