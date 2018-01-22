@@ -38,7 +38,7 @@ module.exports = function(config) {
 
     client: {
       mocha: {
-        require: [require.resolve('./before-test')]
+        require: [require.resolve('./config')]
       }
     },
 

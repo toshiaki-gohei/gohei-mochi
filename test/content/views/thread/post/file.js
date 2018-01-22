@@ -124,7 +124,7 @@ describe(__filename, () => {
     describe('event handlers', () => {
         it('should make handlers if post has a file and a file is webm', () => {
             file.url = '/b/src/123001.webm';
-            let post = new Post({ ...post, file });
+            let post = new Post({ file });
             let $el = render(<File {...{ post }} />);
 
             let { showVideo, hideVideo } = $el._component._handlers;

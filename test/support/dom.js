@@ -3,8 +3,7 @@
 export const isBrowser = typeof window !== 'undefined';
 
 export function setup() {
-    if (isBrowser) return;
-    if (window != null) return;
+    if (!shouldSetup()) return;
 
     const JSDOM = require('jsdom').JSDOM;
     const dom = new JSDOM('<!doctype html><html><body></body></html>', {
@@ -24,6 +23,13 @@ export function setup() {
     window.localStorage = new LocalStorage();
 
     require('./chrome');
+}
+
+function shouldSetup() {
+    if (isBrowser) return false;
+    if (typeof window === 'undefined') return true;
+    if (window == null) return true;
+    return false;
 }
 
 export function teardown() {

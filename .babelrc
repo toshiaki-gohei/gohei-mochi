@@ -1,19 +1,22 @@
 {
   "presets": [
-    "es2015", "react"
+    ["@babel/preset-env", {
+      "targets": {
+        "browsers": [
+          "last 2 Firefox versions", "unreleased Firefox versions",
+          "last 2 Chrome versions", "unreleased Chrome versions"
+        ]
+      }
+    }],
+    ["@babel/preset-react", {
+      "pragma": "h"
+    }]
   ],
   "plugins": [
-    "transform-object-rest-spread",
-    ["transform-react-jsx", { "pragma":"h" }],
-    ["root-import", [
-      { "rootPathSuffix":"src" },
-      { "rootPathPrefix": "@", "rootPathSuffix": "test"}]]
-  ],
-  "env": {
-    "development": {
-      "presets": [
-        "power-assert"
-      ]
-    }
-  }
+    "@babel/plugin-proposal-object-rest-spread",
+    ["babel-plugin-root-import", {
+      "paths": [
+        { "rootPathSuffix": "src" },
+        { "rootPathPrefix": "@", "rootPathSuffix": "test" }] }]
+  ]
 }
