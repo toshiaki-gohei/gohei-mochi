@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Body from '~/content/views/thread/post/body.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { Post } from '~/content/model';
 
@@ -17,7 +18,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = `
-<blockquote class="gohei-post-body" style="">
+<blockquote class="gohei-post-body">
 <span class="gohei-quote">&gt;引用文</span><br>通常文
 </blockquote>
 `.replace(/\n/g, '');
@@ -40,7 +41,7 @@ describe(__filename, () => {
         });
 
         it('should render body if no props', () => {
-            let exp = '<blockquote class="gohei-post-body" style=""></blockquote>';
+            let exp = '<blockquote class="gohei-post-body"></blockquote>';
 
             let $el = render(<Body />);
             let got = $el.outerHTML;
@@ -56,7 +57,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = `
-<blockquote class="gohei-post-body" style="">
+<blockquote class="gohei-post-body">
 <span class="gohei-quote">No.123</span><br>通常文
 </blockquote>
 `.replace(/\n/g, '');
@@ -70,7 +71,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = `
-<blockquote class="gohei-post-body" style="">
+<blockquote class="gohei-post-body">
 <span class="gohei-quote">No.100</span><br>
 <span class="gohei-quote">No.101</span>,<span class="gohei-quote">No.102</span>
 </blockquote>
@@ -85,7 +86,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = `
-<blockquote class="gohei-post-body" style="">
+<blockquote class="gohei-post-body">
 <span class="gohei-quote">&gt;引用文No.100</span><br>
 通常文<span class="gohei-quote">No.101</span>
 </blockquote>
@@ -110,8 +111,8 @@ describe(__filename, () => {
 
             let $el = render(<Body {...{ post, handlers }} />);
 
-            let $quote = $el.querySelector('.gohei-quote');
-            $quote.dispatchEvent(new window.Event('mouseover', { bubbles: true }));
+            let target = $el.querySelector('.gohei-quote');
+            simulate.mouseOver($el.querySelector('blockquote'), { target });
         });
     });
 });

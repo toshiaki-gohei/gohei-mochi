@@ -1,10 +1,12 @@
 'use strict';
 import assert from 'assert';
 import File, { marginLeftForThumb, internal } from '~/content/views/thread/post/file.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { Post, preferences } from '~/content/model';
+import { sleep } from '~/content/util';
 
 describe(__filename, () => {
     before(() => setup());
@@ -87,8 +89,7 @@ describe(__filename, () => {
             let post = new Post({ index: 1, file });
             let $el = render(<File {...{ commit: mock, post }} />);
 
-            let c = $el._component;
-            c.setState({ isVisibleVideo: true }, () => {
+            $el.setState({ isVisibleVideo: true }, () => {
                 let got = $el.outerHTML;
                 let exp = new RegExp(`
 <div class="gohei-post-file">
@@ -97,7 +98,7 @@ describe(__filename, () => {
 <span class="gohei-file-size">\\(888 B\\)</span>
 </div>
 <div class="gohei-video-container">
-<video class="gohei-video" (?=.*style="display: none;")(?=.*autoplay="true" controls="" loop="").*>
+<video class="gohei-video" (?=.*style="display: none;")(?=.*autoplay="" controls="" loop="" volume="0\\.5").*>
 <source src="/b/src/123001.webm" type="video/webm">
 <source src="/b/src/123001.mp4" type="video/mp4">
 </video>
@@ -117,7 +118,7 @@ describe(__filename, () => {
             let $el = render(<File {...{ post }} />);
 
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -127,7 +128,7 @@ describe(__filename, () => {
             let post = new Post({ file });
             let $el = render(<File {...{ post }} />);
 
-            let { showVideo, hideVideo } = $el._component._handlers;
+            let { showVideo, hideVideo } = $el._handlers;
             assert(showVideo !== null);
             assert(hideVideo !== null);
         });
@@ -136,7 +137,7 @@ describe(__filename, () => {
             let post = new Post({ index: 1 });
             let $el = render(<File {...{ post }} />);
 
-            let { showVideo, hideVideo } = $el._component._handlers;
+            let { showVideo, hideVideo } = $el._handlers;
             assert(showVideo === null);
             assert(hideVideo === null);
         });
@@ -172,34 +173,32 @@ describe(__filename, () => {
             assert(got === null);
 
             let $img = $el.querySelector('.gohei-thumb-image');
-            $img.dispatchEvent(new window.Event('click', { bubbles: true }));
+            simulate.click($img);
 
-            $el._component.forceUpdate(() => {
+            $el.forceUpdate(() => {
                 let got = $el.querySelector('.gohei-video-container');
                 assert(got !== null);
                 done();
             });
         });
 
-        it('should hide video if click close button', done => {
+        it('should hide video if click close button', async () => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
             let $el = render(<File {...{ commit: mock, post }} />);
 
-            let c = $el._component;
-            c.setState({ isVisibleVideo: true }, () => {
+            $el.setState({ isVisibleVideo: true }, () => {
                 let got = $el.querySelector('.gohei-video-container');
                 assert(got !== null);
 
                 let $btn = $el.querySelector('.gohei-close-btn');
-                $btn.dispatchEvent(new window.Event('click'));
+                simulate.click($btn);
             });
 
-            setTimeout(() => {
-                let got = $el.querySelector('.gohei-video-container');
-                assert(got === null);
-                done();
-            }, 10);
+            await sleep(1);
+
+            let got = $el.querySelector('.gohei-video-container');
+            assert(got === null);
         });
     });
 });
@@ -222,37 +221,35 @@ describe(`${__filename}: Video`, () => {
     const isVisibleVideo = true;
 
     describe('event', () => {
-        it('should show video close button if mouse enter video', done => {
+        it('should show video close button if mouse enter video', async () => {
             let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-            let c = $el._component;
 
-            let got = c.state.isActive;
+            let got = $el.state.isActive;
             assert(got === false);
 
-            $el.dispatchEvent(new window.Event('mouseenter'));
+            let $container = $el.querySelector('.gohei-video-container');
+            simulate.mouseEnter($container);
 
-            setTimeout(() => {
-                let got = c.state.isActive;
-                assert(got === true);
-                done();
-            }, 5);
+            await sleep(1);
+
+            got = $el.state.isActive;
+            assert(got === true);
         });
 
-        it('should hide video close button if mouse leave video', done => {
+        it('should hide video close button if mouse leave video', async () => {
             let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-            let c = $el._component;
 
-            let got = c.state.isActive;
+            let got = $el.state.isActive;
             assert(got === false);
 
-            $el.dispatchEvent(new window.Event('mouseenter'));
-            $el.dispatchEvent(new window.Event('mouseleave'));
+            let $container = $el.querySelector('.gohei-video-container');
+            simulate.mouseEnter($container);
+            simulate.mouseLeave($container);
 
-            setTimeout(() => {
-                let got = c.state.isActive;
-                assert(got === false);
-                done();
-            }, 5);
+            await sleep(1);
+
+            got = $el.state.isActive;
+            assert(got === false);
         });
 
         it('should set video prefs if mouse leave video', () => {
@@ -265,15 +262,13 @@ describe(`${__filename}: Video`, () => {
             });
 
             let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-
-            $el.dispatchEvent(new window.Event('mouseleave'));
+            let $container = $el.querySelector('.gohei-video-container');
+            simulate.mouseLeave($container);
 
             return p.then(prefs => {
-                let got = prefs;
-                let exp = {
-                    ...preferences.create(),
-                    video: { loop: false, muted: true, volume: 0.8 }
-                };
+                let got = prefs.video;
+                let exp = { loop: false, muted: true, volume: 0.8 };
+                exp.volume = 1; // the volume attr is not reflected on jsdom and Browsers
                 assert.deepStrictEqual(got, exp);
             });
         });

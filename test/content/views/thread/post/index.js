@@ -1,11 +1,13 @@
 'use strict';
 import assert from 'assert';
 import Post from '~/content/views/thread/post/index.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { Post as ModelPost, thread as modelThread } from '~/content/model';
 import Body from '~/content/views/thread/post/body.jsx';
+import { sleep } from '~/content/util';
 
 describe(__filename, () => {
     before(() => setup());
@@ -21,8 +23,8 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post gohei-reply">
-<div class="gohei-post-header" style="">.+?</div>
-<blockquote class="gohei-post-body" style=""></blockquote>
+<div class="gohei-post-header">.+?</div>
+<blockquote class="gohei-post-body"></blockquote>
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
@@ -35,8 +37,8 @@ $`.replace(/\n/g, ''));
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post gohei-op">
-<div class="gohei-post-header" style="">.+?</div>
-<blockquote class="gohei-post-body" style=""></blockquote>
+<div class="gohei-post-header">.+?</div>
+<blockquote class="gohei-post-body"></blockquote>
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
@@ -45,7 +47,7 @@ $`.replace(/\n/g, ''));
         it('should not render post if no props', () => {
             let $el = render(<Post />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -64,39 +66,35 @@ $`.replace(/\n/g, ''));
                 return ret;
             };
 
-            $el._component.forceUpdate(() => done());
+            $el.forceUpdate(() => done());
         });
     });
 
     describe('event', () => {
-        it('should be active if mouse enter', done => {
+        it('should be active if mouse enter', async () => {
             let $el = render(<Post {...{ post }} />);
-            let c = $el._component;
 
-            assert(c.state.isActive === false);
+            assert($el.state.isActive === false);
 
-            $el.dispatchEvent(new window.Event('mouseenter'));
+            simulate.mouseEnter($el.querySelector('.gohei-post'));
 
-            setTimeout(() => {
-                assert(c.state.isActive === true);
-                done();
-            }, 5);
+            await sleep(1);
+
+            assert($el.state.isActive === true);
         });
 
-        it('should be inactive if mosue leave', done => {
+        it('should be inactive if mosue leave', async () => {
             let $el = render(<Post {...{ post }} />);
-            let c = $el._component;
 
-            c.setState({ isActive: true }, () => {
-                assert(c.state.isActive === true);
+            $el.setState({ isActive: true }, () => {
+                assert($el.state.isActive === true);
 
-                $el.dispatchEvent(new window.Event('mouseleave'));
+                simulate.mouseLeave($el.querySelector('.gohei-post'));
             });
 
-            setTimeout(() => {
-                assert(c.state.isActive === false);
-                done();
-            }, 5);
+            await sleep(1);
+
+            assert($el.state.isActive === false);
         });
 
         it('should handle to popup posts by id', done => {
@@ -122,7 +120,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Post {...{ commit: mock, post, app }} />);
 
             let $counter = $el.querySelector('.gohei-post-header .gohei-counter');
-            $counter.dispatchEvent(new window.Event('mouseenter'));
+            simulate.mouseEnter($counter);
         });
 
         it('should handle to popup posts by ip', done => {
@@ -148,7 +146,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Post {...{ commit: mock, post, app }} />);
 
             let $counter = $el.querySelector('.gohei-post-header .gohei-counter');
-            $counter.dispatchEvent(new window.Event('mouseenter'));
+            simulate.mouseEnter($counter);
         });
 
         it('should handle to popup quote', done => {
@@ -167,8 +165,8 @@ $`.replace(/\n/g, ''));
 
             let $el = render(<Post {...{ commit: mock, post }} />);
 
-            let $quote = $el.querySelector('.gohei-post-body .gohei-quote');
-            $quote.dispatchEvent(new window.Event('mouseover', { bubbles: true }));
+            let target = $el.querySelector('.gohei-post-body .gohei-quote');
+            simulate.mouseOver($el.querySelector('.gohei-post-body'), { target });
         });
 
         it('should handle delreq', () => {
@@ -186,7 +184,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Post {...{ commit: mock, post, thread }} />);
 
             let $btn = $el.querySelector('.gohei-post-header .gohei-del');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
 
             return Promise.all([
                 p1.then(({ url, id }) => {
@@ -212,7 +210,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Post {...{ commit: mock, post }} />);
 
             let $btn = $el.querySelector('.gohei-post-header .gohei-sod');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 
@@ -231,11 +229,10 @@ $`.replace(/\n/g, ''));
 
         it('should handle to quote no', () => {
             let $el = render(<Post {...{ commit: mock, post }} />);
-            let c = $el._component;
 
-            c.setState({ isActive: true }, () => {
+            $el.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[0];
-                $btn.dispatchEvent(new window.Event('click'));
+                simulate.click($btn);
             });
 
             return Promise.all([
@@ -251,11 +248,10 @@ $`.replace(/\n/g, ''));
 
         it('should handle to quote comment', () => {
             let $el = render(<Post {...{ commit: mock, post }} />);
-            let c = $el._component;
 
-            c.setState({ isActive: true }, () => {
+            $el.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[1];
-                $btn.dispatchEvent(new window.Event('click'));
+                simulate.click($btn);
             });
 
             return Promise.all([
@@ -274,11 +270,10 @@ $`.replace(/\n/g, ''));
             post = new ModelPost({ ...post, file });
 
             let $el = render(<Post {...{ commit: mock, post }} />);
-            let c = $el._component;
 
-            c.setState({ isActive: true }, () => {
+            $el.setState({ isActive: true }, () => {
                 let $btn = $el.querySelectorAll('.gohei-post-action button')[2];
-                $btn.dispatchEvent(new window.Event('click'));
+                simulate.click($btn);
             });
 
             return Promise.all([

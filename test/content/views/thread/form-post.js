@@ -1,12 +1,14 @@
 'use strict';
 import assert from 'assert';
 import Postform from '~/content/views/thread/form-post.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { create as createApp } from '~/content/reducers/app/threads';
 import { create as createUi } from '~/content/reducers/ui/thread';
 import procedures from '~/content/procedures';
 import cookie from 'js-cookie';
+import { sleep } from '~/content/util';
 
 describe(__filename, () => {
     before(() => setup());
@@ -26,7 +28,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-postform" style="">
+<div class="gohei-postform">
 <div class="gohei-err-msg gohei-text-error"></div>
 <form method="POST" enctype="multipart/form-data">
 <div class="gohei-hiddens"></div>
@@ -67,14 +69,14 @@ $`.replace(/\n/g, ''));
 <input (?=.*type="hidden")(?=.*name="hidden2")(?=.*value="test hidden2").+?>
 </div>
 .+<input (?=.*name="name")(?=.*value="cookie name").+?>
-.+<textarea .*name="com".*?></textarea>
+.+<textarea .*name="com".*?>test comment</textarea>
 .+<input (?=.*name="pwd")(?=.*value="cookie pwd").+?>
 .+
 </form>
 `.replace(/\n/g, ''));
             assert(exp.test(got));
 
-            let { name, pwd } = $el._component.state;
+            let { name, pwd } = $el.state;
             assert(name === 'cookie name');
             assert(pwd === 'cookie pwd');
         });
@@ -82,7 +84,7 @@ $`.replace(/\n/g, ''));
         it('should render error message if set state.errmsg', () => {
             let $el = render(<Postform {...props} />);
 
-            $el._component.setState({ errmsg: 'test errmsg' }, () => {
+            $el.setState({ errmsg: 'test errmsg' }, () => {
                 let got = $el.querySelector('.gohei-err-msg').innerHTML;
                 assert(got === 'test errmsg');
             });
@@ -91,20 +93,19 @@ $`.replace(/\n/g, ''));
         it('should not render postform if no props', () => {
             let $el = render(<Postform />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
     describe('refs', () => {
         it('shoudl set elements', () => {
             let $el = render(<Postform {...props} />);
-            let c = $el._component;
 
-            let got = c._$inputFile;
+            let got = $el._$inputFile;
             let exp = $el.querySelector('input[type=file]');
             assert(got === exp);
 
-            got = c._$comment;
+            got = $el._$comment;
             exp = $el.querySelector('textarea');
             assert(got === exp);
         });
@@ -123,21 +124,19 @@ $`.replace(/\n/g, ''));
 
             let $textarea = $el.querySelector('form textarea[name=com]');
             $textarea.value = 'test com';
-            $textarea.dispatchEvent(new window.Event('change'));
+            simulate.change($textarea);
         });
     });
 
     describe('submit event', () => {
         let $el;
-        const component = () => $el._component;
-        const getState = () => $el._component.state;
-        const select = selector => $el.querySelector(selector);
 
         it('should commit procedures correctly', () => {
             let submit, setComment, update;
             let p1 = new Promise(resolve => {
-                submit = args => {
-                    let { isPosting, errmsg } = getState();
+                submit = async args => {
+                    await sleep(1);
+                    let { isPosting, errmsg } = $el.state;
                     resolve({ args, isPosting, errmsg });
                     return { ok: true };
                 };
@@ -160,9 +159,9 @@ $`.replace(/\n/g, ''));
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
-            component().setState({ errmsg: 'test errmsg' }, () => {
+            $el.setState({ errmsg: 'test errmsg' }, () => {
                 let $form = $el.querySelector('form');
-                $form.dispatchEvent(new window.Event('submit'));
+                simulate.submit($form);
             });
 
             return Promise.all([
@@ -177,7 +176,7 @@ $`.replace(/\n/g, ''));
                     assert(comment === null);
                 }),
                 p3.then(() => {
-                    let { isPosting } = getState();
+                    let { isPosting } = $el.state;
                     assert(isPosting === false);
                 })
             ]);
@@ -212,13 +211,13 @@ $`.replace(/\n/g, ''));
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
-            select('form input[name=name]').value = 'test name';
-            select('form input[name=email]').value = 'test email';
-            select('form input[name=sub]').value = 'test sub';
-            select('form textarea[name=com]').value = 'test com';
-            select('form input[name=pwd]').value = 'test pwd';
+            $el.querySelector('form input[name=name]').value = 'test name';
+            $el.querySelector('form input[name=email]').value = 'test email';
+            $el.querySelector('form input[name=sub]').value = 'test sub';
+            $el.querySelector('form textarea[name=com]').value = 'test com';
+            $el.querySelector('form input[name=pwd]').value = 'test pwd';
 
-            let $form = select('form');
+            let $form = $el.querySelector('form');
             $form.dispatchEvent(new window.Event('submit'));
 
             return Promise.all([
@@ -257,16 +256,16 @@ $`.replace(/\n/g, ''));
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
-            select('form input[name=name]').value = 'test name';
-            select('form input[name=pwd]').value = 'test pwd';
+            $el.querySelector('form input[name=name]').value = 'test name';
+            $el.querySelector('form input[name=pwd]').value = 'test pwd';
 
-            component().setState({ errmsg: 'test errmsg' }, () => {
+            $el.setState({ errmsg: 'test errmsg' }, () => {
                 let $form = $el.querySelector('form');
-                $form.dispatchEvent(new window.Event('submit'));
+                simulate.submit($form);
             });
 
             return p.then(() => {
-                let { name, pwd } = getState();
+                let { name, pwd } = $el.state;
                 assert(name === 'test name');
                 assert(pwd === 'test pwd');
                 let namec = cookie.get('namec');
@@ -293,106 +292,77 @@ $`.replace(/\n/g, ''));
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
             let $form = $el.querySelector('form');
-            $form.dispatchEvent(new window.Event('submit'));
+            simulate.submit($form);
 
             return p.then(() => {
-                let { errmsg } = getState();
+                let { errmsg } = $el.state;
                 assert(errmsg === 'error message');
             });
         });
 
-        it('should set errmsg if form is empty', done => {
+        it('should set errmsg if form is empty', async () => {
             let mock = procedures(null, {});
 
             $el = render(<Postform {...{ ...props, commit: mock }} />);
 
             let $form = $el.querySelector('form');
-            $form.dispatchEvent(new window.Event('submit'));
+            simulate.submit($form);
 
-            component().forceUpdate(() => {
-                let { errmsg } = getState();
-                assert(errmsg === '何か書いて下さい');
-                done();
-            });
+            await sleep(1);
+
+            let { errmsg } = $el.state;
+            assert(errmsg === '何か書いて下さい');
         });
     });
 
     describe('drag & drop event', () => {
-        it('should set state correctly if dragenter -> dragover -> dragleave', () => {
+        it('should set state correctly if dragenter -> dragover -> dragleave', async () => {
             let $el = render(<Postform {...props} />);
-            let c = $el._component;
 
-            assert(c._isInsideDropBox === false);
-            assert(c._isInsideChildren === false);
+            assert($el._isInsideDropBox === false);
+            assert($el._isInsideChildren === false);
 
             // dragenter($postform) ->
             // dragover: dragenter($child1) -> dragleave($postform) ->
             // dragover: dragenter($child2) -> dragleave($child1) ->
             // dragover: dragenter($postform) -> dragleave($child2) ->
             // dragleave($postform)
-            return new Promise(resolve => {
-                c.componentDidUpdate = () => {
-                    assert(c._isInsideDropBox === true);
-                    assert(c._isInsideChildren === false);
-                    assert(c.state.styleDropMsg === null);
-                    resolve();
-                };
-                $el.dispatchEvent(new window.Event('dragenter'));
-            }).then(() => {
-                return new Promise(resolve => {
-                    $el.addEventListener('dragenter', () => {
-                        assert(c._isInsideDropBox === true);
-                        assert(c._isInsideChildren === true);
-                        assert(c.state.styleDropMsg === null);
-                        resolve();
-                    }, { once: true });
-                    let event = new window.Event('dragenter', { bubbles: true });
-                    let $child1 = $el.querySelector('textarea');
-                    $child1.dispatchEvent(event);
-                });
-            }).then(() => {
-                return new Promise(resolve => {
-                    $el.addEventListener('dragleave', () => {
-                        assert(c._isInsideDropBox === true);
-                        assert(c._isInsideChildren === false);
-                        assert(c.state.styleDropMsg === null);
-                        resolve();
-                    }, { once: true });
-                    $el.dispatchEvent(new window.Event('dragleave'));
-                });
-            }).then(() => {
-                return new Promise(resolve => {
-                    $el.addEventListener('dragenter', () => {
-                        assert(c._isInsideDropBox === true);
-                        assert(c._isInsideChildren === true);
-                        assert(c.state.styleDropMsg === null);
-                        resolve();
-                    }, { once: true });
-                    $el.dispatchEvent(new window.Event('dragenter'));
-                });
-            }).then(() => {
-                return new Promise(resolve => {
-                    $el.addEventListener('dragleave', () => {
-                        assert(c._isInsideDropBox === true);
-                        assert(c._isInsideChildren === false);
-                        assert(c.state.styleDropMsg === null);
-                        resolve();
-                    }, { once: true });
-                    let event = new window.Event('dragleave', { bubbles: true });
-                    let $child1 = $el.querySelector('textarea');
-                    $child1.dispatchEvent(event);
-                });
-            }).then(() => {
-                return new Promise(resolve => {
-                    c.componentDidUpdate = () => {
-                        assert(c._isInsideDropBox === false);
-                        assert(c._isInsideChildren === false);
-                        assert.deepStrictEqual(c.state.styleDropMsg, { display: 'none' });
-                        resolve();
-                    };
-                    $el.dispatchEvent(new window.Event('dragleave'));
-                });
-            });
+
+            simulate.dragEnter($el.querySelector('.gohei-postform'));
+            await sleep(1);
+            assert($el._isInsideDropBox === true);
+            assert($el._isInsideChildren === false);
+            assert($el.state.styleDropMsg === null);
+
+            simulate.dragEnter($el.querySelector('textarea'));
+            await sleep(1);
+            assert($el._isInsideDropBox === true);
+            assert($el._isInsideChildren === true);
+            assert($el.state.styleDropMsg === null);
+
+            simulate.dragLeave($el.querySelector('.gohei-postform'));
+            await sleep(1);
+            assert($el._isInsideDropBox === true);
+            assert($el._isInsideChildren === false);
+            assert($el.state.styleDropMsg === null);
+
+            simulate.dragEnter($el.querySelector('.gohei-postform'));
+            await sleep(1);
+            assert($el._isInsideDropBox === true);
+            assert($el._isInsideChildren === true);
+            assert($el.state.styleDropMsg === null);
+
+            simulate.dragLeave($el.querySelector('textarea'));
+            await sleep(1);
+            assert($el._isInsideDropBox === true);
+            assert($el._isInsideChildren === false);
+            assert($el.state.styleDropMsg === null);
+
+            simulate.dragLeave($el.querySelector('.gohei-postform'));
+            await sleep(1);
+            assert($el._isInsideDropBox === false);
+            assert($el._isInsideChildren === false);
+            assert.deepStrictEqual($el.state.styleDropMsg, { display: 'none' });
         });
     });
 });

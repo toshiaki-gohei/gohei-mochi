@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import PopupContainer from '~/content/views/popup-container.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 
 describe(__filename, () => {
@@ -42,7 +43,7 @@ describe(__filename, () => {
                 component: Popup,
                 id: 'popup01',
                 props: {
-                    class: 'class-name1 class-name2',
+                    className: 'class-name1 class-name2',
                     style: { left: '100px', top: '200px' },
                     text: 'hoge'
                 }

@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Reply from '~/content/views/thread/post/reply.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { Post } from '~/content/model';
 
@@ -19,8 +20,8 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post gohei-reply">
-<div class="gohei-post-header" style="">.+?</div>
-<blockquote class="gohei-post-body" style=""></blockquote>
+<div class="gohei-post-header">.+?</div>
+<blockquote class="gohei-post-body"></blockquote>
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
@@ -35,7 +36,7 @@ $`.replace(/\n/g, ''));
         it('should not render reply if no props', () => {
             let $el = render(<Reply />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 });

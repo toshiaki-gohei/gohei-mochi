@@ -1,28 +1,34 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 
 export default class Console extends Component {
-    constructor({ commit, thread, app }) {
-        super({ thread, app });
+    constructor(props) {
+        super(props);
 
+        let { commit, thread } = this.props;
         this._handleUpdate = () => commit('thread/update', thread.url);
     }
 
-    render({ thread, app }) {
+    render() {
+        let { thread, app } = this.props;
         if (thread == null || app == null) return null;
         let { expire } = thread;
         let { viewer } = app.messages;
 
         return (
-<div class="gohei-console">
-  <div class="gohei-msg">
+<div className="gohei-console">
+  <div className="gohei-msg">
     <span>{viewer}</span><span>/</span><Expire {...expire} />
   </div>
-  <div class="gohei-thread-action">
+  <div className="gohei-thread-action">
     <UpdateBtn {...{ app, handler: this._handleUpdate }} />
     <LastUpdated {...app} />
     <StatusMessage {...app} />
-    <UpdateDetail {...app} />
+    <span className="gohei-update-detail">
+      <ExposedIdMessage {...app} />
+      <ExposedIpMessage {...app} />
+      <DeletedMessage {...app} />
+    </span>
   </div>
 </div>
         );
@@ -39,7 +45,7 @@ function Expire(expire = {}) {
 
     let css = isTextDanger ? 'gohei-text-danger' : null;
 
-    return <span class={css}>{message}</span>;
+    return <span className={css}>{message}</span>;
 }
 
 function UpdateBtn({ app, handler }) {
@@ -48,13 +54,13 @@ function UpdateBtn({ app, handler }) {
     let label = isUpdating ? '更新中…' : '最新に更新';
     let isDisabled = isUpdating ? true : false;
 
-    return <button class="gohei-link-btn gohei-update-btn" type="button"
+    return <button className="gohei-link-btn gohei-update-btn" type="button"
                    disabled={isDisabled} onClick={handler}>{label}</button>;
 }
 
 function LastUpdated({ lastUpdatedByUser: date }) {
     let str = hms(date);
-    return <span class="gohei-last-updated">{ str ? `(${str})` : null }</span>;
+    return <span className="gohei-last-updated">{ str ? `(${str})` : null }</span>;
 }
 
 function hms(date) {
@@ -73,7 +79,7 @@ function StatusMessage({ updateHttpRes, changeset }) {
     let { status, statusText } = updateHttpRes || {};
     let { newPostsCount } = changeset || {};
     let msg = statusMessage({ status, statusText, newPostsCount });
-    return <span class="gohei-status-msg">{msg}</span>;
+    return <span className="gohei-status-msg">{msg}</span>;
 }
 
 function statusMessage({ status, statusText, newPostsCount }) {
@@ -94,51 +100,40 @@ function statusMessage({ status, statusText, newPostsCount }) {
     }
 }
 
-function UpdateDetail({ changeset }) {
-    let $msgs = [];
-
-    let idsMsg = exposedIdMessage(changeset);
-    if (idsMsg) $msgs.push(<span class="gohei-msg">ID: {idsMsg}</span>);
-
-    let ipsMsg = exposedIpMessage(changeset);
-    if (ipsMsg) $msgs.push(<span class="gohei-msg">IP: {ipsMsg}</span>);
-
-    let deletedMsg = deletedMessage(changeset);
-    if (deletedMsg) $msgs.push(<span class="gohei-msg">削除: {deletedMsg}</span>);
-
-    return <span class="gohei-update-detail">{$msgs}</span>;
-}
-
-function exposedIdMessage(changeset) {
+function ExposedIdMessage({ changeset }) {
     if (changeset == null) return null;
 
     let counter = changeset.countExposedIds();
     if (counter == null) return null;
 
-    return Object.entries(counter).map(([ id, count ]) => `${id}(${count})`).join(', ');
+    let msg = Object.entries(counter).map(([ id, count ]) => `${id}(${count})`).join(', ');
+
+    return <span className="gohei-msg">ID: {msg}</span>;
 }
 
-function exposedIpMessage(changeset) {
+function ExposedIpMessage({ changeset }) {
     if (changeset == null) return null;
 
     let counter = changeset.countExposedIps();
     if (counter == null) return null;
 
-    return Object.entries(counter).map(([ ip, count ]) => `${ip}(${count})`).join(', ');
+    let msg = Object.entries(counter).map(([ ip, count ]) => `${ip}(${count})`).join(', ');
+
+    return <span className="gohei-msg">IP: {msg}</span>;
 }
 
-function deletedMessage(changeset) {
+function DeletedMessage({ changeset }) {
     if (changeset == null) return null;
 
     let { deletedPosts } = changeset;
-    let deletedMsg = deletedPosts.map(post => `No.${post.no}`).join(',');
+    let msg = deletedPosts.map(post => `No.${post.no}`).join(',');
 
-    return deletedMsg;
+    return <span className="gohei-msg">削除: {msg}</span>;
 }
 
 export const internal = {
     Expire,
     statusMessage,
-    exposedIdMessage,
-    exposedIpMessage
+    ExposedIdMessage,
+    ExposedIpMessage
 };

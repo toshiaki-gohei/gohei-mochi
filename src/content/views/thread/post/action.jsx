@@ -1,5 +1,5 @@
 'use strict';
-import { h } from 'preact';
+import React from 'react';
 
 export default function Action({ post, handlers, isActive = true }) {
     if (!isActive) return null;
@@ -7,10 +7,10 @@ export default function Action({ post, handlers, isActive = true }) {
     let { quoteNo, quoteComment, quoteFile } = handlers || {};
 
     return (
-<div class="gohei-post-action">
-  <span class="gohei-inline-icon gohei-icon-edit" />
-  <button class="gohei-link-btn" type="button" onClick={quoteNo}>No.</button>
-  <button class="gohei-link-btn" type="button" onClick={quoteComment}>コメント</button>
+<div className="gohei-post-action">
+  <span className="gohei-inline-icon gohei-icon-edit" />
+  <button className="gohei-link-btn" type="button" onClick={quoteNo}>No.</button>
+  <button className="gohei-link-btn" type="button" onClick={quoteComment}>コメント</button>
   <QuoteFileBtn {...{ post, quoteFile }} />
 </div>
     );
@@ -18,5 +18,5 @@ export default function Action({ post, handlers, isActive = true }) {
 
 function QuoteFileBtn({ post, quoteFile }) {
     if (!post.hasFile()) return null;
-    return <button class="gohei-link-btn" type="button" onClick={quoteFile}>ファイル</button>;
+    return <button className="gohei-link-btn" type="button" onClick={quoteFile}>ファイル</button>;
 }

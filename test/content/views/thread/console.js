@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Console, { internal } from '~/content/views/thread/console.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { create as createApp } from '~/content/reducers/app/threads';
 import procedures from '~/content/procedures';
@@ -98,9 +99,31 @@ describe(__filename, () => {
         it('should not render console if no props', () => {
             let $el = render(<Console />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
 
+    });
+
+    describe('Expire()', () => {
+        const { Expire } = internal;
+
+        const message = 'expire message';
+
+        it('should render expire message', () => {
+            let date = new Date(Date.now() + 1000 * 60 * 35);
+            let $el = render(<Expire {...{ message, date }} />);
+            let got = $el.outerHTML;
+            let exp = '<span>expire message</span>';
+            assert(got === exp);
+        });
+
+        it('should render expire message with danger if expire is near', () => {
+            let date = new Date(Date.now() + 1000 * 60 * 25);
+            let $el = render(<Expire {...{ message, date }} />);
+            let got = $el.outerHTML;
+            let exp = '<span class="gohei-text-danger">expire message</span>';
+            assert(got === exp);
+        });
     });
 
     describe('statusMessage()', () => {
@@ -135,56 +158,40 @@ describe(__filename, () => {
         });
     });
 
-    describe('exposedIdMessage()', () => {
-        const { exposedIdMessage } = internal;
+    describe('ExposedIdMessage()', () => {
+        const { ExposedIdMessage } = internal;
 
-        it('should return exposed id message', () => {
+        it('should render exposed id message', () => {
             let exposedIdPosts = [
                 { index: 1, no: '12301', userId: 'ID01' },
                 { index: 2, no: '12302', userId: 'ID02' },
                 { index: 4, no: '12304', userId: 'ID01' }
             ];
-            let cs = new Changeset({ exposedIdPosts });
+            let changeset = new Changeset({ exposedIdPosts });
 
-            let got = exposedIdMessage(cs);
-            assert(got === 'ID01(2), ID02(1)');
+            let $el = render(<ExposedIdMessage {...{ changeset }} />);
+
+            let got = $el.outerHTML;
+            let exp = '<span class="gohei-msg">ID: ID01(2), ID02(1)</span>';
+            assert(got === exp);
         });
     });
 
-    describe('exposedIpMessage()', () => {
-        const { exposedIpMessage } = internal;
+    describe('ExposedIpMessage()', () => {
+        const { ExposedIpMessage } = internal;
 
-        it('should return exposed ip message', () => {
+        it('should render exposed ip message', () => {
             let exposedIpPosts = [
                 { index: 1, no: '12301', userIp: 'IP01' },
                 { index: 2, no: '12302', userIp: 'IP02' },
                 { index: 4, no: '12304', userIp: 'IP01' }
             ];
-            let cs = new Changeset({ exposedIpPosts });
+            let changeset = new Changeset({ exposedIpPosts });
 
-            let got = exposedIpMessage(cs);
-            assert(got === 'IP01(2), IP02(1)');
-        });
-    });
+            let $el = render(<ExposedIpMessage {...{ changeset }} />);
 
-    describe('Expire()', () => {
-        const { Expire } = internal;
-
-        const message = 'expire message';
-
-        it('should render expire message', () => {
-            let date = new Date(Date.now() + 1000 * 60 * 35);
-            let $el = render(<Expire {...{ message, date }} />);
             let got = $el.outerHTML;
-            let exp = '<span class="">expire message</span>';
-            assert(got === exp);
-        });
-
-        it('should render expire message with danger if expire is near', () => {
-            let date = new Date(Date.now() + 1000 * 60 * 25);
-            let $el = render(<Expire {...{ message, date }} />);
-            let got = $el.outerHTML;
-            let exp = '<span class="gohei-text-danger">expire message</span>';
+            let exp = '<span class="gohei-msg">IP: IP01(2), IP02(1)</span>';
             assert(got === exp);
         });
     });
@@ -198,7 +205,7 @@ describe(__filename, () => {
             let $el = render(<Console {...{ ...props, commit: mock }} />);
 
             let $btn = $el.querySelector('.gohei-update-btn');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 });

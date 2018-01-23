@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import * as preferences from '../../../model/preferences';
 
 export default class File extends Component {
@@ -18,10 +18,11 @@ export default class File extends Component {
         };
     }
 
-    render({ commit, post }, state) {
-        if (!post.hasFile()) return null;
+    render() {
+        let { commit, post } = this.props;
+        let { isVisibleVideo } = this.state;
 
-        let { isVisibleVideo } = state;
+        if (!post.hasFile()) return null;
 
         let { index, file } = post;
         let { showVideo, hideVideo } = this._handlers;
@@ -29,14 +30,14 @@ export default class File extends Component {
         let label = index === 0 ? '画像ファイル名：' : null;
 
         return (
-<div class="gohei-post-file">
+<div className="gohei-post-file">
   <div>
     {label}
-    <a href={file.url} class="gohei-file-name" download={file.name}>
+    <a href={file.url} className="gohei-file-name" download={file.name}>
       <Icon {...post}/>
       {file.name}
     </a>
-    <span class="gohei-file-size">({file.size} B)</span>
+    <span className="gohei-file-size">({file.size} B)</span>
   </div>
   <Thumb {...{ file, isVisibleVideo, showVideo }} />
   <Video {...{ commit, file, isVisibleVideo, hideVideo }} />
@@ -47,7 +48,7 @@ export default class File extends Component {
 
 function Icon({ index }) {
     if (index === 0) return null;
-    return <span class="gohei-inline-icon gohei-icon-download" />;
+    return <span className="gohei-inline-icon gohei-icon-download" />;
 }
 
 function Thumb({ file, isVisibleVideo, showVideo }) {
@@ -68,7 +69,7 @@ function ThumbImage({ file }) {
     height = height + 'px';
 
     // eslint-disable-next-line jsx-a11y/alt-text
-    return <img class="gohei-thumb-image" src={url} style={{ width, height }} />;
+    return <img className="gohei-thumb-image" src={url} style={{ width, height }} />;
 }
 
 function handleSetVisibleVideo(isVisibleVideo, event) {
@@ -87,7 +88,7 @@ export function marginLeftForThumb(file) {
 }
 
 class Video extends Component {
-    constructor({ hideVideo, ...props }) {
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -97,10 +98,14 @@ class Video extends Component {
 
         this._$video = null;
 
+        let { hideVideo } = this.props;
         let setVideoPrefs = handleSetVideoPrefs.bind(this);
 
         this._handlers = {
-            loadedMetadata: () => this._adjustSize(),
+            loadedMetadata: () => {
+                this._setVideoAttrs();
+                this._adjustSize();
+            },
             enter: () => this.setState({ isActive: true }),
             leave: () => {
                 setVideoPrefs();
@@ -111,6 +116,19 @@ class Video extends Component {
                 hideVideo(event);
             }
         };
+    }
+
+    _setVideoAttrs() {
+        if (!this.props.isVisibleVideo) return;
+        if (this._$video == null) return;
+
+        let { commit } = this.props;
+        let { video } = commit('sync/preferences');
+
+        let { loop, muted, volume } = video;
+        this._$video.loop = loop;
+        this._$video.muted = muted;
+        this._$video.volume = volume;
     }
 
     _adjustSize() {
@@ -133,9 +151,11 @@ class Video extends Component {
         this.setState({ styleVideo });
     }
 
-    render({ commit, file, isVisibleVideo }, state) {
+    render() {
+        let { commit, file, isVisibleVideo } = this.props;
+        let { isActive, styleVideo } = this.state;
+
         if (!isVisibleVideo) return null;
-        let { isActive, styleVideo } = state;
 
         let { video } = commit('sync/preferences');
         let { loop, muted, volume } = video;
@@ -148,15 +168,15 @@ class Video extends Component {
         let styleBtn = isActive ? null : { display: 'none' };
 
         return (
-<div class="gohei-video-container" onMouseenter={enter} onMouseleave={leave}>
-  <video class="gohei-video" style={styleVideo} ref={$el => this._$video = $el}
+<div className="gohei-video-container" onMouseEnter={enter} onMouseLeave={leave}>
+  <video className="gohei-video" style={styleVideo} ref={$el => this._$video = $el}
          autoPlay={true} controls={true} loop={loop} muted={muted} volume={volume}
          onLoadedMetadata={loadedMetadata}>
     <source src={webmUrl} type="video/webm" />
     <source src={mp4Url} type="video/mp4" />
   </video>
-  <div class="gohei-button-area" style={styleBtn}>
-    <button class="gohei-icon-btn gohei-close-btn gohei-icon-close" onClick={close} />
+  <div className="gohei-button-area" style={styleBtn}>
+    <button className="gohei-icon-btn gohei-close-btn gohei-icon-close" onClick={close} />
   </div>
 </div>
         );

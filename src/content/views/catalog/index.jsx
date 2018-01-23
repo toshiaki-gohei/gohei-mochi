@@ -1,16 +1,17 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component, Fragment } from 'react';
 import Catalog from './catalog.jsx';
 import Nav from './nav.jsx';
 
 export default class Main extends Component {
-    constructor({ store, commit, emitter }) {
-        super({ commit });
+    constructor(props) {
+        super(props);
+
+        let { store, emitter } = this.props;
         if (store == null) throw new TypeError('store is required');
 
         this.state = store.getState();
 
-        this._$el = null;
         this._emitter = emitter;
 
         this._unsubscribe = store.subscribe(() => {
@@ -29,19 +30,21 @@ export default class Main extends Component {
         this._unsubscribe();
     }
 
-    render({ commit }, state) {
-        let url = state.app.current.catalog;
+    render() {
+        let { commit } = this.props;
+        let { domain, app, ui } = this.state;
 
-        let catalog = state.domain.catalogs.get(url);
-        let app = state.app.catalogs.get(url);
-        let { preferences } = state.ui;
+        let url = app.current.catalog;
+        let catalog = domain.catalogs.get(url);
+        let appCatalog = app.catalogs.get(url);
+        let { preferences } = ui;
 
         return (
-<main>
-  <Nav {...{ commit, catalog, app }} />
-  <h2 class="gohei-mode-title">カタログモード</h2>
-  <Catalog {...{ commit, catalog, app, preferences }} />
-</main>
+<Fragment>
+  <Nav {...{ commit, catalog, app: appCatalog }} />
+  <h2 className="gohei-mode-title">カタログモード</h2>
+  <Catalog {...{ commit, catalog, app: appCatalog, preferences }} />
+</Fragment>
         );
     }
 }

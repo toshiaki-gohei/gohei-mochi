@@ -1,11 +1,13 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import { CLASS_NAME as CN } from '~/content/constants';
 import Post from './post/index.jsx';
 
 export default class Popup extends Component {
-    constructor({ event, style, ...rest }) {
-        super(rest);
+    constructor(props) {
+        super(props);
+
+        let { event, style } = this.props;
 
         this.state = { style };
 
@@ -36,9 +38,9 @@ export default class Popup extends Component {
         this.setState({ style });
     }
 
-    render(props, state) {
-        let { commit, id, class: className, posts = [], thread: threadUrl } = props;
-        let { style } = state;
+    render() {
+        let { commit, id, className, posts = [], thread: threadUrl } = this.props;
+        let { style } = this.state;
 
         if (this._vanishes) {
             style = { ...style, display: 'none' };
@@ -55,7 +57,7 @@ export default class Popup extends Component {
         className = `${className || ''} gohei-post-popup`.trim();
 
         return (
-<div id={id} class={className} style={style}
+<div id={id} className={className} style={style}
      onMouseLeave={this._handleClose} ref={$el => this._$el = $el}>
 {$posts}
 </div>

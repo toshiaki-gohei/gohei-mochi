@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Popup from '~/content/views/thread/popup-posts.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures, { defaultMap } from '~/content/procedures';
 import createStore from '~/content/reducers';
@@ -35,7 +36,7 @@ describe(__filename, () => {
             let props = {
                 commit,
                 id: 'popup1',
-                class: 'class1',
+                className: 'class1',
                 style: { left: '100px' },
                 posts: [ 'post01' ],
                 thread: 'url-thread01'
@@ -64,7 +65,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-popup" style="">
+<div class="gohei-post-popup">
 <div class="gohei-post gohei-reply">.+?</div>
 <div class="gohei-post gohei-op">.+?</div>
 <div class="gohei-post gohei-reply">.+?</div>
@@ -82,7 +83,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Popup {...props} />);
 
             let got = $el.outerHTML;
-            let exp = '<div class="gohei-post-popup" style=""></div>';
+            let exp = '<div class="gohei-post-popup"></div>';
             assert(got === exp);
         });
 
@@ -99,7 +100,7 @@ $`.replace(/\n/g, ''));
             store.dispatch(setDomainPosts(posts));
             let postIds = posts.map(({ id }) => id);
             let thread = 'url-thread01';
-            return { id: `popup${index}`, class: 'gohei-popup', posts: postIds, thread };
+            return { id: `popup${index}`, className: 'gohei-popup', posts: postIds, thread };
         };
 
         it('should commit procedure if left mouse', done => {
@@ -112,7 +113,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<div><Popup {...props} /></div>);
 
             let $popup1 = $el.querySelector('#popup1');
-            $popup1.dispatchEvent(new window.Event('mouseleave'));
+            simulate.mouseLeave($popup1);
         });
 
         it('should commit procedure if mouse went back from popup to previous(under) popup', done => {
@@ -126,16 +127,15 @@ $`.replace(/\n/g, ''));
             let $el = render(<div><Popup {...props1} /><Popup {...props2} /></div>);
 
             let $popup2 = $el.querySelector('#popup2');
-            let event = new window.Event('mouseleave');
-            event.relatedTarget = $el.querySelector('#popup1 .gohei-post-body');
-            $popup2.dispatchEvent(event);
+            let relatedTarget = $el.querySelector('#popup1 .gohei-post-body');
+            simulate.mouseLeave($popup2, { relatedTarget });
         });
 
         it('should not commit procedure if mouse moved from popup to next(overlap) popup', done => {
             let mock = procedures(store, {
                 ...defaultMap(store),
-                'thread/closePostsPopup': () => { throw new Error('not commit close'); },
-                'thread/clearPostsPopup': () => { throw new Error('not commit clear'); }
+                'thread/closePostsPopup': () => { done('not reach here'); },
+                'thread/clearPostsPopup': () => { done('not reach here'); }
             });
             let props1 = { commit: mock, ...makeProps(1) };
             let props2 = { commit: mock, ...makeProps(2) };
@@ -143,9 +143,8 @@ $`.replace(/\n/g, ''));
             let $el = render(<div><Popup {...props1} /><Popup {...props2} /></div>);
 
             let $popup2 = $el.querySelector('#popup2');
-            let event = new window.Event('mouseleave');
-            event.relatedTarget = $el.querySelector('#popup1');
-            $popup2.dispatchEvent(event);
+            let relatedTarget = $el.querySelector('#popup1');
+            simulate.mouseLeave($popup2, { relatedTarget });
 
             setTimeout(done, 10);
         });

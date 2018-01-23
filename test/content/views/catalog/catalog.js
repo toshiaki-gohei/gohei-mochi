@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Catalog from '~/content/views/catalog/catalog.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import createStore from '~/content/reducers';
@@ -63,7 +64,7 @@ $`.replace(/\n/g, ''));
         it('should not render catalog if no props', () => {
             let $el = render(<Catalog />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 });

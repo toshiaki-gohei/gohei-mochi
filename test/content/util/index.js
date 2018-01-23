@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as util from '~/content/procedures/worker/util';
+import * as util from '~/content/util';
 
 describe(__filename, () => {
     describe('sleep()', () => {

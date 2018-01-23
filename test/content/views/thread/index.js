@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Main from '~/content/views/thread/index.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setDomainThreads, setAppThreads, setAppCurrent } from '~/content/reducers/actions';
@@ -22,7 +23,7 @@ describe(__filename, () => {
 
     describe('render()', () => {
         it('should render main content', () => {
-            let $el = render(<Main {...{ store, commit } } />);
+            let $el = render(<main><Main {...{ store, commit } } /></main>);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
@@ -38,7 +39,7 @@ $`.replace(/\n/g, ''));
 
         it('should throw exception if no store', () => {
             let got;
-            try { render(<Main />); } catch (e) { got = e.message; }
+            try { render(<main><Main /></main>); } catch (e) { got = e.message; }
             assert(got === 'store is required');
         });
     });

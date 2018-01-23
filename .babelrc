@@ -8,9 +8,7 @@
         ]
       }
     }],
-    ["@babel/preset-react", {
-      "pragma": "h"
-    }]
+    "@babel/preset-react"
   ],
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",

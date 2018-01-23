@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import { F } from '~/common/util';
 
 export default class Delreq extends Component {
@@ -30,7 +30,10 @@ export default class Delreq extends Component {
         this.setState({ checked });
     }
 
-    render({ commit, panel, app }, state) {
+    render() {
+        let { commit, panel, app } = this.props;
+        let state = this.state;
+
         if (panel == null || app == null) return null;
 
         let { changeReason, ...rest } = this._handlers;
@@ -39,7 +42,7 @@ export default class Delreq extends Component {
         let styleDelreq = panel.type === 'DELREQ' ? null : { display: 'none' };
 
         return (
-<div class="gohei-delreq" style={styleDelreq}>
+<div className="gohei-delreq" style={styleDelreq}>
   <div>削除依頼</div>
   <LeftPane {...{ commit, state, app, handlers }} />
   <RightPane {...{ commit, state, app, changeReason }} />
@@ -52,19 +55,19 @@ function LeftPane({ commit, state, app, handlers }) {
     let { errmsg } = state;
 
     return (
-<div class="gohei-left-pane">
-  <div class="gohei-top-pane">
-    <div class="gohei-row">送信前の削除依頼<ClearDelreqListBtn {...{ handlers }} /></div>
-    <div class="gohei-row gohei-scroll">
+<div className="gohei-left-pane">
+  <div className="gohei-top-pane">
+    <div className="gohei-row">送信前の削除依頼<ClearDelreqListBtn {...{ handlers }} /></div>
+    <div className="gohei-row gohei-scroll">
       <CandidateList {...{ commit, state, app, handlers }} />
     </div>
   </div>
-  <div class="gohei-bottom-pane">
-    <div class="gohei-row"><SelectedReason {...{ state, handlers }} /></div>
-    <div class="gohei-row"><span class="gohei-font-smaller">
+  <div className="gohei-bottom-pane">
+    <div className="gohei-row"><SelectedReason {...{ state, handlers }} /></div>
+    <div className="gohei-row"><span className="gohei-font-smaller">
       チェックの付いたレスを、選択した理由で削除依頼します。</span></div>
     <DelreqBtn {...{ state, handlers }} />
-    <div class="gohei-row gohei-text-error">{errmsg}</div>
+    <div className="gohei-row gohei-text-error">{errmsg}</div>
   </div>
 </div>
     );
@@ -76,14 +79,14 @@ function RightPane({ commit, state, app, changeReason }) {
     let style = isVisibleReasons ? { display: 'none' } : null;
 
     return (
-<div class="gohei-right-pane">
-  <div class="gohei-top-pane" style={style}>
-    <div class="gohei-row">送信中の削除依頼</div>
-    <div class="gohei-row gohei-scroll">
+<div className="gohei-right-pane">
+  <div className="gohei-top-pane" style={style}>
+    <div className="gohei-row">送信中の削除依頼</div>
+    <div className="gohei-row gohei-scroll">
       <TaskList {...{ commit, state, app }} />
     </div>
   </div>
-  <div class="gohei-bottom-pane" style={style}></div>
+  <div className="gohei-bottom-pane" style={style}></div>
   <Reasons {...{ state, changeReason }} />
 </div>
     );
@@ -102,7 +105,7 @@ function CandidateList({ commit, state, app, handlers }) {
 
     if ($rows.length == 0) $rows = <EmptyDelreqList />;
 
-    return <table class="gohei-delreq-list">{$rows}</table>;
+    return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
 }
 
 function isCandidate(postId, app) {
@@ -121,10 +124,12 @@ function Candidate({ post, state, handlers }) {
     let isChecked = checked.get(id);
 
     return (
-<tr class="gohei-tr" data-post-id={id} onClick={clickDelreqList}>
-  <td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" defaultChecked={isChecked} /></td>
-  <td class="gohei-td gohei-selectable">{index}</td>
-  <td class="gohei-td gohei-selectable">No.{no}</td>
+<tr className="gohei-tr" data-post-id={id} onClick={clickDelreqList}>
+  <td className="gohei-td gohei-text-center gohei-selectable">
+    <input type="checkbox" defaultChecked={isChecked} />
+  </td>
+  <td className="gohei-td gohei-selectable">{index}</td>
+  <td className="gohei-td gohei-selectable">No.{no}</td>
 </tr>
     );
 }
@@ -134,10 +139,10 @@ function NoCandidate({ post, delreqs }) {
     let { status } = delreqs.get(id);
 
     return (
-<tr class="gohei-tr">
-  <td class="gohei-td gohei-text-center">{DELREQ_STATUS_TEXT[status]}</td>
-  <td class="gohei-td">{index}</td>
-  <td class="gohei-td">No.{no}</td>
+<tr className="gohei-tr">
+  <td className="gohei-td gohei-text-center">{DELREQ_STATUS_TEXT[status]}</td>
+  <td className="gohei-td">{index}</td>
+  <td className="gohei-td">No.{no}</td>
 </tr>
     );
 }
@@ -158,23 +163,23 @@ function TaskList({ commit, app }) {
         let reasonText = REASON_TEXT[reason];
 
         return (
-<tr class="gohei-tr" key={id}>
-  <td class="gohei-td" title={statusText}>{DELREQ_STATUS_TEXT[status]}</td>
-  <td class="gohei-td">{index}</td>
-  <td class="gohei-td" title={reasonText}>{shorthand(reasonText, 6)}</td>
+<tr className="gohei-tr" key={id}>
+  <td className="gohei-td" title={statusText}>{DELREQ_STATUS_TEXT[status]}</td>
+  <td className="gohei-td">{index}</td>
+  <td className="gohei-td" title={reasonText}>{shorthand(reasonText, 6)}</td>
 </tr>
         );
     });
 
     if ($rows.length == 0) $rows = <EmptyDelreqList />;
 
-    return <table class="gohei-delreq-list">{$rows}</table>;
+    return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
 }
 
 function EmptyDelreqList() {
     return (
-<tr class="gohei-tr">
-  <td class="gohei-td gohei-font-smaller">(削除依頼はありません)</td>
+<tr className="gohei-tr">
+  <td className="gohei-td gohei-font-smaller">(削除依頼はありません)</td>
 </tr>
     );
 }
@@ -184,21 +189,21 @@ function SelectedReason({ state: { reason }, handlers }) {
 
     let $reason = text == null
         ? <ToggleReasonsLink {...{ handlers }}>(未選択)</ToggleReasonsLink>
-        : <span class="gohei-font-bolder" title={text}>{text}</span>;
+        : <span className="gohei-font-bolder" title={text}>{text}</span>;
 
     return (
 <div>
-  <div class="gohei-float-left">
+  <div className="gohei-float-left">
     <ToggleReasonsLink {...{ handlers }}>削除理由</ToggleReasonsLink>:
   </div>
-  <div class="gohei-select-reason gohei-text-ellipsis">{$reason}</div>
+  <div className="gohei-select-reason gohei-text-ellipsis">{$reason}</div>
 </div>
     );
 }
 
 function ToggleReasonsLink({ children, handlers }) {
     let { toggleReasons } = handlers;
-    return <button class="gohei-link-btn" title="削除理由を表示します"
+    return <button className="gohei-link-btn" title="削除理由を表示します"
                    onClick={toggleReasons}>{children}</button>;
 }
 
@@ -210,13 +215,13 @@ function DelreqBtn({ state, handlers }) {
     if (reason == null) isDisabled = true;
     if (checkedList(checked).length === 0) isDisabled = true;
 
-    return <button class="gohei-btn gohei-delreq-btn" type="button"
+    return <button className="gohei-btn gohei-delreq-btn" type="button"
                    disabled={isDisabled} onClick={addToTasks}>削除依頼をする</button>;
 }
 
 function ClearDelreqListBtn({ handlers }) {
     let { clearDelreqList } = handlers;
-    return <button class="gohei-link-btn gohei-clear-btn" type="button"
+    return <button className="gohei-link-btn gohei-clear-btn" type="button"
                    onClick={clearDelreqList}>[クリア]</button>;
 }
 
@@ -235,7 +240,7 @@ function Reasons({ state, changeReason }) {
     });
 
     return (
-<div class="gohei-reasons" style={style}>
+<div className="gohei-reasons" style={style}>
   <span>文字・画像</span>
   {$radios1}
   <span>２次画像</span>
@@ -250,9 +255,9 @@ function Radio({ reason, value, changeReason }) {
     let id = `gohei-radio-reason-${value}`;
 
     return (
-<label class="gohei-radio" htmlFor={id}>
+<label className="gohei-radio" htmlFor={id}>
   <input id={id} type="radio" value={value} name="reason"
-         class="gohei-radio-btn" checked={value === reason} onChange={changeReason} />
+         className="gohei-radio-btn" checked={value === reason} onChange={changeReason} />
   {REASON_TEXT[value]}
 </label>
     );

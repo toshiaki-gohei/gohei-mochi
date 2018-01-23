@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Header from '~/content/views/thread/post/header.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { Post, thread } from '~/content/model';
 
@@ -23,7 +24,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 <span class="gohei-index">1</span>
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
@@ -42,7 +43,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
 <span class="gohei-date">17/01/01\\(日\\)01:23:45</span>
@@ -64,7 +65,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 <span class="gohei-index">1</span>
 .+?
 </div>
@@ -98,7 +99,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 .+
 <span class="gohei-name">としあき</span>
 <span class="gohei-mailto">\\[メアド\\]</span>
@@ -123,7 +124,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 .+
 <span class="gohei-no">No\\.123000001</span>
 <span class="gohei-id">ID:XXXXXXXX</span>
@@ -142,7 +143,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">
+<div class="gohei-post-header">
 <span class="gohei-index">1</span>
 <span class="gohei-date">17/01/01\\(日\\)01:23:45</span>
 <span class="gohei-no">No\\.123000001</span>
@@ -158,7 +159,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-post-header" style="">.+</div>
+<div class="gohei-post-header">.+</div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
         });
@@ -177,7 +178,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Header {...{ post, idipIndex, handlers }} />);
 
             let $counter = $el.querySelector('.gohei-counter');
-            $counter.dispatchEvent(new window.Event('mouseenter'));
+            simulate.mouseEnter($counter);
         });
 
         it('should handle to popup posts by userIp if mouse enter counter', done => {
@@ -189,7 +190,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Header {...{ post, idipIndex, handlers }} />);
 
             let $counter = $el.querySelector('.gohei-counter');
-            $counter.dispatchEvent(new window.Event('mouseenter'));
+            simulate.mouseEnter($counter);
         });
 
         it('should handle delreq if click del', done => {
@@ -197,7 +198,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Header {...{ post, handlers }} />);
 
             let $del = $el.querySelector('.gohei-del');
-            $del.dispatchEvent(new window.Event('click'));
+            simulate.click($del);
         });
 
         it('should handle soudane if click sod', done => {
@@ -205,7 +206,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Header {...{ post, handlers }} />);
 
             let $sod = $el.querySelector('.gohei-sod');
-            $sod.dispatchEvent(new window.Event('click'));
+            simulate.click($sod);
         });
     });
 });

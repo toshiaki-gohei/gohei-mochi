@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import { CLASS_NAME as CN } from '~/content/constants';
 import { BR_TAG } from '~/content/model/post';
 import { marginLeftForThumb } from './file.jsx';
@@ -17,7 +17,8 @@ export default class Body extends Component {
         return false;
     }
 
-    render({ post, handlers }) {
+    render() {
+        let { post, handlers } = this.props;
         let { raw } = post || {};
         let { popupQuote } = handlers || {};
 
@@ -25,15 +26,15 @@ export default class Body extends Component {
         bq = replaceNoWithNoQuote(bq);
 
         let __html = bq;
-        let style = makeStyle(post);
+        let style = bqStyle(post);
 
         // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events
-        return <blockquote class="gohei-post-body" style={style}
-                           onMouseover={popupQuote} dangerouslySetInnerHTML={{ __html }} />;
+        return <blockquote className="gohei-post-body" style={style}
+                           onMouseOver={popupQuote} dangerouslySetInnerHTML={{ __html }} />;
     }
 }
 
-function makeStyle(post) {
+function bqStyle(post) {
     let { file } = post || {};
     let marginLeft = marginLeftForThumb(file);
     let style = marginLeft ? { marginLeft } : null;

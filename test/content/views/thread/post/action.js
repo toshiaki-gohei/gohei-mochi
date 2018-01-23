@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Action from '~/content/views/thread/post/action.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { Post } from '~/content/model';
 
@@ -44,7 +45,7 @@ $`.replace(/\n/g, ''));
         it('should not render action if is not active', () => {
             let $el = render(<Action {...{ isActive: false }} />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -59,7 +60,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Action {...{ post, handlers }} />);
 
             let $btn = $el.querySelectorAll('.gohei-post-action button')[0];
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
 
         it('should handle to quote by comment button', done => {
@@ -67,7 +68,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Action {...{ post, handlers }} />);
 
             let $btn = $el.querySelectorAll('.gohei-post-action button')[1];
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
 
         it('should handle to quote by file button', done => {
@@ -75,7 +76,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Action {...{ post, handlers }} />);
 
             let $btn = $el.querySelectorAll('.gohei-post-action button')[2];
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 });

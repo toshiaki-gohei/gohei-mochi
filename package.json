@@ -10,7 +10,7 @@
     "dist": "NODE_ENV=production ./tasks/dist.sh",
     "lint": "eslint --ext .js,.jsx src test tasks || exit 0",
     "test": "mocha --recursive --require @babel/register --file test/support/config.js",
-    "test-browser": "karma start test/support/karma.conf.js"
+    "test-browser": "NODE_ENV=production karma start test/support/karma.conf.js"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,8 @@
     "jconv": "0.1.x",
     "js-cookie": "2.2.x",
     "normalize.css": "7.0.x",
-    "preact": "8.2.x",
+    "react": "16.2.x",
+    "react-dom": "16.2.x",
     "redux": "3.7.x"
   },
   "devDependencies": {

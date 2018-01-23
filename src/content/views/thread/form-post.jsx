@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import cookie from 'js-cookie';
 import FormData from '~/content/util/form-data';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
@@ -107,9 +107,11 @@ export default class Postform extends Component {
         cookie.set('pwdc', pwd);
     }
 
-    render({ panel, postform }, state) {
+    render() {
+        let { panel, postform } = this.props;
+        let { errmsg, styleDropMsg } = this.state;
+
         if (panel == null || postform == null) return null;
-        let { styleDropMsg } = state;
 
         let stylePostForm = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
 
@@ -117,41 +119,41 @@ export default class Postform extends Component {
         let { dragEnter, dragLeave, drop, submit } = this._handlers;
 
         return (
-<div class="gohei-postform" style={stylePostForm} ref={$el => this._$el = $el}
+<div className="gohei-postform" style={stylePostForm} ref={$el => this._$el = $el}
      onDragEnter={dragEnter} onDragLeave={dragLeave} onDragOver={preventDefault} onDrop={drop}>
-  <div class="gohei-err-msg gohei-text-error">{state.errmsg}</div>
+  <div className="gohei-err-msg gohei-text-error">{errmsg}</div>
   <form action={action} method="POST" encType="multipart/form-data"
         ref={$el => this._$form = $el} onSubmit={submit}>
     <Hiddens {...{ hiddens }} />
-    <div class="gohei-row">
-      <div class="gohei-col1">おなまえ</div>
-      <div class="gohei-col2"><Name {...state} /></div>
+    <div className="gohei-row">
+      <div className="gohei-col1">おなまえ</div>
+      <div className="gohei-col2"><Name {...this.state} /></div>
     </div>
-    <div class="gohei-row">
-      <div class="gohei-col1">E-mail</div>
-      <div class="gohei-col2"><Email /></div>
+    <div className="gohei-row">
+      <div className="gohei-col1">E-mail</div>
+      <div className="gohei-col2"><Email /></div>
     </div>
-    <div class="gohei-row">
-      <div class="gohei-col1">題名</div>
-      <div class="gohei-col2"><Subject /><Submit {...state} /></div>
+    <div className="gohei-row">
+      <div className="gohei-col1">題名</div>
+      <div className="gohei-col2"><Subject /><Submit {...this.state} /></div>
     </div>
-    <div class="gohei-row">
-      <div class="gohei-col1"><LabelComment {...{ ctx: this }} /></div>
-      <div class="gohei-col2">
+    <div className="gohei-row">
+      <div className="gohei-col1"><LabelComment {...{ ctx: this }} /></div>
+      <div className="gohei-col2">
         <div id="swfContents"></div>
         <Comment {...{ comment, ctx: this }} />
       </div>
     </div>
-    <div class="gohei-row">
-      <div class="gohei-col1">添付File</div>
-      <File {...{ state, ctx: this }} />
+    <div className="gohei-row">
+      <div className="gohei-col1">添付File</div>
+      <File {...{ state: this.state, ctx: this }} />
     </div>
-    <div class="gohei-row">
-      <div class="gohei-col1">削除キー</div>
-      <DeleteKey {...state} />
+    <div className="gohei-row">
+      <div className="gohei-col1">削除キー</div>
+      <DeleteKey {...this.state} />
     </div>
   </form>
-  <div class="gohei-drop-msg" style={styleDropMsg}>ここにファイルをドロップ</div>
+  <div className="gohei-drop-msg" style={styleDropMsg}>ここにファイルをドロップ</div>
 </div>
         );
     }
@@ -161,41 +163,42 @@ function Hiddens({ hiddens }) {
     let $hiddens = hiddens.map(({ name, value }) => {
         return <input type="hidden" name={name} value={value} key={name} />;
     });
-    return <div class="gohei-hiddens">{$hiddens}</div>;
+    return <div className="gohei-hiddens">{$hiddens}</div>;
 }
 
 function Name({ name }) {
-    return <input type="text" class="gohei-input-name" name="name" defaultValue={name} />;
+    return <input type="text" className="gohei-input-name" name="name" defaultValue={name} />;
 }
 
 function Email() {
-    return <input type="text" class="gohei-input-email" name="email" />;
+    return <input type="text" className="gohei-input-email" name="email" />;
 }
 
 function Subject() {
-    return <input type="text" class="gohei-input-subject" name="sub" />;
+    return <input type="text" className="gohei-input-subject" name="sub" />;
 }
 
 function Submit({ isPosting }) {
     let labelSubmit = isPosting ? '送信中…' : '送信する';
     let disabledSubmit = isPosting ? true : false;
-    return <button type="submit" class="gohei-btn"
+    return <button type="submit" className="gohei-btn"
                    disabled={disabledSubmit}>{labelSubmit}</button>;
 }
 
 function LabelComment({ ctx }) {
     let { oekaki } = ctx._handlers;
     return (
-<div class="gohei-label-comment">
+<div className="gohei-label-comment">
   コメント
-  <button class="gohei-link-btn" type="button" onClick={oekaki}>手書き</button>
+  <button className="gohei-link-btn" type="button" onClick={oekaki}>手書き</button>
 </div>
     );
 }
 
 function Comment({ comment, ctx }) {
     let { changeComment } = ctx._handlers;
-    return <textarea class="gohei-input-comment" name="com" value={comment}
+    let value = comment == null ? '' : comment;
+    return <textarea className="gohei-input-comment" name="com" value={value}
                      ref={$el => ctx._$comment = $el} onChange={changeComment} />;
 }
 
@@ -205,12 +208,12 @@ function File({ state, ctx }) {
     let styleDetachFileBtn = ctx._hasAttachedFile() ? null : { display: 'none' };
 
     return (
-<div class="gohei-col2">
-  <input type="file" class="gohei-input-file" name="upfile"
+<div className="gohei-col2">
+  <input type="file" className="gohei-input-file" name="upfile"
          ref={$el => ctx._$inputFile = $el} onChange={changeInputFile} />
-  <div class="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
+  <div className="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
   <div style={styleDetachFileBtn}>
-    <button class="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
+    <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
   </div>
   <Preview {...{ image: previewImage, video: previewVideo }} />
 </div>
@@ -219,10 +222,10 @@ function File({ state, ctx }) {
 
 function DeleteKey({ pwd }) {
     return (
-<div class="gohei-col2">
-  <input type="password" class="gohei-input-password" name="pwd"
+<div className="gohei-col2">
+  <input type="password" className="gohei-input-password" name="pwd"
          maxLength="12" defaultValue={pwd} />
-  <span class="gohei-font-smaller">(削除用。英数字で8字以内)</span>
+  <span className="gohei-font-smaller">(削除用。英数字で8字以内)</span>
   <object type="application/x-shockwave-flash" id="cnt" data="/bin/count.swf" width="0" height="0" aria-label="" aria-hidden="true"></object>
 </div>
     );
@@ -233,12 +236,12 @@ function Preview({ image, video }) {
     let styleVideo = video ? null :  { display: 'none' };
 
     // eslint-disable-next-line jsx-a11y/alt-text
-    let $img = <img src={image} class="gohei-preview-img" style={styleImage} />;
+    let $img = <img src={image} className="gohei-preview-img" style={styleImage} />;
 
     return (
-<div class="gohei-preview">
+<div className="gohei-preview">
   {$img}
-  <video src={video} class="gohei-preview-video" style={styleVideo} />
+  <video src={video} className="gohei-preview-video" style={styleVideo} />
 </div>
     );
 }

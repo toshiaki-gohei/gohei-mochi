@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import Post from './post/index.jsx';
 import { isThreadLazyDisplay } from '../util';
 import { DISPLAY_THRESHOLD } from '../../constants';
@@ -41,7 +41,8 @@ export default class Thread extends Component {
         this._observer = null;
     }
 
-    render({ commit, thread, app }) {
+    render() {
+        let { commit, thread, app } = this.props;
         if (commit == null || thread == null) return null;
         app = app || {};
 
@@ -69,7 +70,7 @@ function ThreadNormal({ commit, thread, app }) {
     let props = { commit, thread, app };
 
     return (
-<div class="gohei-thread">
+<div className="gohei-thread">
   {renderPosts(oldPosts, props)}
   <NewPostMessage {...{ newPostsCount }} />
   {renderPosts(newPosts, props)}
@@ -86,7 +87,7 @@ function ThreadLazyDisplay({ commit, thread, app, handlers, intersection }) {
     let props = { commit, thread, app };
 
     return (
-<div class="gohei-thread">
+<div className="gohei-thread">
   {renderPosts(postIds, props)}
   <DisplayMore {...{ handlers, intersection }} />
 </div>
@@ -104,8 +105,8 @@ function renderPosts(postIds, { commit, thread, app }) {
 
 function PostWithLeftMark(props) {
     return (
-<div class="gohei-reply-container">
-  <div class="gohei-reply-left-mark">...</div>
+<div className="gohei-reply-container">
+  <div className="gohei-reply-left-mark">...</div>
   <Post {...props} />
 </div>
     );
@@ -113,7 +114,7 @@ function PostWithLeftMark(props) {
 
 function NewPostMessage({ newPostsCount }) {
     if (newPostsCount === 0) return null;
-    return <div class="gohei-newpost-msg">新着レス{newPostsCount}件</div>;
+    return <div className="gohei-newpost-msg">新着レス{newPostsCount}件</div>;
 }
 
 function DisplayMore({ handlers, intersection }) {
@@ -121,8 +122,8 @@ function DisplayMore({ handlers, intersection }) {
     let { setTarget } = intersection;
 
     return (
-<div class="gohei-display-more" ref={setTarget}>
-  <button class="gohei-link-btn gohei-display-more-btn" type="button"
+<div className="gohei-display-more" ref={setTarget}>
+  <button className="gohei-link-btn gohei-display-more-btn" type="button"
           onClick={displayMore}>さらに表示</button>
 </div>
     );

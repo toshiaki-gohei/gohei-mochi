@@ -1,5 +1,6 @@
 'use strict';
-import { render, createElement as createComponent } from 'preact';
+import React from 'react';
+import { render } from 'react-dom';
 import createStore from '../reducers';
 import { setDomainThreads, setAppThreads, setAppCurrent } from '../reducers/actions';
 import procedures from '../procedures';
@@ -95,8 +96,9 @@ export default class App {
             displayAds(ads);
         });
 
-        let $main = createComponent(Main, { store, commit, emitter });
-        render($main, this._$el, $(ID_MP_MAIN));
+        let $main = React.createElement(Main, { store, commit, emitter });
+        let $container = document.querySelector('main');
+        render($main, $container);
     }
 
     _mount($el) {
@@ -126,7 +128,6 @@ export default class App {
     }
 }
 
-const ID_MP_MAIN = 'mount-point-of-main';
 const ID_ADS = {
     TOP: 'gohei-ad-top',
     UNDER_POSTFORM: 'gohei-ad-under-postform',
@@ -156,7 +157,7 @@ ${nav({ url })}
 <div class="gohei-ad-right-container">
 <div class="gohei-ad" id="${ID_ADS.RIGHT}"></div>
 </div>
-<div id="${ID_MP_MAIN}"></div>
+<main></main>
 <hr>
 <div class="gohei-ad" id="${ID_ADS.ON_DELFORM}"></div>
 <div class="gohei-ad" id="${ID_ADS.BOTTOM}"></div>

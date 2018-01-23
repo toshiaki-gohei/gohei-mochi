@@ -1,5 +1,5 @@
 'use strict';
-import { h, Component } from 'preact';
+import React, { Component } from 'react';
 import { CLASS_NAME as CN, THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 import OriginalPost from './original.jsx';
 import Reply from './reply.jsx';
@@ -21,9 +21,11 @@ export default class Post extends Component {
         return hasChanged(this, nextProps, nextState);
     }
 
-    render({ commit, post, app, thread }, state) {
+    render() {
+        let { commit, post, app, thread } = this.props;
+        let { isActive } = this.state;
+
         if (post == null) return null;
-        let { isActive } = state;
 
         let handlers = this._handlers;
 
@@ -63,12 +65,14 @@ function makeHandlers() {
 
 function handlePopupPostsById(event) {
     let { commit, post, app } = this.props;
+    event = pickSyntheticEvent(event);
     let posts = app.idipIndex.retrieve(post.userId);
     commit('thread/openPostsPopup', { component: Popup, posts, event });
 }
 
 function handlePopupPostsByIp(event) {
     let { commit, post, app } = this.props;
+    event = pickSyntheticEvent(event);
     let posts = app.idipIndex.retrieve(post.userIp);
     commit('thread/openPostsPopup', { component: Popup, posts, event });
 }
@@ -78,6 +82,7 @@ function handlePopupQuote(event) {
     if (!$el.classList.contains(CN.post.QUOTE)) return;
 
     let { commit, post } = this.props;
+    event = pickSyntheticEvent(event);
 
     let { index } = post;
     let quote = $el.textContent.trim();
@@ -118,4 +123,9 @@ async function handleSoudane(event) {
     if (!res.ok) {
         console.error(res.status, res.statusText); // eslint-disable-line no-console
     }
+}
+
+function pickSyntheticEvent(event) {
+    let { target, pageX, pageY } = event;
+    return { target, pageX, pageY };
 }

@@ -23,14 +23,9 @@
         "import/no-named-as-default-member": "off",
         "import/no-unresolved": "off",
 
-        "react/no-unknown-property": [ "error", { ignore: [ "class" ] } ],
         "react/prop-types": "off",
-        "react/react-in-jsx-scope": "off",
 
         "jsx-a11y/media-has-caption": "off"
-    },
-    "settings": {
-        "react": { "pragma": "h" }
     },
     "env": {
         "es6": true,

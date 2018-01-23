@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Panel from '~/content/views/thread/panel.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setUiThread, setAppThreads } from '~/content/reducers/actions';
@@ -27,7 +28,7 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-panel" role="presentation">
-<button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu" style=""></button>
+<button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu"></button>
 <div class="gohei-panel-content" style="display: none;">
 <button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
@@ -53,10 +54,10 @@ $`.replace(/\n/g, ''));
             let exp = new RegExp(`^
 <div class="gohei-panel" role="presentation">
 <button class="gohei-icon-btn gohei-panel-icon gohei-icon-menu" style="display: none;"></button>
-<div class="gohei-panel-content" style="">
+<div class="gohei-panel-content">
 <button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
-<div class="gohei-postform" style="">.+</div>
+<div class="gohei-postform">.+</div>
 <div class="gohei-delreq" style="display: none;">.+</div>
 </div>
 <ul class="gohei-tabsbar">.+</ul>
@@ -69,7 +70,7 @@ $`.replace(/\n/g, ''));
         it('should not render panel if no props', () => {
             let $el = render(<Panel />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -88,7 +89,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Panel {...{ ...props, commit: mock }} />);
 
             let $icon = $el.querySelector('.gohei-panel-icon');
-            $icon.dispatchEvent(new window.Event('click'));
+            simulate.click($icon);
         });
 
         it('should commit procedure if emit close event', done => {
@@ -99,7 +100,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Panel {...{ ...props, commit: mock }} />);
 
             let $btn = $el.querySelector('.gohei-panel .gohei-close-btn');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 });

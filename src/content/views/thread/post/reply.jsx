@@ -1,5 +1,5 @@
 'use strict';
-import { h } from 'preact';
+import React from 'react';
 import { CLASS_NAME as CN } from '~/content/constants';
 import Header from './header.jsx';
 import Body from './body.jsx';
@@ -16,7 +16,7 @@ export default function Reply(props) {
     handlers = rest;
 
     return (
-<div class={classes} onMouseenter={enter} onMouseleave={leave}>
+<div className={CLASS_NAME} onMouseEnter={enter} onMouseLeave={leave}>
   <Header {...{ post, idipIndex, handlers }} />
   <File {...{ commit, post }} />
   <Body {...{ post, handlers }} />
@@ -25,4 +25,4 @@ export default function Reply(props) {
     );
 }
 
-const classes = `${CN.POST} gohei-reply`;
+const CLASS_NAME = `${CN.POST} gohei-reply`;

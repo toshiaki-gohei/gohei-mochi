@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Nav from '~/content/views/catalog/nav.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { CATALOG_SORT } from '~/content/constants';
@@ -110,7 +111,7 @@ $`.replace(/\n/g, ''));
         it('should not render nav if no props', () => {
             let $el = render(<Nav />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -131,7 +132,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Nav {...{ ...props, commit: mock }} />);
 
             let $btn = $el.querySelector('.gohei-update-btn');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
 
             return Promise.all([
                 p1.then(prefs => {
@@ -162,7 +163,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Nav {...{ ...props, commit: mock }} />);
 
             let $btn = $el.querySelector('.gohei-right-menu > .gohei-menu-link:nth-child(5)'); // 多順
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 });

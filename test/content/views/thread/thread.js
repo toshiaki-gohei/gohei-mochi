@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Thread from '~/content/views/thread/thread.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { Post } from '~/content/model';
@@ -81,7 +82,7 @@ $`.replace(/\n/g, ''));
         it('should not render thread if no props', () => {
             let $el = render(<Thread />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -99,7 +100,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Thread {...{ commit: mock, thread, app }} />);
 
             let $btn = $el.querySelector('.gohei-display-more-btn');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 });

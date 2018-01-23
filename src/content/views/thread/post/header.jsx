@@ -1,5 +1,5 @@
 'use strict';
-import { h } from 'preact';
+import React from 'react';
 import { marginLeftForThumb } from './file.jsx';
 
 export default function Header({ post, idipIndex, handlers }) {
@@ -10,13 +10,13 @@ export default function Header({ post, idipIndex, handlers }) {
     let style = marginLeft ? { marginLeft } : null;
 
     return (
-<div class="gohei-post-header" style={style}>
+<div className="gohei-post-header" style={style}>
   <Index {...post} />
   <Subject {...post} />
   <Name {...post} />
   <Mailto {...post} />
-  <span class="gohei-date">{date}</span>
-  <span class="gohei-no">No.{no}</span>
+  <span className="gohei-date">{date}</span>
+  <span className="gohei-no">No.{no}</span>
   <UserId {...post} />
   <Counter {...{ idipIndex, idOrIp: userId, id, popupPostsBy: popupPostsById }} />
   <UserIp {...post} />
@@ -29,37 +29,37 @@ export default function Header({ post, idipIndex, handlers }) {
 
 function Index({ index }) {
     if (index === 0) return null;
-    return <span class="gohei-index">{index}</span>;
+    return <span className="gohei-index">{index}</span>;
 }
 
 function Subject({ subject }) {
     if (subject == null) return null;
-    return <span class="gohei-subject">{subject}</span>;
+    return <span className="gohei-subject">{subject}</span>;
 }
 
 function Name({ name }) {
     if (name == null) return null;
-    return <span class="gohei-name">{name}</span>;
+    return <span className="gohei-name">{name}</span>;
 }
 
 function Mailto({ mailto }) {
     if (mailto == null) return null;
-    return <span class="gohei-mailto">[{mailto}]</span>;
+    return <span className="gohei-mailto">[{mailto}]</span>;
 }
 
 function UserId({ userId }) {
     if (userId == null) return null;
-    return <span class="gohei-id">ID:{userId}</span>;
+    return <span className="gohei-id">ID:{userId}</span>;
 }
 
 function UserIp({ userIp }) {
     if (userIp == null) return null;
-    return <span class="gohei-ip">IP:{userIp}</span>;
+    return <span className="gohei-ip">IP:{userIp}</span>;
 }
 
 function Del({ del, delreq }) {
     if (del == null) return null;
-    return <button class="gohei-del gohei-link-btn" type="button"
+    return <button className="gohei-del gohei-link-btn" type="button"
                    onClick={delreq}>{del}</button>;
 }
 
@@ -69,7 +69,7 @@ function Sod({ sod, soudane }) {
     let style = sod === 0 ? sodStyle : null;
     let text = sod === 0 ? '+' : `そうだねx${sod}`;
 
-    return <button class="gohei-sod gohei-link-btn" type="button"
+    return <button className="gohei-sod gohei-link-btn" type="button"
                    style={style} onClick={soudane}>{text}</button>;
 }
 
@@ -83,6 +83,6 @@ function Counter({ idipIndex, idOrIp, id, popupPostsBy }) {
     if (count == null) return null;
     let { current, total } = count;
 
-    return <span class="gohei-counter"
-                 onMouseenter={popupPostsBy}>[{current}/{total}]</span>;
+    return <span className="gohei-counter"
+                 onMouseEnter={popupPostsBy}>[{current}/{total}]</span>;
 }

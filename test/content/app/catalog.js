@@ -97,7 +97,7 @@ describe(__filename, () => {
 <nav class="gohei-header-nav">[<a href="https://may.2chan.net/b/futaba.htm">掲示板に戻る</a>][<a href="https://www.2chan.net/">ホーム</a>]</nav>
 </header>
 <hr>
-<div id="mount-point-of-main"></div>
+<main></main>
 <hr>
 <div class="gohei-ad" id="gohei-ad-bottom"></div>
 <footer class="gohei-footer">

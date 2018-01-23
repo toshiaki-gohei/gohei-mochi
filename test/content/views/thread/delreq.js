@@ -1,7 +1,8 @@
 'use strict';
 import assert from 'assert';
 import Delreq, { internal } from '~/content/views/thread/delreq.jsx';
-import { h, render } from 'preact';
+import React from 'react';
+import { render, simulate } from '@/support/react';
 import { setup, teardown, tidy } from '@/support/dom';
 import createStore from '~/content/reducers';
 import * as actions from '~/content/reducers/actions';
@@ -46,7 +47,7 @@ describe(__filename, () => {
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
-<div class="gohei-delreq" style="">
+<div class="gohei-delreq">
 <div>削除依頼</div>
 <div class="gohei-left-pane">.+</div>
 <div class="gohei-right-pane">.+</div>
@@ -76,6 +77,7 @@ $`.replace(/\n/g, ''));
             let got = tidy($el.querySelector('.gohei-left-pane .gohei-delreq-list').outerHTML);
             let exp = tidy(`
 <table class="gohei-delreq-list">
+<tbody>
 <tr class="gohei-tr">
 <td class="gohei-td gohei-text-center">完了</td>
 <td class="gohei-td">0</td><td class="gohei-td">No.100</td>
@@ -85,17 +87,18 @@ $`.replace(/\n/g, ''));
 <td class="gohei-td">1</td><td class="gohei-td">No.101</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/102">
-<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" checked=""></td>
+<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" value="on"></td>
 <td class="${tdCss}">2</td><td class="${tdCss}">No.102</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/110">
-<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" checked=""></td>
+<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" value="on"></td>
 <td class="${tdCss}">10</td><td class="${tdCss}">No.110</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/111">
-<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" checked=""></td>
+<td class="gohei-td gohei-text-center gohei-selectable"><input type="checkbox" value="on"></td>
 <td class="${tdCss}">11</td><td class="${tdCss}">No.111</td>
 </tr>
+</tbody>
 </table>
 `.replace(/\n/g, ''));
             assert(got === exp);
@@ -124,6 +127,7 @@ $`.replace(/\n/g, ''));
             let got = $el.querySelector('.gohei-right-pane .gohei-delreq-list').outerHTML;
             let exp = `
 <table class="gohei-delreq-list">
+<tbody>
 <tr class="gohei-tr">
 <td class="gohei-td" title="">完了</td><td class="gohei-td">0</td>
 <td class="gohei-td" title="荒らし・嫌がらせ・混乱の元">荒らし・嫌が...</td>
@@ -140,6 +144,7 @@ $`.replace(/\n/g, ''));
 <td class="gohei-td" title=""></td><td class="gohei-td">3</td>
 <td class="gohei-td" title="中傷・侮辱・名誉毀損">中傷・侮辱・...</td>
 </tr>
+</tbody>
 </table>
 `.replace(/\n/g, '');
             assert(got === exp);
@@ -148,7 +153,7 @@ $`.replace(/\n/g, ''));
         it('should not render delreq if no props', () => {
             let $el = render(<Delreq />);
             let got = $el.outerHTML;
-            assert(got === undefined);
+            assert(got === null);
         });
     });
 
@@ -162,7 +167,7 @@ $`.replace(/\n/g, ''));
             let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
 
             let $btn = $el.querySelector('.gohei-clear-btn');
-            $btn.dispatchEvent(new window.Event('click'));
+            simulate.click($btn);
         });
     });
 
@@ -193,10 +198,9 @@ $`.replace(/\n/g, ''));
             let { app, ui } = store.getState();
             let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
 
-            let c = $el._component;
-            c.setState({ reason: 110, isVisibleReasons: true }, () => {
+            $el.setState({ reason: 110, isVisibleReasons: true }, () => {
                 let $btn = $el.querySelector('.gohei-delreq-btn');
-                $btn.dispatchEvent(new window.Event('click'));
+                simulate.click($btn);
             });
 
             return Promise.all([
@@ -210,10 +214,10 @@ $`.replace(/\n/g, ''));
                     assert(worker === 'delreq');
                 })
             ]).then(() => {
-                let got = c.state.checked;
+                let got = $el.state.checked;
                 let exp = new Map([ [ 'may/b/100', null ], [ 'may/b/101', null ] ]);
                 assert.deepStrictEqual(got, exp);
-                assert(c.state.isVisibleReasons === false);
+                assert($el.state.isVisibleReasons === false);
             });
         });
     });
