@@ -126,7 +126,9 @@ function DeletedMessage({ changeset }) {
     if (changeset == null) return null;
 
     let { deletedPosts } = changeset;
-    let msg = deletedPosts.map(post => `No.${post.no}`).join(',');
+    if (deletedPosts.length === 0) return null;
+
+    let msg = deletedPosts.map(post => `No.${post.no}`).join(', ');
 
     return <span className="gohei-msg">削除: {msg}</span>;
 }
@@ -135,5 +137,6 @@ export const internal = {
     Expire,
     statusMessage,
     ExposedIdMessage,
-    ExposedIpMessage
+    ExposedIpMessage,
+    DeletedMessage
 };

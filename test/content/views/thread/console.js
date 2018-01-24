@@ -175,6 +175,13 @@ describe(__filename, () => {
             let exp = '<span class="gohei-msg">ID: ID01(2), ID02(1)</span>';
             assert(got === exp);
         });
+
+        it('should not render exposed id message if changeset is empty', () => {
+            let changeset = new Changeset();
+            let $el = render(<ExposedIdMessage {...{ changeset }} />);
+            let got = $el.outerHTML;
+            assert(got === null);
+        });
     });
 
     describe('ExposedIpMessage()', () => {
@@ -193,6 +200,38 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = '<span class="gohei-msg">IP: IP01(2), IP02(1)</span>';
             assert(got === exp);
+        });
+
+        it('should not render exposed ip message if changeset is empty', () => {
+            let changeset = new Changeset();
+            let $el = render(<ExposedIpMessage {...{ changeset }} />);
+            let got = $el.outerHTML;
+            assert(got === null);
+        });
+    });
+
+    describe('DeletedMessage()', () => {
+        const { DeletedMessage } = internal;
+
+        it('should render deleted message', () => {
+            let deletedPosts = [
+                { index: 1, no: '12301' },
+                { index: 2, no: '12302' }
+            ];
+            let changeset = new Changeset({ deletedPosts });
+
+            let $el = render(<DeletedMessage {...{ changeset }} />);
+
+            let got = $el.outerHTML;
+            let exp = '<span class="gohei-msg">削除: No.12301, No.12302</span>';
+            assert(got === exp);
+        });
+
+        it('should not render deleted message if changeset is empty', () => {
+            let changeset = new Changeset();
+            let $el = render(<DeletedMessage {...{ changeset }} />);
+            let got = $el.outerHTML;
+            assert(got === null);
         });
     });
 
