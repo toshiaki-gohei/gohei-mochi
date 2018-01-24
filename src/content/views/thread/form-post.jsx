@@ -213,8 +213,8 @@ class File extends Component {
         this._$inputFile = null;
 
         this._handlers = {
-            changeInputFile: handleChangeInputFile.bind(this),
-            detachFile: () => this._detachFile(),
+            change: handleChangeInputFile.bind(this),
+            detach: () => this._detach(),
             pasteImage: pasteImageHandler().bind(this)
         };
     }
@@ -224,18 +224,23 @@ class File extends Component {
         let next = nextProps;
 
         if (prev.files !== next.files) {
-            let $el = this._$inputFile;
-
-            // Chrome : emit change event when set files to $inputFile
-            // Firefox: not emit change event when set files to $inputFile
-            $el.files = next.files;
-
-            // show file preview through change event of $inputFile
-            if (isFirefox()) $el.dispatchEvent(new window.Event('change'));
+            this._attach(next.files);
         }
     }
 
-    _detachFile() {
+    _attach(files) {
+        // Chrome : emit change event when set files to $inputFile
+        // Firefox: not emit change event when set files to $inputFile
+        this._$inputFile.files = files;
+
+        // a change event is emitted on Chrome
+        if (isFirefox()) {
+            let event = { target: { files } };
+            this._handlers.change(event);
+        }
+    }
+
+    _detach() {
         let { commit, file } = this.props;
         if (file == null) return;
 
@@ -245,20 +250,20 @@ class File extends Component {
 
     render() {
         let { file } = this.props;
-        let { changeInputFile, detachFile, pasteImage } = this._handlers;
+        let { change, detach, pasteImage } = this._handlers;
 
         let styleDetachFileBtn = file ? null : { display: 'none' };
 
         return (
 <div className="gohei-col2">
   <input type="file" className="gohei-input-file" name="upfile"
-         ref={$el => this._$inputFile = $el} onChange={changeInputFile} />
+         ref={$el => this._$inputFile = $el} onChange={change} />
   <div className="gohei-font-smaller">
     (ドラッグ＆ドロップでファイルを添付できます)
     <PasteImageBtn {...{ pasteImage }} />
   </div>
   <div style={styleDetachFileBtn}>
-    <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
+    <button className="gohei-link-btn" type="button" onClick={detach}>[ファイルを削除]</button>
   </div>
   <Preview {...{ file }} />
 </div>
