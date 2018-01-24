@@ -4,6 +4,7 @@ import cookie from 'js-cookie';
 import FormData from '~/content/util/form-data';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 import { isFirefox } from '~/common/browser';
+import { $, createElement, tagName } from '~/content/util/dom';
 
 export default class Postform extends Component {
     constructor(props) {
@@ -213,7 +214,8 @@ class File extends Component {
 
         this._handlers = {
             changeInputFile: handleChangeInputFile.bind(this),
-            detachFile: () => this._detachFile()
+            detachFile: () => this._detachFile(),
+            pasteImage: pasteImageHandler().bind(this)
         };
     }
 
@@ -243,7 +245,7 @@ class File extends Component {
 
     render() {
         let { file } = this.props;
-        let { changeInputFile, detachFile } = this._handlers;
+        let { changeInputFile, detachFile, pasteImage } = this._handlers;
 
         let styleDetachFileBtn = file ? null : { display: 'none' };
 
@@ -251,7 +253,10 @@ class File extends Component {
 <div className="gohei-col2">
   <input type="file" className="gohei-input-file" name="upfile"
          ref={$el => this._$inputFile = $el} onChange={changeInputFile} />
-  <div className="gohei-font-smaller">(ドラッグ＆ドロップでファイルを添付できます)</div>
+  <div className="gohei-font-smaller">
+    (ドラッグ＆ドロップでファイルを添付できます)
+    <PasteImageBtn {...{ pasteImage }} />
+  </div>
   <div style={styleDetachFileBtn}>
     <button className="gohei-link-btn" type="button" onClick={detachFile}>[ファイルを削除]</button>
   </div>
@@ -261,12 +266,62 @@ class File extends Component {
     }
 }
 
+function PasteImageBtn({ pasteImage }) {
+    if (!isFirefox()) return null;
+    return <button className="gohei-link-btn" type="button"
+                   title="クリップボードの画像を添付します"
+                   onClick={pasteImage}>[貼り付け]</button>;
+}
+
 function handleChangeInputFile(event) {
     let { files } = event.target;
     let { commit } = this.props;
 
     let file = files.length === 0 ? null : files[0];
     commit('thread/setFile', file);
+}
+
+function pasteImageHandler() {
+    if (isFirefox()) return handlePasteImageOnFirefox;
+    return () => {};
+}
+
+async function handlePasteImageOnFirefox() {
+    let $box = createPasteBoxOnFirefox();
+    $box.focus();
+    document.execCommand('paste');
+
+    let $img = $box.children[0];
+    if ($img == null || tagName($img) !== 'img') return;
+    let blob = await window.fetch($img.src).then(res => res.blob());
+
+    if (!/^data:(.+?);/.test($img.src.split(',')[0])) return;
+    let mime = RegExp.$1;
+    let file = new window.File([ blob ], 'clipboard-image', { type: mime });
+
+    let { commit } = this.props;
+    commit('thread/setFile', file);
+
+    this._focusComment();
+}
+
+function createPasteBoxOnFirefox() {
+    const id = 'gohei-paste-box';
+    let { pageXOffset: x, pageYOffset: y } = window;
+
+    let $box = $(id);
+    if ($box) $box.parentNode.removeChild($box);
+
+    $box = createElement('div', { id, contenteditable: '' });
+    $box.style.width = 0;
+    $box.style.height = 0;
+    $box.style.overflow = 'hidden';
+    $box.style.position = 'absolute';
+    $box.style.top = y + 'px';
+    $box.style.left = x + 'px';
+
+    document.body.appendChild($box);
+    return $box;
 }
 
 class Preview extends Component {

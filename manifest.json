@@ -7,7 +7,7 @@
 
   "permissions": [
     "*://*/*",
-    "tabs", "webRequest", "webRequestBlocking"
+    "clipboardRead", "tabs", "webRequest", "webRequestBlocking"
   ],
 
   "background": {
