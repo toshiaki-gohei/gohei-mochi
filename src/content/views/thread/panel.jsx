@@ -8,6 +8,9 @@ export default class Panel extends Component {
     constructor(props) {
         super(props);
 
+        let { commit } = this.props;
+        if (commit == null) throw new TypeError('commit is required');
+
         this._handlers = {
             open: handleOpen.bind(this),
             close: handleClose.bind(this),
@@ -26,15 +29,17 @@ export default class Panel extends Component {
     }
 
     render() {
-        let { commit, app, ui } = this.props;
-        if (app == null || ui == null) return null;
+        let { commit, app, ui = {} } = this.props;
 
-        let { panel } = ui.thread;
+        // do not return null because must detach listener on componentWillUnmount()
+        //if (app == null || ui == null) return null;
+
+        let { panel } = ui.thread || {};
         let handlers = this._handlers;
 
         return (
 // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-<div className="gohei-panel" onClick={stopPropagation} role="presentation">
+<div className={CN_PANEL} role="presentation">
   <Icon {...{ panel, open: handlers.open }} />
   <Content {...{ commit, panel, app, handlers }} />
 </div>
@@ -42,13 +47,18 @@ export default class Panel extends Component {
     }
 }
 
+const CN_PANEL = 'gohei-panel';
+
 function Icon({ panel, open }) {
+    if (panel == null) return null;
     let style = panel.isOpen ? { display: 'none' } : null;
     return <button className="gohei-icon-btn gohei-panel-icon gohei-icon-menu"
                    style={style} onClick={open} />;
 }
 
 function Content({ commit, panel, app, handlers }) {
+    if (app == null || panel == null) return null;
+
     let style = panel.isOpen ? null : { display: 'none' };
 
     let { close, ...rest } = handlers;
@@ -105,6 +115,15 @@ function tabCss(panel) {
     return { formPost, delreq };
 }
 
+function isOnPanel($el) {
+    while ($el) {
+        if ($el.classList.contains(CN_PANEL)) return true;
+        if ($el === document.body) return false;
+        $el = $el.parentNode;
+    }
+    return false;
+}
+
 function handleOpen(event) {
     event.stopPropagation();
     let { commit } = this.props;
@@ -117,18 +136,14 @@ function handleClose(event) {
     commit('thread/closePanel');
 }
 
-function handleClickBody(event) {
+async function handleClickBody(event) {
     let $el = event.target;
-    if ($el.classList.contains('gohei-link-btn')) return;
+    if (isOnPanel($el)) return;
     let { commit } = this.props;
-    commit('thread/closePanel');
+    await commit('thread/closePanel'); // async/await for avoid errors on browser tests
 }
 
 function handleTab(type) {
     let { commit } = this.props;
     commit('thread/openPanel', type);
-}
-
-function stopPropagation(event) {
-    event.stopPropagation();
 }

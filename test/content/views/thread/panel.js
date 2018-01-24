@@ -2,7 +2,7 @@
 import assert from 'assert';
 import Panel from '~/content/views/thread/panel.jsx';
 import React from 'react';
-import { render, simulate } from '@/support/react';
+import { simulate, mount, unmount } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setUiThread, setAppThreads } from '~/content/reducers/actions';
@@ -20,10 +20,16 @@ describe(__filename, () => {
     const commit = () => {};
     const url = 'https://may.2chan.net/b/res/123000.htm';
 
+    let $el;
+    afterEach(() => {
+        unmount($el);
+        $el = null;
+    });
+
     describe('render()', () => {
         it('should render icon', () => {
             let { app, ui } = store.getState();
-            let $el = render(<Panel {...{ commit, app, ui }} />);
+            $el = mount(<Panel {...{ commit, app, ui }} />);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
@@ -48,7 +54,7 @@ $`.replace(/\n/g, ''));
             }));
 
             let { app, ui } = store.getState();
-            let $el = render(<Panel {...{ commit, app, ui }} />);
+            $el = mount(<Panel {...{ commit, app, ui }} />);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
@@ -67,40 +73,54 @@ $`.replace(/\n/g, ''));
             assert(exp.test(got));
         });
 
-        it('should not render panel if no props', () => {
-            let $el = render(<Panel />);
+        it('should throw exception if no commit', () => {
+            let got;
+            try { mount(<Panel />); } catch (e) { got = e.message; }
+            assert(got === 'commit is required');
+        });
+
+        it('should render panel if no props', () => {
+            $el = mount(<Panel {...{ commit }} />);
             let got = $el.outerHTML;
-            assert(got === null);
+            let exp = '<div class="gohei-panel" role="presentation"></div>';
+            assert(got === exp);
         });
     });
 
     describe('event', () => {
-        let props;
-        beforeEach(() => {
+        it('should open panel if click panel icon', done => {
             let { app, ui } = store.getState();
-            props = { commit, app, ui };
-        });
-
-        it('should commit procedure if emit open event', done => {
             let mock = procedures(null, {
                 'thread/openPanel': done
             });
 
-            let $el = render(<Panel {...{ ...props, commit: mock }} />);
+            $el = mount(<Panel {...{ commit: mock, app, ui }} />);
 
             let $icon = $el.querySelector('.gohei-panel-icon');
             simulate.click($icon);
         });
 
-        it('should commit procedure if emit close event', done => {
+        it('should close panel if click close button', done => {
+            let { app, ui } = store.getState();
             let mock = procedures(null, {
                 'thread/closePanel': done
             });
 
-            let $el = render(<Panel {...{ ...props, commit: mock }} />);
+            $el = mount(<Panel {...{ commit: mock, app, ui }} />);
 
             let $btn = $el.querySelector('.gohei-panel .gohei-close-btn');
             simulate.click($btn);
+        });
+
+        it('should close panel if click body', done => {
+            let { app, ui } = store.getState();
+            let mock = procedures(null, {
+                'thread/closePanel': done
+            });
+
+            $el = mount(<Panel {...{ commit: mock, app, ui }} />);
+
+            document.body.dispatchEvent(new window.Event('click'));
         });
     });
 });
