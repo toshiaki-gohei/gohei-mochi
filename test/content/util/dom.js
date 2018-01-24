@@ -1,7 +1,7 @@
 'use strict';
 import assert from 'assert';
 import { setup, teardown } from '@/support/dom';
-import { $, createElement } from '~/content/util/dom';
+import { $, createElement, tagName } from '~/content/util/dom';
 
 describe(__filename, () => {
     before(() => setup());
@@ -41,6 +41,29 @@ describe(__filename, () => {
             let got = $el.outerHTML;
             let exp = '<div id="foo" class="bar"></div>';
             assert(got === exp);
+        });
+    });
+
+    describe('tagName()', () => {
+        it('should return tag name correctly', () => {
+            let $container = createElement('div');
+            $container.innerHTML = `
+<a>anchor tag</a>
+<img>
+<small>small tag</small>
+<br>
+foo bar
+<!-- comment -->
+`.replace(/\n/g, '');
+            let [ $a, $img, $small, $br, $text, $comment ] = $container.childNodes;
+
+            assert(tagName($a) === 'a');
+            assert(tagName($img) === 'img');
+            assert(tagName($small) === 'small');
+            assert(tagName($br) === 'br');
+            assert(tagName($text) === null);
+            assert(tagName($comment) === null);
+            assert(tagName(null) === null);
         });
     });
 });

@@ -1,7 +1,8 @@
 'use strict';
 import parseFromString from '../dom-parser';
 import parseAds from './ads';
-import { tagName, parseTitle } from '../util';
+import { parseTitle } from '../util';
+import { tagName } from '~/content/util/dom';
 
 export default {
     parseAll,

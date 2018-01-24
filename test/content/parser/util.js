@@ -8,30 +8,6 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    describe('tagName()', () => {
-        const { tagName } = util;
-
-        it('should return tag name correctly', () => {
-            let $doc = parseFromString(`
-<a>anchor tag</a>
-<img>
-<small>small tag</small>
-<br>
-foo bar
-<!-- comment -->
-`.replace(/\n/g, ''));
-            let [ $a, $img, $small, $br, $text, $comment ] = $doc.body.childNodes;
-
-            assert(tagName($a) === 'a');
-            assert(tagName($img) === 'img');
-            assert(tagName($small) === 'small');
-            assert(tagName($br) === 'br');
-            assert(tagName($text) === null);
-            assert(tagName($comment) === null);
-            assert(tagName(null) === null);
-        });
-    });
-
     describe('parseTitle()', () => {
         const { parseTitle } = util;
 

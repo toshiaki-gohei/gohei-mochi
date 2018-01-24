@@ -11,3 +11,9 @@ export function createElement(tagName, attrs = {}) {
     }
     return $el;
 }
+
+export function tagName($el) {
+    if ($el == null) return null;
+    if ($el.tagName == null) return null;
+    return $el.tagName.toLowerCase();
+}

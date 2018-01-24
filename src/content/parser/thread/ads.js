@@ -1,5 +1,5 @@
 'use strict';
-import { tagName } from '../util';
+import { tagName } from '~/content/util/dom';
 
 export default function parse($body) {
     let top = parseTop($body);
