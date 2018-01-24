@@ -6,10 +6,10 @@ import { Simulate } from 'react-dom/test-utils';
 export const simulate = Simulate;
 
 export function render($component, $container) {
+    $container = $container || document.createElement('div');
+
     let $c = $component;
     if (isFunctional($c)) $c = createWrappedComponent($c);
-
-    $container = $container || document.createElement('div');
 
     // eslint-disable-next-line react/no-render-return-value
     let $inst = ReactDOM.render($c, $container);
@@ -36,10 +36,15 @@ function elementify($instance, $container) {
     let $inst = $instance;
     if ($inst instanceof window.HTMLElement) return $inst;
 
-    let $el = $container.firstChild;
+    let $el = $container.firstElementChild;
 
-    Object.defineProperty($inst, 'outerHTML', {
-        get: () => { return $el == null ? null : $el.outerHTML; }
+    Object.defineProperties($inst, {
+        'outerHTML': {
+            get: () => { return $el == null ? null : $el.outerHTML; }
+        },
+        'parentElement': {
+            get: () => { return $el == null ? null : $el.parentElement; }
+        }
     });
 
     $inst.querySelector = query => $container.querySelector(query);
@@ -48,6 +53,13 @@ function elementify($instance, $container) {
     return $inst;
 }
 
-export function unmount($container) {
-    ReactDOM.unmountComponentAtNode($container);
+export function mount($component) {
+    document.body.innerHTML = '<div></div>';
+    return render($component, document.body.firstElementChild);
+}
+
+export function unmount($el) {
+    if ($el == null) return;
+    ReactDOM.unmountComponentAtNode($el.parentElement);
+    document.body.innerHTML = '';
 }

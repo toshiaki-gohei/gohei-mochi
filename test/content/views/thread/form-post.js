@@ -2,7 +2,7 @@
 import assert from 'assert';
 import Postform, { internal } from '~/content/views/thread/form-post.jsx';
 import React from 'react';
-import { render, simulate, unmount } from '@/support/react';
+import { render, simulate, mount, unmount } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
 import { create as createApp } from '~/content/reducers/app/threads';
 import { create as createUi } from '~/content/reducers/ui/thread';
@@ -342,6 +342,9 @@ describe(`${__filename}: DropBox`, () => {
     before(() => setup());
     after(() => teardown());
 
+    let $el;
+    afterEach(() => unmount($el));
+
     describe('event', () => {
         it('should handle drop event', done => {
             let handlers = {
@@ -351,24 +354,16 @@ describe(`${__filename}: DropBox`, () => {
                 }
             };
 
-            let $el = render(<DropBox {...{ handlers }} />);
+            $el = mount(<DropBox {...{ handlers }} />);
             let dataTransfer = { files: 'dummy files' };
             simulate.drop($el.querySelector('.gohei-drop-box'), { dataTransfer });
         });
     });
 
     describe('drag & drop event', () => {
-        let $el;
-        before(() => {
-            document.body.innerHTML = '<main></main>';
-            $el = render(<DropBox />, document.body.querySelector('main'));
-        });
-        afterEach(() => {
-            unmount(document.body.querySelector('main'));
-            document.body.innerHTML = '';
-        });
-
         it('should set state correctly if dragenter -> dragover -> dragleave', async () => {
+            $el = mount(<DropBox />);
+
             assert($el._isInsideDragArea === false);
             assert($el._isInsideChildren === false);
             assert($el.state.isVisible === false);
