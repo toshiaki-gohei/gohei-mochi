@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
-import Postform from './form-post.jsx';
+import Postform from './form-post/index.jsx';
 import Delreq from './delreq.jsx';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 

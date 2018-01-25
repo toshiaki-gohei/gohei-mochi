@@ -1,0 +1,207 @@
+'use strict';
+import React, { Component, Fragment } from 'react';
+import File from './file.jsx';
+import DropBox from './drop-box.jsx';
+import cookie from 'js-cookie';
+import FormData from '~/content/util/form-data';
+import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
+
+export default class Postform extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            name: cookie.get('namec'),
+            pwd: cookie.get('pwdc'),
+            files: null,
+
+            isPosting: false,
+            errmsg: null
+        };
+
+        this._$form = null;
+        this._$comment = null;
+
+        this._handlers = {
+            submit: handleSubmit.bind(this),
+            oekaki: () => alert('not implement: oekaki'),
+            changeComment: handleChangeComment.bind(this),
+            setRefComment: $el => this._$comment = $el,
+            setFiles: files => this.setState({ files })
+        };
+    }
+
+    componentDidUpdate(prevProps) {
+        let prev = prevProps;
+        let next = this.props;
+        if (!prev.panel.isOpen && next.isOpen) this._focusComment();
+    }
+
+    _focusComment() {
+        setTimeout(() => { this._$comment.focus(); }, 10);
+    }
+
+    _isEmptyForm(formdata) {
+        let comment = formdata.get('com');
+        if (comment != null && comment !== '') return false;
+
+        let { file } = this.props.postform;
+        if (file != null) return false;
+
+        return true;
+    }
+
+    _resetForm() {
+        let { commit } = this.props;
+        this._$form.reset();
+        commit('thread/setComment', null);
+        commit('thread/setFile', null);
+    }
+
+    _setCookie(formdata) {
+        let name = formdata.get('name');
+        let pwd = formdata.get('pwd');
+        this.setState({ name, pwd });
+        cookie.set('namec', name);
+        cookie.set('pwdc', pwd);
+    }
+
+    render() {
+        let { commit, panel, postform } = this.props;
+        let { name, files, errmsg } = this.state;
+
+        if (panel == null || postform == null) return null;
+
+        let stylePostForm = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
+
+        let { action, hiddens, comment, file } = postform || {};
+        let { submit, setFiles, ...handlers } = this._handlers;
+
+        return (
+<div className="gohei-postform" style={stylePostForm}>
+  <div className="gohei-err-msg gohei-text-error">{errmsg}</div>
+  <form action={action} method="POST" encType="multipart/form-data"
+        ref={$el => this._$form = $el} onSubmit={submit}>
+    <Hiddens {...{ hiddens }} />
+    <div className="gohei-row">
+      <div className="gohei-col1">おなまえ</div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-name" name="name" defaultValue={name} />
+      </div>
+    </div>
+    <div className="gohei-row">
+      <div className="gohei-col1">E-mail</div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-email" name="email" />
+      </div>
+    </div>
+    <div className="gohei-row">
+      <div className="gohei-col1">題名</div>
+      <div className="gohei-col2">
+        <input type="text" className="gohei-input-subject" name="sub" />
+        <Submit {...this.state} />
+      </div>
+    </div>
+    <div className="gohei-row">
+      <div className="gohei-col1"><LabelComment {...{ handlers }} /></div>
+      <div className="gohei-col2">
+        <div id="swfContents"></div>
+        <Comment {...{ comment, handlers }} />
+      </div>
+    </div>
+    <div className="gohei-row">
+      <div className="gohei-col1">添付File</div>
+      <div className="gohei-col2"><File {...{ commit, file, files }} /></div>
+    </div>
+    <div className="gohei-row">
+      <div className="gohei-col1">削除キー</div>
+      <div className="gohei-col2"><DeleteKey {...this.state} /></div>
+    </div>
+  </form>
+  <DropBox {...{ setFiles }} />
+</div>
+        );
+    }
+}
+
+function Hiddens({ hiddens }) {
+    let $hiddens = hiddens.map(({ name, value }) => {
+        return <input type="hidden" name={name} value={value} key={name} />;
+    });
+    return <div className="gohei-hiddens">{$hiddens}</div>;
+}
+
+function Submit({ isPosting }) {
+    let labelSubmit = isPosting ? '送信中…' : '送信する';
+    let disabledSubmit = isPosting ? true : false;
+    return <button type="submit" className="gohei-btn"
+                   disabled={disabledSubmit}>{labelSubmit}</button>;
+}
+
+function LabelComment({ handlers }) {
+    let { oekaki } = handlers; // eslint-disable-line no-unused-vars
+    return (
+<div className="gohei-label-comment">
+  コメント
+  {/*<button className="gohei-link-btn" type="button" onClick={oekaki}>手書き</button>*/}
+</div>
+    );
+}
+
+function Comment({ comment, handlers }) {
+    let { changeComment, setRefComment } = handlers;
+    let value = comment == null ? '' : comment;
+    return <textarea className="gohei-input-comment" name="com" value={value}
+                     ref={setRefComment} onChange={changeComment} />;
+}
+
+function DeleteKey({ pwd }) {
+    return (
+<Fragment>
+  <input type="password" className="gohei-input-password" name="pwd"
+         maxLength="12" defaultValue={pwd} />
+  <span className="gohei-font-smaller">(削除用。英数字で8字以内)</span>
+  <object type="application/x-shockwave-flash" id="cnt" data="/bin/count.swf" width="0" height="0" aria-label="" aria-hidden="true"></object>
+</Fragment>
+    );
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+
+    let $form = event.target;
+    let url = $form.action;
+
+    let { commit, postform: { file } } = this.props;
+
+    let fd = new FormData($form);
+    if (file) fd.set('upfile', file, file.name);
+    fd.set('js', 'on');
+
+    if (this._isEmptyForm(fd)) {
+        this.setState({ errmsg: '何か書いて下さい' });
+        this._focusComment();
+        return;
+    }
+
+    this.setState({ isPosting: true, errmsg: null });
+
+    let res = await commit('thread/submit', { url, formdata: fd });
+
+    this.setState({ isPosting: false });
+
+    if (res.ok) {
+        this._setCookie(fd);
+        this._resetForm();
+    } else {
+        this.setState({ errmsg: res.statusText });
+    }
+
+    this._focusComment();
+    commit('thread/update');
+}
+
+function handleChangeComment(event) {
+    let { commit } = this.props;
+    commit('thread/setComment', event.target.value);
+}
