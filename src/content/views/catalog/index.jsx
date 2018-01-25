@@ -2,6 +2,7 @@
 import React, { Component, Fragment } from 'react';
 import Catalog from './catalog.jsx';
 import Nav from './nav.jsx';
+import performance from '~/common/performance';
 
 export default class Main extends Component {
     constructor(props) {
@@ -23,7 +24,12 @@ export default class Main extends Component {
     componentDidMount() {
         if (this._emitter) this._emitter.emit('catalog:did-mount');
     }
+    componentWillUpdate() {
+        // performance.start('render catalog');
+    }
     componentDidUpdate() {
+        // performance.end('render catalog');
+        performance.print('render catalog');
         if (this._emitter) this._emitter.emit('catalog:did-update');
     }
     componentWillUnmount() {

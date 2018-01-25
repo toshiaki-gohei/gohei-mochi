@@ -4,6 +4,7 @@ import Thread from './thread.jsx';
 import Console from './console.jsx';
 import Panel from './panel.jsx';
 import PopupContainer from '../popup-container.jsx';
+import performance from '~/common/performance';
 
 export default class Main extends Component {
     constructor(props) {
@@ -25,7 +26,12 @@ export default class Main extends Component {
     componentDidMount() {
         if (this._emitter) this._emitter.emit('thread:did-mount');
     }
+    componentWillUpdate() {
+        // performance.start('render thread');
+    }
     componentDidUpdate() {
+        // performance.end('render thread');
+        performance.print('render thread');
         if (this._emitter) this._emitter.emit('thread:did-update');
     }
     componentWillUnmount() {

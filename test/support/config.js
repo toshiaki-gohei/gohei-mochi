@@ -1,3 +1,2 @@
 'use strict';
-import stopwatch from '~/common/stopwatch';
-stopwatch.disabled = true;
+// the file is empty because there is no config at present

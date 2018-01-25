@@ -12,7 +12,7 @@ import * as prefs from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { cleanCatalogUrl } from '../util/url';
 import EventEmitter from '~/common/event-emitter';
-import stopwatch from '~/common/stopwatch';
+import performance from '~/common/performance';
 
 export default class App {
     constructor() {
@@ -42,7 +42,7 @@ export default class App {
     }
 
     run() {
-        stopwatch.start('parse thread');
+        performance.start('parse catalog');
 
         let {
             catalog,
@@ -52,7 +52,7 @@ export default class App {
 
         this._html = null;
 
-        stopwatch.stop('parse thread');
+        performance.end('parse catalog');
 
         let url = cleanCatalogUrl(this._url);
         let sort = getSort(this._url);
@@ -71,7 +71,7 @@ export default class App {
 
         commit('preferences/set', prefs.load());
 
-        stopwatch.start('first render');
+        performance.start('first render');
 
         if (process.env.NODE_ENV === 'production') {
             emitter.once('catalog:did-mount', () => displayAds(ads));
@@ -90,7 +90,11 @@ export default class App {
 
     _initEventListener() {
         this._emitter.once('catalog:did-mount', () => {
+            performance.end('first render');
+
             this._$bucket = null;
+
+            performance.print([ 'parse catalog', 'first render' ]);
         });
     }
 }

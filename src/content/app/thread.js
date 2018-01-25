@@ -12,7 +12,7 @@ import * as prefs from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { DISPLAY_THRESHOLD, THREAD_PANEL_TYPE as P_TYPE } from '../constants';
 import EventEmitter from '~/common/event-emitter';
-import stopwatch from '~/common/stopwatch';
+import performance from '~/common/performance';
 
 export default class App {
     constructor() {
@@ -50,7 +50,7 @@ export default class App {
     }
 
     run() {
-        stopwatch.start('parse thread');
+        performance.start('parse thread');
 
         let {
             thread, messages, postform, delform,
@@ -60,7 +60,7 @@ export default class App {
 
         this._html = null;
 
-        stopwatch.stop('parse thread');
+        performance.end('parse thread');
 
         let url = this._url;
 
@@ -88,7 +88,7 @@ export default class App {
 
         commit('thread/setPanel', { isOpen: false, type: P_TYPE.FORM_POST });
 
-        stopwatch.start('first render');
+        performance.start('first render');
 
         if (process.env.NODE_ENV === 'production') {
             emitter.once('thread:did-mount', () => displayAds(ads));
@@ -107,15 +107,14 @@ export default class App {
 
     _initEventListener() {
         this._emitter.once('thread:did-mount', () => {
-            stopwatch.stop('first render');
+            performance.end('first render');
 
             this._$bucket = null;
 
             adjustAds();
             adjustScroll();
 
-            stopwatch.log('parse thread');
-            stopwatch.log('first render');
+            performance.print([ 'parse thread', 'first render' ]);
         });
 
         this._emitter.on('thread:did-update', () => {
