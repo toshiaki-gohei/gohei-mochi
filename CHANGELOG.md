@@ -1,13 +1,16 @@
 ## 0.2.0 (2018-01-24)
+
 * change to use React instead of preact
 * change to use Babel 7
 * add to attach a image from clipboard on post form (only Firefox)
 * remove tegaki-link on post form because the feature is not implemented
 
 ## 0.1.1 (2018-01-21)
+
 * modify to adjust a popup position
 
 ## 0.1.0 (2018-01-18)
+
 * add to popup posts by userId or userIp
 * use a original post thumb to display tab icon
 * improve to display ads
@@ -15,6 +18,7 @@
 * modify to return true on a listener passed to onMessage() in background
 
 ## 0.0.5 (2018-01-16)
+
 * adjust video size when display video
 * update a document
 
