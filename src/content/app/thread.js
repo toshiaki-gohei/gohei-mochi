@@ -90,11 +90,9 @@ export default class App {
 
         stopwatch.start('first render');
 
-        emitter.once('thread:did-mount', () => {
-            this._$bucket = null;
-            if (process.env.NODE_ENV === 'development') return;
-            displayAds(ads);
-        });
+        if (process.env.NODE_ENV === 'production') {
+            emitter.once('thread:did-mount', () => displayAds(ads));
+        }
 
         let $main = React.createElement(Main, { store, commit, emitter });
         let $container = document.querySelector('main');
@@ -110,6 +108,8 @@ export default class App {
     _initEventListener() {
         this._emitter.once('thread:did-mount', () => {
             stopwatch.stop('first render');
+
+            this._$bucket = null;
 
             adjustAds();
             adjustScroll();

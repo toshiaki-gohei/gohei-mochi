@@ -27,6 +27,8 @@ export default class App {
     }
 
     init() {
+        this._initEventListener();
+
         this._html = document.body.outerHTML;
         let title = document.title;
 
@@ -71,11 +73,9 @@ export default class App {
 
         stopwatch.start('first render');
 
-        emitter.once('catalog:did-mount', () => {
-            this._$bucket = null;
-            if (process.env.NODE_ENV === 'development') return;
-            displayAds(ads);
-        });
+        if (process.env.NODE_ENV === 'production') {
+            emitter.once('catalog:did-mount', () => displayAds(ads));
+        }
 
         let $main = React.createElement(Main, { store, commit, emitter });
         let $container = document.querySelector('main');
@@ -86,6 +86,12 @@ export default class App {
         let body = document.body;
         body.insertBefore($el, body.firstChild);
         this._$el = $el;
+    }
+
+    _initEventListener() {
+        this._emitter.once('catalog:did-mount', () => {
+            this._$bucket = null;
+        });
     }
 }
 
