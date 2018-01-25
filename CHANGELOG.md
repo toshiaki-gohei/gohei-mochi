@@ -1,3 +1,9 @@
+## 0.2.1 (2018-01-25)
+
+* fix not to close post form on click in panel
+* fix the issue that cannot attach a file by drag and drop
+* fix to focus textarea correctly in post-form
+
 ## 0.2.0 (2018-01-24)
 
 * change to use React instead of preact
