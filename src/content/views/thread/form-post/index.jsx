@@ -32,13 +32,19 @@ export default class Postform extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        let prev = prevProps;
-        let next = this.props;
-        if (!prev.panel.isOpen && next.isOpen) this._focusComment();
+        if (this._focusesCommentOnDidUpdate(prevProps, this.props)) {
+            this._focusComment();
+        }
+    }
+
+    _focusesCommentOnDidUpdate(prev, next) {
+        if (!prev.panel.isOpen && next.panel.isOpen) return true;
+        if (prev.postform.file !== next.postform.file) return true;
+        return false;
     }
 
     _focusComment() {
-        setTimeout(() => { this._$comment.focus(); }, 10);
+        setTimeout(() => this._$comment.focus(), 1);
     }
 
     _isEmptyForm(formdata) {
