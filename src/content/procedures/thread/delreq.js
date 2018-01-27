@@ -1,75 +1,118 @@
 'use strict';
 import { setAppThreads } from '../../reducers/actions';
+import { createDelreqTarget } from '../../reducers/app/threads';
 import { add } from '../delreq';
 import { register } from '../worker';
 
-export function addDelreqs(store, { url, id, ids }) {
+export function addDelreqTargets(store, { url, postId, postIds }) {
     let { app } = store.getState();
     if (url == null) url = app.current.thread;
     if (url == null) throw new TypeError('thread url is required');
 
-    if (id != null) ids = [ id ];
-    if (ids == null || ids.length === 0) return;
+    if (postId != null) postIds = [ postId ];
+    if (postIds == null || postIds.length === 0) return;
 
-    let { delreqs } = app.threads.get(url);
+    let { delreq } = app.threads.get(url);
 
-    ids = uniq(delreqs, ids);
-    if (ids.length === 0) return;
+    postIds = uniq(delreq.targets, postIds);
+    if (postIds.length === 0) return;
 
-    delreqs = delreqs.concat(ids);
+    let targets = new Map(delreq.targets);
+    for (let key of postIds) {
+        let checked = app.delreqs.has(key) ? false : true;
+        let target = createDelreqTarget({ post: key, checked });
+        targets.set(key, target);
+    }
 
-    store.dispatch(setAppThreads({ url, delreqs }));
+    delreq = { targets };
+    store.dispatch(setAppThreads({ url, delreq }));
 }
 
-function uniq(delreqs, ids) {
-    let contains = delreqs.reduce((map, postId) => {
-        map.set(postId, true);
-        return map;
-    }, new Map());
-
-    ids = ids.filter(id => !contains.has(id));
-
-    return ids;
+function uniq(targets, postIds) {
+    return postIds.filter(id => !targets.has(id));
 }
 
-export function removeDelreqs(store, { url, id, ids }) {
+export function setDelreqTargets(store, { url, target, targets }) {
     let { app } = store.getState();
     if (url == null) url = app.current.thread;
     if (url == null) throw new TypeError('thread url is required');
 
-    if (id != null) ids = [ id ];
-    if (ids == null || ids.length === 0) return;
+    if (target != null) targets = [ target ];
+    if (targets == null || targets.length === 0) {
+        throw new Error('target or targets is required');
+    }
 
-    let contains = ids.reduce((map, id) => {
+    let { delreq } = app.threads.get(url);
+    let newTargets = new Map(delreq.targets);
+
+    for (let target of targets) {
+        let key = target.post;
+        if (!newTargets.has(key)) throw new Error(`delreq target not found: ${key}`);
+        target = createDelreqTarget(target);
+        newTargets.set(key, target);
+    }
+
+    delreq = { targets: newTargets };
+    store.dispatch(setAppThreads({ url, delreq }));
+}
+
+function removeDelreqTargets(store, { url, postId, postIds }) {
+    let { app } = store.getState();
+    if (url == null) url = app.current.thread;
+    if (url == null) throw new TypeError('thread url is required');
+
+    if (postId != null) postIds = [ postId ];
+    if (postIds == null || postIds.length === 0) return;
+
+    let removed = postIds.reduce((map, id) => {
         map.set(id, true);
         return map;
     }, new Map());
 
-    let { delreqs } = app.threads.get(url);
-    delreqs = delreqs.filter(id => !contains.has(id));
+    let { delreq } = app.threads.get(url);
 
-    store.dispatch(setAppThreads({ url, delreqs }));
+    let targets = new Map();
+    for (let [ key, target ] of delreq.targets) {
+        if (removed.has(key)) continue;
+        targets.set(key, target);
+    }
+
+    delreq = { targets };
+    store.dispatch(setAppThreads({ url, delreq }));
 }
 
-export function clearDelreqs(store, { url } = {}) {
+export function clearDelreqTargets(store, { url } = {}) {
     let { app } = store.getState();
     if (url == null) url = app.current.thread;
     if (url == null) throw new TypeError('thread url is required');
 
-    let { delreqs } = app.threads.get(url);
-    if (delreqs.length === 0) return;
+    let { delreq } = app.threads.get(url);
+    if (delreq.targets.size === 0) return;
 
-    delreqs = [];
-    store.dispatch(setAppThreads({ url, delreqs }));
+    delreq = { targets: new Map() };
+    store.dispatch(setAppThreads({ url, delreq }));
 }
 
-export async function registerDelreqTasks(store, { url, posts, reason }) {
-    let removed = posts.map(({ id }) => id);
-    removeDelreqs(store, { url, ids: removed });
+export async function registerDelreqTasks(store, { url, reason }) {
+    let { app } = store.getState();
+    let { delreq } = app.threads.get(url);
 
+    let postIds = [];
+    for (let [ , { post, checked } ] of delreq.targets) {
+        if (!checked) continue;
+        postIds.push(post);
+    }
+
+    removeDelreqTargets(store, { url, postIds });
+
+    let posts = postIds;
     let status = 'stanby';
     await add(store, { url, posts, reason, status });
 
-    let tasks = posts.map(({ id }) => id);
+    let tasks = postIds;
     await register(store, 'delreq', tasks);
 }
+
+export const internal = {
+    removeDelreqTargets
+};

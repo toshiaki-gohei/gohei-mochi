@@ -9,8 +9,7 @@ export default class Delreq extends Component {
         this.state = {
             reason: null,
             isVisibleReasons: false,
-            errmsg: null,
-            checked: createChecked(null, props)
+            errmsg: null
         };
 
         this._handlers = {
@@ -18,16 +17,11 @@ export default class Delreq extends Component {
             closeReasons: handleVisibleReasons.bind(this, false),
             toggleReasons: handleVisibleReasons.bind(this, null),
 
-            clickDelreqList: handleClickDelreqList.bind(this),
-            clearDelreqList: handleClearDelreqList.bind(this),
+            clickTargets: handleClickTargets.bind(this),
+            clearTargets: handleClearTargets.bind(this),
             changeReason: handleChangeReason.bind(this),
             addToTasks: handleAddToTasks.bind(this)
         };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        let checked = createChecked(this.state, nextProps);
-        this.setState({ checked });
     }
 
     render() {
@@ -52,21 +46,21 @@ export default class Delreq extends Component {
 }
 
 function LeftPane({ commit, state, app, handlers }) {
-    let { errmsg } = state;
+    let { errmsg, reason } = state;
 
     return (
 <div className="gohei-left-pane">
   <div className="gohei-top-pane">
-    <div className="gohei-row">送信前の削除依頼<ClearDelreqListBtn {...{ handlers }} /></div>
+    <div className="gohei-row">送信前の削除依頼<ClearTargetsBtn {...{ handlers }} /></div>
     <div className="gohei-row gohei-scroll">
-      <CandidateList {...{ commit, state, app, handlers }} />
+      <TargetList {...{ commit, app, handlers }} />
     </div>
   </div>
   <div className="gohei-bottom-pane">
     <div className="gohei-row"><SelectedReason {...{ state, handlers }} /></div>
     <div className="gohei-row"><span className="gohei-font-smaller">
       チェックの付いたレスを、選択した理由で削除依頼します。</span></div>
-    <DelreqBtn {...{ state, handlers }} />
+    <DelreqBtn {...{ app, reason, handlers }} />
     <div className="gohei-row gohei-text-error">{errmsg}</div>
   </div>
 </div>
@@ -92,41 +86,39 @@ function RightPane({ commit, state, app, changeReason }) {
     );
 }
 
-function CandidateList({ commit, state, app, handlers }) {
-    let { current, delreqs } = app;
-    let { delreqs: delreqList } = app.threads.get(current.thread);
+function TargetList({ commit, app, handlers }) {
+    let { current, threads, delreqs } = app;
+    let { delreq } = threads.get(current.thread);
 
-    let $rows = delreqList.map(postId => {
+    let $rows = [];
+    for (let [ key, { post: postId, checked } ] of delreq.targets) {
         let post = commit('sync/post', postId);
-        return isCandidate(postId, app)
-            ? <Candidate {...{ post, state, handlers }} key={postId} />
-            : <NoCandidate {...{ post, delreqs }} key={postId} />;
-    });
+        let delreq = delreqs.get(key);
+        let $row = isTarget(delreq)
+            ? <Target {...{ checked, post, handlers }} key={key} />
+            : <NonTarget {...{ delreq, post }} key={key} />;
+        $rows.push($row);
+    }
 
-    if ($rows.length == 0) $rows = <EmptyDelreqList />;
+    if ($rows.length == 0) $rows = <EmptyList />;
 
     return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
 }
 
-function isCandidate(postId, app) {
-    let { delreqs } = app;
-    let delreq = delreqs.get(postId);
+function isTarget(delreq) {
     if (delreq == null) return true;
     if (delreq.status == null) return true;
     return false;
 }
 
-function Candidate({ post, state, handlers }) {
+function Target({ checked, post, handlers }) {
     let { id, index, no } = post;
-    let { checked } = state;
-    let { clickDelreqList } = handlers;
-
-    let isChecked = checked.get(id);
+    let { clickTargets } = handlers;
 
     return (
-<tr className="gohei-tr" data-post-id={id} onClick={clickDelreqList}>
+<tr className="gohei-tr" data-post-id={id} onClick={clickTargets}>
   <td className="gohei-td gohei-text-center gohei-selectable">
-    <input type="checkbox" defaultChecked={isChecked} />
+    <input type="checkbox" checked={checked} onChange={noop} />
   </td>
   <td className="gohei-td gohei-selectable">{index}</td>
   <td className="gohei-td gohei-selectable">No.{no}</td>
@@ -134,17 +126,26 @@ function Candidate({ post, state, handlers }) {
     );
 }
 
-function NoCandidate({ post, delreqs }) {
-    let { id, index, no } = post;
-    let { status } = delreqs.get(id);
+const noop = () => {};
+
+function NonTarget({ delreq, post }) {
+    let { status, res } = delreq;
+    let { index, no } = post;
+
+    let statusText = getStatusText(res);
 
     return (
 <tr className="gohei-tr">
-  <td className="gohei-td gohei-text-center">{DELREQ_STATUS_TEXT[status]}</td>
+  <td className="gohei-td gohei-text-center" title={statusText}>{DELREQ_STATUS_TEXT[status]}</td>
   <td className="gohei-td">{index}</td>
   <td className="gohei-td">No.{no}</td>
 </tr>
     );
+}
+
+function getStatusText(res) {
+    if (res == null) return '';
+    return res.ok ? '' : res.statusText;
 }
 
 function TaskList({ commit, app }) {
@@ -157,9 +158,7 @@ function TaskList({ commit, app }) {
 
         let { index } = commit('sync/post', post);
 
-        let statusText = '';
-        if (res != null) statusText = res.ok ? '' : res.statusText;
-
+        let statusText = getStatusText(res);
         let reasonText = REASON_TEXT[reason];
 
         return (
@@ -171,12 +170,12 @@ function TaskList({ commit, app }) {
         );
     });
 
-    if ($rows.length == 0) $rows = <EmptyDelreqList />;
+    if ($rows.length == 0) $rows = <EmptyList />;
 
     return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
 }
 
-function EmptyDelreqList() {
+function EmptyList() {
     return (
 <tr className="gohei-tr">
   <td className="gohei-td gohei-font-smaller">(削除依頼はありません)</td>
@@ -207,22 +206,21 @@ function ToggleReasonsLink({ children, handlers }) {
                    onClick={toggleReasons}>{children}</button>;
 }
 
-function DelreqBtn({ state, handlers }) {
-    let { reason, checked } = state;
+function DelreqBtn({ app, reason, handlers }) {
     let { addToTasks } = handlers;
 
     let isDisabled = false;
     if (reason == null) isDisabled = true;
-    if (checkedList(checked).length === 0) isDisabled = true;
+    if (!hasChecked(app)) isDisabled = true;
 
     return <button className="gohei-btn gohei-delreq-btn" type="button"
                    disabled={isDisabled} onClick={addToTasks}>削除依頼をする</button>;
 }
 
-function ClearDelreqListBtn({ handlers }) {
-    let { clearDelreqList } = handlers;
+function ClearTargetsBtn({ handlers }) {
+    let { clearTargets } = handlers;
     return <button className="gohei-link-btn gohei-clear-btn" type="button"
-                   onClick={clearDelreqList}>[クリア]</button>;
+                   onClick={clearTargets}>[クリア]</button>;
 }
 
 function Reasons({ state, changeReason }) {
@@ -268,20 +266,23 @@ function handleVisibleReasons(isVisible) {
     this.setState({ isVisibleReasons: isVisible });
 }
 
-function handleClickDelreqList(event) {
+function handleClickTargets(event) {
     let $el = event.currentTarget;
+    let { postId } = $el.dataset;
 
-    let { checked } = this.state;
-    checked = new Map(checked);
+    let { commit, app } = this.props;
+    let url = app.current.thread;
+    let { delreq } = app.threads.get(url);
 
-    let id = $el.dataset.postId;
-    checked.set(id, !checked.get(id));
-    this.setState({ checked });
+    let target = delreq.targets.get(postId);
+    target = { ...target, checked: !target.checked };
+
+    commit('thread/setDelreqTargets', { url, target });
 }
 
-function handleClearDelreqList() {
+function handleClearTargets() {
     let { commit } = this.props;
-    commit('thread/clearDelreqs');
+    commit('thread/clearDelreqTargets');
 }
 
 function handleChangeReason(event) {
@@ -291,26 +292,14 @@ function handleChangeReason(event) {
 
 async function handleAddToTasks() {
     let { commit, app } = this.props;
-    let { reason, checked } = this.state;
+    let { reason } = this.state;
     if (reason == null) return;
 
     let url = app.current.thread;
 
-    let posts = [];
-    let newChecked = new Map();
+    this.setState({ isVisibleReasons: false });
 
-    for (let [ postId, isChecked ] of checked) {
-        if (isChecked) {
-            let post = commit('sync/post', postId);
-            posts.push(post);
-            continue;
-        }
-        newChecked.set(postId, isChecked);
-    }
-
-    this.setState({ checked: newChecked, isVisibleReasons: false });
-
-    await commit('thread/registerDelreqTasks', { url, posts, reason });
+    await commit('thread/registerDelreqTasks', { url, reason });
     commit('worker/run', 'delreq');
 }
 
@@ -350,43 +339,16 @@ function shorthand(text, length) {
     return `${text.substr(0, length)}...`;
 }
 
-function createChecked(state, nextProps) {
-    let { checked = new Map() } = state || {};
-    let { app } = nextProps || {};
+function hasChecked(app) {
+    let { current, threads } = app;
+    let { delreq } = threads.get(current.thread);
 
-    if (app == null) return checked;
-
-    let { current, delreqs } = app;
-    let { delreqs: delreqList } = app.threads.get(current.thread);
-
-    let newChecked = delreqList.reduce((map, postId) => {
-        let delreq = delreqs.get(postId);
-
-        let isChecked = true; // initial check is true
-
-        if (checked.has(postId)) {
-            isChecked = checked.get(postId);
-        } else if (delreq != null && delreq.status != null) {
-            isChecked = null;
-        }
-
-        map.set(postId, isChecked);
-        return map;
-    }, new Map());
-
-    return newChecked;
-}
-
-function checkedList(checked) {
-    let list = [];
-    for (let [ key, value ] of checked) {
-        if (value !== true) continue;
-        list.push(key);
+    for (let [ , { checked } ] of delreq.targets) {
+        if (checked) return true;
     }
-    return list;
+    return false;
 }
 
 export const internal = {
-    createChecked,
-    checkedList
+    hasChecked
 };

@@ -170,12 +170,12 @@ $`.replace(/\n/g, ''));
         });
 
         it('should handle delreq', () => {
-            let addDelreqs, openPanel;
-            let p1 = new Promise(resolve => addDelreqs = resolve);
+            let addDelreqTargets, openPanel;
+            let p1 = new Promise(resolve => addDelreqTargets = resolve);
             let p2 = new Promise(resolve => openPanel = resolve);
 
             let mock = procedures(null, {
-                'thread/addDelreqs': addDelreqs,
+                'thread/addDelreqTargets': addDelreqTargets,
                 'thread/openPanel': openPanel
             });
 
@@ -187,9 +187,9 @@ $`.replace(/\n/g, ''));
             simulate.click($btn);
 
             return Promise.all([
-                p1.then(({ url, id }) => {
+                p1.then(({ url, postId }) => {
                     assert(url === 'http://example.net');
-                    assert(id === 'post01');
+                    assert(postId === 'post01');
                 }),
                 p2.then(type => {
                     assert(type === 'DELREQ');

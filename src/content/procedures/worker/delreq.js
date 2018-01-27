@@ -1,6 +1,6 @@
 'use strict';
 import { setAppWorkers } from '../../reducers/actions';
-import { submit } from '../delreq/submit';
+import { submit } from '../delreq';
 import { sleep } from '~/content/util';
 
 const SLEEP_TIME = 5 * 1000;

@@ -6,9 +6,11 @@ import { render, simulate } from '@/support/react';
 import { setup, teardown, tidy } from '@/support/dom';
 import createStore from '~/content/reducers';
 import * as actions from '~/content/reducers/actions';
-import procedures from '~/content/procedures';
+import procedures, { defaultMap } from '~/content/procedures';
+import { pluckFromMap as pluck } from '@/support/util';
+import { sleep } from '~/content/util';
 
-const { setAppThreads, setAppDelreqs, setAppWorkers } = actions;
+const { setDomainPosts, setAppThreads, setAppDelreqs, setAppWorkers } = actions;
 
 describe(__filename, () => {
     before(() => setup());
@@ -17,30 +19,29 @@ describe(__filename, () => {
     let store, props;
     beforeEach(() => {
         store = createStore({
-            app: { current: { thread: url } },
+            app: { current: { thread: URL } },
             ui: { thread: { panel: { isOpen: true, type: 'DELREQ' } } }
         });
-        store.dispatch(setAppThreads({ url }));
+        store.dispatch(setAppThreads({ url: URL }));
 
         let { app, ui } = store.getState();
         props = { panel: ui.thread.panel, app };
     });
 
-    const url = 'http://example.net/thread01';
+    const URL = 'http://example.net/thread01';
 
     const createPosts = nolist => {
-        return nolist.reduce((map, no, index) => {
-            let id = `may/b/${no}`;
-            map.set(id, { id, index, no });
-            return map;
-        }, new Map());
+        return nolist.map((no, index) => ({ id: `may/b/${no}`, index, no }));
     };
 
     describe('render()', () => {
-        const posts = createPosts([
-            '100', '101', '102', '103', '104', '105', '106', '107', '108', '109',
-            '110', '111', '112'
-        ]);
+        beforeEach(() => {
+            let posts = createPosts([
+                '100', '101', '102', '103', '104', '105', '106', '107', '108', '109',
+                '110', '111', '112'
+            ]);
+            store.dispatch(setDomainPosts(posts));
+        });
 
         it('should render delreq', () => {
             let $el = render(<Delreq {...props} />);
@@ -62,15 +63,20 @@ $`.replace(/\n/g, ''));
                 { post: 'may/b/101', status: 'stanby' },
                 { post: 'may/b/102', status: null }
             ]));
-            let delreqs = [ 'may/b/100', 'may/b/101', 'may/b/102', 'may/b/110', 'may/b/111' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
+            let delreq = {
+                targets: new Map([
+                    [ 'may/b/100', { post: 'may/b/100', checked: true } ],
+                    [ 'may/b/101', { post: 'may/b/101', checked: true } ],
+                    [ 'may/b/102', { post: 'may/b/102', checked: true } ],
+                    [ 'may/b/110', { post: 'may/b/110', checked: true } ],
+                    [ 'may/b/111', { post: 'may/b/111', checked: false } ]
+                ])
+            };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
 
-            let mock = procedures(store, {
-                'sync/post': id => posts.get(id)
-            });
-
+            let commit = procedures(store);
             let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
+            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
 
             let tdCss = 'gohei-td gohei-selectable';
 
@@ -79,11 +85,11 @@ $`.replace(/\n/g, ''));
 <table class="gohei-delreq-list">
 <tbody>
 <tr class="gohei-tr">
-<td class="gohei-td gohei-text-center">完了</td>
+<td class="gohei-td gohei-text-center" title="">完了</td>
 <td class="gohei-td">0</td><td class="gohei-td">No.100</td>
 </tr>
 <tr class="gohei-tr">
-<td class="gohei-td gohei-text-center">待機中</td>
+<td class="gohei-td gohei-text-center" title="">待機中</td>
 <td class="gohei-td">1</td><td class="gohei-td">No.101</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/102">
@@ -117,12 +123,9 @@ $`.replace(/\n/g, ''));
             let tasks = delreqs.map(({ post }) => post);
             store.dispatch(setAppWorkers({ delreq: { tasks } }));
 
-            let mock = procedures(store, {
-                'sync/post': id => posts.get(id)
-            });
-
+            let commit = procedures(store);
             let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
+            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
 
             let got = $el.querySelector('.gohei-right-pane .gohei-delreq-list').outerHTML;
             let exp = `
@@ -158,9 +161,34 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
+        it('should change delreq state if click delreq list', async () => {
+            store.dispatch(setDomainPosts(createPosts([ '100' ])));
+            let delreq = {
+                targets: new Map([
+                    [ 'may/b/100', { post: 'may/b/100', checked: true } ]
+                ])
+            };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
+
+            let commit = procedures(store);
+            let { app, ui } = store.getState();
+            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
+
+            let $rows = $el.querySelectorAll('.gohei-delreq-list .gohei-tr');
+            simulate.click($rows[0]);
+
+            await sleep(1);
+
+            let { targets } = store.getState().app.threads.get(URL).delreq;
+            let got = pluck(targets, 'post', 'checked');
+            let exp = [ { post: 'may/b/100', checked: false } ];
+            assert.deepStrictEqual(got, exp);
+        });
+
         it('should clear delreq list if click clear button', done => {
-            let mock = procedures(null, {
-                'thread/clearDelreqs': () => done()
+            let mock = procedures(store, {
+                ...defaultMap(store),
+                'thread/clearDelreqTargets': () => done()
             });
 
             let { app, ui } = store.getState();
@@ -173,24 +201,30 @@ $`.replace(/\n/g, ''));
 
     describe('add to tasks event', () => {
         beforeEach(() => {
+            let posts = createPosts([ '100', '101', '102' ]);
+            store.dispatch(setDomainPosts(posts));
             store.dispatch(setAppDelreqs([
                 { post: 'may/b/100', status: 'complete', res: { ok: true, status: 200 } },
                 { post: 'may/b/101', status: 'stanby' },
                 { post: 'may/b/102', status: null }
             ]));
-            let delreqs = [ 'may/b/100', 'may/b/101', 'may/b/102' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
+            let delreq = {
+                targets: new Map([
+                    [ 'may/b/100', { post: 'may/b/100', checked: true } ],
+                    [ 'may/b/101', { post: 'may/b/101', checked: true } ],
+                    [ 'may/b/102', { post: 'may/b/102', checked: true } ]
+                ])
+            };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
         });
-
-        let posts = createPosts([ '100', '101', '102' ]);
 
         it('should add to tasks if click delreq button', () => {
             let registerDelreqTasks, run;
             let p1 = new Promise(resolve => registerDelreqTasks = resolve);
             let p2 = new Promise(resolve => run = resolve);
 
-            let mock = procedures(null, {
-                'sync/post': id => posts.get(id),
+            let mock = procedures(store, {
+                ...defaultMap(store),
                 'thread/registerDelreqTasks': registerDelreqTasks,
                 'worker/run': run
             });
@@ -204,158 +238,58 @@ $`.replace(/\n/g, ''));
             });
 
             return Promise.all([
-                p1.then(({ url, posts, reason }) => {
+                p1.then(({ url, reason }) => {
                     assert(url === 'http://example.net/thread01');
-                    let got = posts.map(({ id }) => id);
-                    assert.deepStrictEqual(got, [ 'may/b/102' ]);
                     assert(reason === 110);
                 }),
                 p2.then(worker => {
                     assert(worker === 'delreq');
                 })
             ]).then(() => {
-                let got = $el.state.checked;
-                let exp = new Map([ [ 'may/b/100', null ], [ 'may/b/101', null ] ]);
-                assert.deepStrictEqual(got, exp);
-                assert($el.state.isVisibleReasons === false);
+                let got = $el.state.isVisibleReasons;
+                assert(got === false);
             });
         });
     });
 
-    describe('createChecked()', () => {
-        const { createChecked } = internal;
+    describe('hasChecked()', () => {
+        const { hasChecked } = internal;
 
-        beforeEach(() => {
-            store.dispatch(setAppDelreqs([
-                { post: 'may/b/100', status: 'complete' },
-                { post: 'may/b/101', status: 'stanby' },
-                { post: 'may/b/102', status: null }
-            ]));
-        });
+        it('should return true if contains checked delreqs', () => {
+            const delreq = {
+                targets: new Map([
+                    [ 'post01', { post: 'post01', checked: false } ],
+                    [ 'post02', { post: 'post02', checked: true } ]
+                ])
+            };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
 
-        it('should create checked', () => {
-            let delreqs = [ 'may/b/110', 'may/b/111', 'may/b/112' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
             let { app } = store.getState();
-
-            let nextProps = { app };
-
-            let got = createChecked(null, nextProps);
-            let exp = new Map([
-                [ 'may/b/110', true ],
-                [ 'may/b/111', true ],
-                [ 'may/b/112', true ]
-            ]);
-            assert.deepStrictEqual(got, exp);
+            let got = hasChecked(app);
+            assert(got === true);
         });
 
-        it('should create checked if pass state', () => {
-            let delreqs = [ 'may/b/110', 'may/b/111', 'may/b/112' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
+        it('should return false if not contains checked delreqs', () => {
+            const delreq = {
+                targets: new Map([
+                    [ 'post01', { post: 'post01', checked: false } ],
+                    [ 'post02', { post: 'post02', checked: false } ]
+                ])
+            };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
+
             let { app } = store.getState();
-
-            let checked = new Map([
-                [ 'may/b/110', null ], [ 'may/b/111', false ], [ 'may/b/112', true ]
-            ]);
-
-            let state = { checked };
-            let nextProps = { app };
-
-            let got = createChecked(state, nextProps);
-            let exp = new Map([
-                [ 'may/b/110', null ],
-                [ 'may/b/111', false ],
-                [ 'may/b/112', true ]
-            ]);
-            assert.deepStrictEqual(got, exp);
+            let got = hasChecked(app);
+            assert(got === false);
         });
 
-        it('should create checked if exists state.app.delreqs', () => {
-            let delreqs = [ 'may/b/100', 'may/b/101', 'may/b/102' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
+        it('should return false if delreqs is empty', () => {
+            const delreq = { targets: new Map([]) };
+            store.dispatch(setAppThreads({ url: URL, delreq }));
+
             let { app } = store.getState();
-
-            let nextProps = { app };
-
-            let got = createChecked(null, nextProps);
-            let exp = new Map([
-                [ 'may/b/100', null ],
-                [ 'may/b/101', null ],
-                [ 'may/b/102', true ]
-            ]);
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should create checked if pass state and exists state.app.delreqs', () => {
-            let delreqs = [ 'may/b/100', 'may/b/101', 'may/b/102',
-                            'may/b/110', 'may/b/111', 'may/b/112' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
-            let { app } = store.getState();
-
-            let checked = new Map([
-                [ 'may/b/110', null ], [ 'may/b/111', false ], [ 'may/b/112', true ]
-            ]);
-
-            let state = { checked };
-            let nextProps = { app };
-
-            let got = createChecked(state, nextProps);
-            let exp = new Map([
-                [ 'may/b/100', null ],
-                [ 'may/b/101', null ],
-                [ 'may/b/102', true ],
-                [ 'may/b/110', null ],
-                [ 'may/b/111', false ],
-                [ 'may/b/112', true ]
-            ]);
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should create checked (state has priority)', () => {
-            let delreqs = [ 'may/b/100', 'may/b/101', 'may/b/102' ];
-            store.dispatch(setAppThreads({ url, delreqs }));
-            let { app } = store.getState();
-
-            let checked = new Map([
-                [ 'may/b/100', null ], [ 'may/b/101', false ], [ 'may/b/102', true ]
-            ]);
-
-            let state = { checked };
-            let nextProps = { app };
-
-            let got = createChecked(state, nextProps);
-            let exp = new Map([
-                [ 'may/b/100', null ],
-                [ 'may/b/101', false ],
-                [ 'may/b/102', true ]
-            ]);
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should create checked if no arguments', () => {
-            let got = createChecked();
-            let exp = new Map();
-            assert.deepStrictEqual(got, exp);
-        });
-    });
-
-    describe('checkedList()', () => {
-        const { checkedList } = internal;
-
-        it('should return checked list', () => {
-            let checked = new Map([
-                [ 'may/b/100', null ], [ 'may/b/101', false ], [ 'may/b/102', true ]
-            ]);
-            let got = checkedList(checked);
-            let exp = [ 'may/b/102' ];
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should return [] if pass empty checked', () => {
-            let checked = new Map();
-            let got = checkedList(checked);
-            let exp = [];
-            assert.deepStrictEqual(got, exp);
+            let got = hasChecked(app);
+            assert(got === false);
         });
     });
 });

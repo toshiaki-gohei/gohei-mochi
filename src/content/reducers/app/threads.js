@@ -17,11 +17,10 @@ export function create(opts) {
 
         postform,
         delform,
+        delreq,
 
         changeset = null, // model/thread/changeset
         idipIndex = null, // model/thread/idip-index
-
-        delreqs = [], // post ids
 
         isUpdating = false,
         lastUpdatedByUser = null,
@@ -34,14 +33,14 @@ export function create(opts) {
     });
     postform = createPostform(postform);
     delform = createDelform(delform);
-    F(delreqs);
+    delreq = createDelreq(delreq);
 
     return F({
         url,
         displayThreshold,
         messages, postform, delform,
         changeset, idipIndex,
-        delreqs,
+        delreq,
         isUpdating, lastUpdatedByUser, updateHttpRes
     });
 }
@@ -56,6 +55,18 @@ function createPostform(opts) {
 function createDelform(opts) {
     let { action = null } = opts || {};
     return F({ action });
+}
+
+function createDelreq(opts) {
+    let { targets = new Map() } = opts || {};
+    F(targets);
+    return F({ targets });
+}
+
+export function createDelreqTarget(opts) {
+    // post: post id
+    let { post = null, checked = true } = opts || {};
+    return F({ post, checked });
 }
 
 export default createReducer(STATE, {
@@ -85,12 +96,13 @@ const APP = create();
 function reduceApp(state = APP, app) {
     if (app == null) return state;
 
-    let { messages, postform, delform } = app;
+    let { messages, postform, delform, delreq } = app;
     messages = { ...state.messages, ...messages };
     postform = { ...state.postform, ...postform };
     delform = { ...state.delform, ...delform };
+    delreq = { ...state.delreq, ...delreq };
 
-    let newState = { ...state, ...app, messages, postform, delform };
+    let newState = { ...state, ...app, messages, postform, delform, delreq };
 
     return create(newState);
 }

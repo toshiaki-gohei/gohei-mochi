@@ -28,7 +28,8 @@ describe(__filename, () => {
                 { url: 'url-thread01',
                   messages: { viewer: '1234人くらい' },
                   postform: { action: 'post' },
-                  delform: { action: 'del' } },
+                  delform: { action: 'del' },
+                  delreq: { targets: [ 'delreq01' ] } },
                 { url: 'url-thread04' }
             ];
             let action = { apps };
@@ -44,6 +45,7 @@ describe(__filename, () => {
                     },
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
                     delform: { action: 'del' },
+                    delreq: { targets: [ 'delreq01' ] },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ],
@@ -57,7 +59,8 @@ describe(__filename, () => {
                 url: 'url-thread01',
                 messages: { viewer: '1234人くらい' },
                 postform: { action: 'post' },
-                delform: { action: 'del' }
+                delform: { action: 'del' },
+                delreq: { targets: [ 'delreq01' ] }
             };
             let action = { app };
 
@@ -72,6 +75,7 @@ describe(__filename, () => {
                     },
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
                     delform: { action: 'del' },
+                    delreq: { targets: [ 'delreq01' ] },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ]
