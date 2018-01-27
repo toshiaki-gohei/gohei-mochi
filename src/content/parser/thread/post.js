@@ -154,12 +154,20 @@ function parseBlockquote(body) {
     let bqlines = blockquote.split('<br>');
     let lines = [];
 
-    for (let bqline of bqlines) {
-        let line = parseLine(bqline);
+    for (let line of bqlines) {
+        // collapse sequences of whitespace for display blockquote with { white-space: normal; }
+        line = collapseWhitespaces(line);
+
+        line = parseLine(line);
         lines.push(line);
     }
 
     return lines.join(BR_TAG);
+}
+
+function collapseWhitespaces(line) {
+    if (line == null) return line;
+    return line.replace(/ +/g, ' ');
 }
 
 function parseLine(line) {

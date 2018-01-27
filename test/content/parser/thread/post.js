@@ -142,6 +142,17 @@ describe(__filename, () => {
             assert(got === exp);
         });
 
+        it('should collapse sequences of whitespace', () => {
+            let got = parseBlockquote('<blockquote>  foo  bar  baz  </blockquote>');
+            assert(got === ' foo bar baz ');
+
+            got = parseBlockquote('<blockquote>foo  bar  baz</blockquote>');
+            assert(got === 'foo bar baz');
+
+            got = parseBlockquote('<blockquote>foo bar  baz</blockquote>');
+            assert(got === 'foo bar baz');
+        });
+
         it('should handle line break correctly', () => {
             let got = parseBlockquote('<blockquote>hoge<br>fuga<br></blockquote>');
             assert(got === 'hoge<br />fuga<br />');
