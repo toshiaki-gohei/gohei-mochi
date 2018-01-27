@@ -192,7 +192,7 @@ async function handleSubmit(event) {
 
     this.setState({ isPosting: true, errmsg: null });
 
-    let res = await commit('thread/submit', { url, formdata: fd });
+    let res = await commit('thread/submitPost', { url, formdata: fd });
 
     this.setState({ isPosting: false });
 

@@ -161,7 +161,7 @@ $`.replace(/\n/g, ''));
             let p4 = new Promise(resolve => update = resolve);
 
             let mock = procedures(null, {
-                'thread/submit': submit,
+                'thread/submitPost': submit,
                 'thread/setComment': setComment,
                 'thread/setFile': setFile,
                 'thread/update': update
@@ -212,7 +212,7 @@ $`.replace(/\n/g, ''));
             });
 
             let mock = procedures(null, {
-                'thread/submit': submit,
+                'thread/submitPost': submit,
                 'thread/setComment': () => {},
                 'thread/setFile': () => {},
                 'thread/update': () => {}
@@ -263,7 +263,7 @@ $`.replace(/\n/g, ''));
             let p = new Promise(resolve => update = resolve);
 
             let mock = procedures(null, {
-                'thread/submit': () => ({ ok: true }),
+                'thread/submitPost': () => ({ ok: true }),
                 'thread/setComment': () => {},
                 'thread/setFile': () => {},
                 'thread/update': update
@@ -299,7 +299,7 @@ $`.replace(/\n/g, ''));
             let p = new Promise(resolve => update = resolve);
 
             let mock = procedures(null, {
-                'thread/submit': () => ({ ok: false, statusText: 'error message' }),
+                'thread/submitPost': () => ({ ok: false, statusText: 'error message' }),
                 'thread/setComment': () => {},
                 'thread/setFile': () => {},
                 'thread/update': update

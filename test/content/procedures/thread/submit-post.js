@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import submit, { internal } from '~/content/procedures/thread/submit';
+import submit, { internal } from '~/content/procedures/thread/submit-post';
 import FormData from '~/content/util/form-data';
 import { encode, decode } from '~/content/util/encoding';
 import { setup, teardown, isBrowser } from '@/support/dom';

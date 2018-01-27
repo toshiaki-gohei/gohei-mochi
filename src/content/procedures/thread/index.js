@@ -7,7 +7,7 @@ export { addDelreqs, removeDelreqs, clearDelreqs, registerDelreqTasks } from './
 export { openQuotePopup, openPostsPopup, closePostsPopup, clearPostsPopup } from './popup';
 export { quote } from './quote';
 export { soudane } from './soudane';
-export { submit } from './submit';
+export { submit as submitPost } from './submit-post';
 export { update } from './update';
 
 const { setDomainPosts, setDomainThreads, setAppThreads, setUiThread } = actions;
