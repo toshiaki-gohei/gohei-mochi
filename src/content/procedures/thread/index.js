@@ -7,6 +7,7 @@ export {
     addDelreqTargets, setDelreqTargets, clearDelreqTargets, registerDelreqTasks
 } from './delreq';
 export { openQuotePopup, openPostsPopup, closePostsPopup, clearPostsPopup } from './popup';
+export { setComment, setFile } from './postform';
 export { quote } from './quote';
 export { soudane } from './soudane';
 export { submit as submitPost } from './submit-post';
@@ -39,21 +40,6 @@ export function load(store, contents) {
 export function setDisplayThreshold(store, displayThreshold) {
     let { url } = getCurrentAppThread(store);
     store.dispatch(setAppThreads({ url, displayThreshold }));
-}
-
-
-export function setComment(store, comment) {
-    let { url, postform } = getCurrentAppThread(store);
-    if (postform.comment === comment) return;
-    postform = { comment };
-    store.dispatch(setAppThreads({ url, postform }));
-}
-
-export function setFile(store, file) {
-    let { url, postform } = getCurrentAppThread(store);
-    if (postform.file === file) return;
-    postform = { file };
-    store.dispatch(setAppThreads({ url, postform }));
 }
 
 
