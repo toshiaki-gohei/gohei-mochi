@@ -6,6 +6,7 @@ import * as model from '../../model';
 export {
     addDelreqTargets, setDelreqTargets, clearDelreqTargets, registerDelreqTasks
 } from './delreq';
+export { openPanel, closePanel, setPanel } from './panel';
 export { openQuotePopup, openPostsPopup, closePostsPopup, clearPostsPopup } from './popup';
 export { setComment, setFile } from './postform';
 export { quote } from './quote';
@@ -13,7 +14,7 @@ export { soudane } from './soudane';
 export { submit as submitPost } from './submit-post';
 export { update } from './update';
 
-const { setDomainPosts, setDomainThreads, setAppThreads, setUiThread } = actions;
+const { setDomainPosts, setDomainThreads, setAppThreads } = actions;
 const { HttpRes, thread: { IdipIndex, createPosts } } = model;
 
 export function load(store, contents) {
@@ -40,22 +41,4 @@ export function load(store, contents) {
 export function setDisplayThreshold(store, displayThreshold) {
     let { url } = getCurrentAppThread(store);
     store.dispatch(setAppThreads({ url, displayThreshold }));
-}
-
-
-export function openPanel(store, type) {
-    let panel = { isOpen: true };
-    if (type) panel.type = type;
-    store.dispatch(setUiThread({ panel }));
-}
-
-export function closePanel(store) {
-    let { ui } = store.getState();
-    if (ui.thread.panel.isOpen === false) return;
-    let panel = { isOpen: false };
-    store.dispatch(setUiThread({ panel }));
-}
-
-export function setPanel(store, panel) {
-    store.dispatch(setUiThread({ panel }));
 }
