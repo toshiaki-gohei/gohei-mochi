@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import File, { marginLeftForThumb, internal } from '~/content/views/thread/post/file.jsx';
+import File, { marginLeftForThumb } from '~/content/views/thread/post/file.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
 import { setup, teardown, tidy } from '@/support/dom';
@@ -97,15 +97,7 @@ describe(__filename, () => {
 <a href="/b/src/123001.webm" class="gohei-file-name" download="file-name"><span class="gohei-inline-icon gohei-icon-download"></span>file-name</a>
 <span class="gohei-file-size">\\(888 B\\)</span>
 </div>
-<div class="gohei-video-container">
-<video class="gohei-video" (?=.*style="display: none;")(?=.*autoplay="" controls="" loop="" volume="0\\.5").*>
-<source src="/b/src/123001.webm" type="video/webm">
-<source src="/b/src/123001.mp4" type="video/mp4">
-</video>
-<div class="gohei-button-area" style="display: none;">
-<button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
-</div>
-</div>
+<div class="gohei-video-container">.+</div>
 </div>
 `.replace(/\n/g, ''));
                 assert(exp.test(got));
@@ -113,10 +105,9 @@ describe(__filename, () => {
             });
         });
 
-        it('should render null if post does not have a file', () => {
+        it('should not render file if post does not have a file', () => {
             let post = new Post({ index: 1 });
             let $el = render(<File {...{ post }} />);
-
             let got = $el.outerHTML;
             assert(got === null);
         });
@@ -164,6 +155,8 @@ describe(__filename, () => {
     });
 
     describe('event', () => {
+        after(() => window.localStorage.clear());
+
         it('should show video if click thumb image', done => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
@@ -199,78 +192,6 @@ describe(__filename, () => {
 
             let got = $el.querySelector('.gohei-video-container');
             assert(got === null);
-        });
-    });
-});
-
-describe(`${__filename}: Video`, () => {
-    const { Video } = internal;
-
-    before(() => setup());
-    after(() => teardown());
-
-    const funs = {
-        'sync/preferences': () => preferences.create({
-            video: { loop: false, muted: true, volume: 0.8 }
-        }),
-        'preferences/set': () => {}
-    };
-    const mock = procedures(null, funs);
-
-    const file = (new Post({ index: 1, file: { url: '/b/src/123001.webm' } })).file;
-    const isVisibleVideo = true;
-
-    describe('event', () => {
-        it('should show video close button if mouse enter video', async () => {
-            let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-
-            let got = $el.state.isActive;
-            assert(got === false);
-
-            let $container = $el.querySelector('.gohei-video-container');
-            simulate.mouseEnter($container);
-
-            await sleep(1);
-
-            got = $el.state.isActive;
-            assert(got === true);
-        });
-
-        it('should hide video close button if mouse leave video', async () => {
-            let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-
-            let got = $el.state.isActive;
-            assert(got === false);
-
-            let $container = $el.querySelector('.gohei-video-container');
-            simulate.mouseEnter($container);
-            simulate.mouseLeave($container);
-
-            await sleep(1);
-
-            got = $el.state.isActive;
-            assert(got === false);
-        });
-
-        it('should set video prefs if mouse leave video', () => {
-            let set;
-            let p = new Promise(resolve => set = resolve);
-
-            let mock = procedures(null, {
-                'sync/preferences': funs['sync/preferences'],
-                'preferences/set': set
-            });
-
-            let $el = render(<Video {...{ commit: mock, file, isVisibleVideo }} />);
-            let $container = $el.querySelector('.gohei-video-container');
-            simulate.mouseLeave($container);
-
-            return p.then(prefs => {
-                let got = prefs.video;
-                let exp = { loop: false, muted: true, volume: 0.8 };
-                exp.volume = 1; // the volume attr is not reflected on jsdom and Browsers
-                assert.deepStrictEqual(got, exp);
-            });
         });
     });
 });
