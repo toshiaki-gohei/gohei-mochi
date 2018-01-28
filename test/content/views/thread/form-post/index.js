@@ -4,8 +4,8 @@ import Postform from '~/content/views/thread/form-post/index.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
-import { create as createApp } from '~/content/reducers/app/threads';
-import { create as createUi } from '~/content/reducers/ui/thread';
+import createStore from '~/content/reducers';
+import { setAppThreads, setUiThread } from '~/content/reducers/actions';
 import procedures from '~/content/procedures';
 import cookie from 'js-cookie';
 import { sleep } from '~/content/util';
@@ -14,13 +14,20 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    let props;
+    let store, props;
     before(() => {
-        let { postform } = createApp();
-        let { panel } = createUi({ panel: { type: 'FORM_POST' } });
+        store = createStore();
+        store.dispatch(setAppThreads({ url: URL }));
+        store.dispatch(setUiThread({ panel: { type: 'FORM_POST' } }));
+
+        let { app, ui } = store.getState();
+        let { postform } = app.threads.get(URL);
+        let { panel } = ui.thread;
         props = { postform, panel };
     });
     beforeEach(() => document.cookie = '');
+
+    const URL = 'http://example.net/thread01';
 
     describe('render()', () => {
         it('should render postform', () => {
@@ -46,7 +53,8 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render with inital data', () => {
-            let { postform } = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 postform: {
                     action: 'http://example.net/submit-url',
                     hiddens: [
@@ -56,7 +64,9 @@ $`.replace(/\n/g, ''));
                     comment: 'test comment',
                     file: null
                 }
-            });
+            }));
+            let { postform } = store.getState().app.threads.get(URL);
+
             cookie.set('namec', 'cookie name');
             cookie.set('pwdc', 'cookie pwd');
 
@@ -167,12 +177,14 @@ $`.replace(/\n/g, ''));
                 'thread/update': update
             });
 
-            let { postform } = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 postform: {
                     action: 'http://example.net/submit-url',
                     comment: 'test comment'
                 }
-            });
+            }));
+            let { postform } = store.getState().app.threads.get(URL);
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
@@ -218,7 +230,8 @@ $`.replace(/\n/g, ''));
                 'thread/update': () => {}
             });
 
-            let { postform } = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 postform: {
                     action: 'http://example.net/submit-url',
                     hiddens: [
@@ -227,7 +240,8 @@ $`.replace(/\n/g, ''));
                     ],
                     file: 'dummy file'
                 }
-            });
+            }));
+            let { postform } = store.getState().app.threads.get(URL);
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
@@ -269,9 +283,11 @@ $`.replace(/\n/g, ''));
                 'thread/update': update
             });
 
-            let { postform } = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 postform: { comment: 'test comment' }
-            });
+            }));
+            let { postform } = store.getState().app.threads.get(URL);
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 
@@ -305,9 +321,11 @@ $`.replace(/\n/g, ''));
                 'thread/update': update
             });
 
-            let { postform } = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 postform: { comment: 'test comment' }
-            });
+            }));
+            let { postform } = store.getState().app.threads.get(URL);
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
 

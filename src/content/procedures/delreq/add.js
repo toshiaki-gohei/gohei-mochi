@@ -1,6 +1,6 @@
 'use strict';
 import { setAppDelreqs } from '../../reducers/actions';
-import { create } from '../../reducers/app/delreqs';
+import { createDelreq } from '../../reducers/app/delreqs';
 import { type as urltype, separate } from '~/common/url';
 
 export function add(store, opts) {
@@ -17,7 +17,7 @@ export function add(store, opts) {
         let post = domain.posts.get(id);
         let [ d, b ] = [ post.no, boardKey ];
         let form = { reason, mode: 'post', d, b, dlv: 0 };
-        return create({ post: id, url, form, status });
+        return createDelreq({ post: id, url, form, status });
     });
 
     store.dispatch(setAppDelreqs(delreqs));

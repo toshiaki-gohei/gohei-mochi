@@ -62,6 +62,34 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
+
+        it('should do nothing if not change props', () => {
+            let post = 'may/b/123000';
+            let delreq = {
+                post, form: { b: 'b', d: '123000' }, res: { ok: true, status: 200 }
+            };
+            let action = { delreq };
+            let prev = reduce(state, action);
+
+            delreq = { post };
+            action = { delreq };
+            let next = reduce(prev, action);
+
+            let got = next.get(post);
+            assert(got.form === prev.get(post).form);
+            assert(got.res === null);
+
+            let { form, res } = prev.get(post);
+            delreq = { post, form, res };
+            action = { delreq };
+            next = reduce(prev, action);
+
+            got = [ 'form', 'res' ].every(prop => {
+                return prev.get(post)[prop] === next.get(post)[prop];
+            });
+            assert(got);
+        });
+
         it('should ignore unknown properties', () => {
             let delreq = {
                 post: 'may/b/123000',

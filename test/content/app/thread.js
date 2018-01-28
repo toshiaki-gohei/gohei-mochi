@@ -3,15 +3,12 @@ import assert from 'assert';
 import App, { internal } from '~/content/app/thread';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
-import { create as createThread } from '~/content/reducers/domain/threads';
-import { create as createApp } from '~/content/reducers/app/threads';
 import procedures from '~/content/procedures';
+import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
-
-    const initialState = createStore().getState();
 
     describe('constructor()', () => {
         it('should create app', () => {
@@ -47,21 +44,16 @@ describe(__filename, () => {
             let url = app._url;
             let state = store.getState();
 
-            let got = state.domain;
-            let exp = {
-                ...initialState.domain,
-                threads: new Map([ [ url, { ...createThread(), url } ] ])
-            };
+            let got = pluck(state.domain.threads, 'url');
+            let exp = [ { url } ];
             assert.deepStrictEqual(got, exp);
 
-            got = state.app;
-            exp = {
-                ...initialState.app,
-                current: { thread: url, catalog: null },
-                threads: new Map([
-                    [ url, { ...createApp(), url } ]
-                ])
-            };
+            got = state.app.current;
+            exp = { thread: url, catalog: null };
+            assert.deepStrictEqual(got, exp);
+
+            got = pluck(state.app.threads, 'url');
+            exp = [ { url } ];
             assert.deepStrictEqual(got, exp);
 
             return Promise.all([

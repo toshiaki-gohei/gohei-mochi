@@ -4,7 +4,7 @@ import { F } from '~/common/util';
 
 const STATE = create();
 
-export function create(opts) {
+function create(opts) {
     let {
         thread = null,
         catalog = null

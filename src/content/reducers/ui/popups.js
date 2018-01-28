@@ -5,7 +5,7 @@ import genId from '~/content/util/id-generator';
 
 const STATE = F(new Map());
 
-export function create(component, props) {
+export function createPopup(component, props) {
     let id = `gohei-popup-${genId()}`;
 
     F(component); // component: <component />
@@ -13,6 +13,7 @@ export function create(component, props) {
 
     return F({ id, component, props });
 }
+
 
 export default createReducer(STATE, {
     'SET_UI_POPUPS': reduce

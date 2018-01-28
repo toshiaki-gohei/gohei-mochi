@@ -4,7 +4,8 @@ import Console, { internal } from '~/content/views/thread/console.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
-import { create as createApp } from '~/content/reducers/app/threads';
+import createStore from '~/content/reducers';
+import { setDomainThreads, setAppThreads } from '~/content/reducers/actions';
 import procedures from '~/content/procedures';
 import { Changeset } from '~/content/model/thread';
 
@@ -12,8 +13,19 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    const thread = {};
-    const props = { thread, app: createApp() };
+    let store, props;
+    beforeEach(() => {
+        store = createStore();
+        store.dispatch(setDomainThreads({ url: URL }));
+        store.dispatch(setAppThreads({ url: URL }));
+
+        let { domain, app } = store.getState();
+        let thread = domain.threads.get(URL);
+        let appThread = app.threads.get(URL);
+        props = { thread, app: appThread };
+    });
+
+    const URL = 'http://example.net/thread01';
 
     describe('render()', () => {
         it('should render console', () => {
@@ -38,12 +50,14 @@ describe(__filename, () => {
         });
 
         it('should render action', () => {
-            let app = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 lastUpdatedByUser: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
                 updateHttpRes: { status: 304 }
-            });
+            }));
+            let app = store.getState().app.threads.get(URL);
 
-            let $el = render(<Console {...{ thread, app }} />);
+            let $el = render(<Console {...{ ...props, app }} />);
 
             let got = $el.querySelector('.gohei-thread-action').innerHTML;
             let exp = `
@@ -57,9 +71,13 @@ describe(__filename, () => {
         });
 
         it('should render updating message if thread is updating', () => {
-            let app = createApp({ isUpdating: true });
+            store.dispatch(setAppThreads({
+                url: URL,
+                isUpdating: true
+            }));
+            let app = store.getState().app.threads.get(URL);
 
-            let $el = render(<Console {...{ thread, app }} />);
+            let $el = render(<Console {...{ ...props, app }} />);
 
             let got = $el.querySelector('.gohei-update-btn').outerHTML;
             let exp = `
@@ -69,7 +87,8 @@ describe(__filename, () => {
         });
 
         it('should render update message', () => {
-            let app = createApp({
+            store.dispatch(setAppThreads({
+                url: URL,
                 changeset: new Changeset({
                     newPostsCount: 3,
                     exposedIdPosts: [ { index: 1, no: '12301', userId: 'ID01' } ],
@@ -78,9 +97,10 @@ describe(__filename, () => {
                 }),
                 lastUpdatedByUser: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
                 updateHttpRes: { status: 200 }
-            });
+            }));
+            let app = store.getState().app.threads.get(URL);
 
-            let $el = render(<Console {...{ thread, app }} />);
+            let $el = render(<Console {...{ ...props, app }} />);
 
             let got = $el.querySelector('.gohei-thread-action').innerHTML;
             let exp = `
@@ -238,7 +258,7 @@ describe(__filename, () => {
     describe('event', () => {
         it('should commit procedure if click update', done => {
             let mock = procedures(null, {
-                'thread/update': done
+                'thread/update': () => done()
             });
 
             let $el = render(<Console {...{ ...props, commit: mock }} />);

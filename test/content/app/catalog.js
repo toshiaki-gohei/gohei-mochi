@@ -3,16 +3,13 @@ import assert from 'assert';
 import App, { internal } from '~/content/app/catalog';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
-import { create as createCatalog } from '~/content/reducers/domain/catalogs';
-import { create as createApp } from '~/content/reducers/app/catalogs';
 import procedures from '~/content/procedures';
 import cookie from 'js-cookie';
+import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
-
-    const initialState = createStore().getState();
 
     describe('constructor()', () => {
         it('should create app', () => {
@@ -45,19 +42,16 @@ describe(__filename, () => {
             let url = 'https://may.2chan.net/b/futaba.php?mode=cat';
             let state = store.getState();
 
-            let got = state.domain;
-            let exp = {
-                ...initialState.domain,
-                catalogs: new Map([ [ url, { ...createCatalog(), url, sort: 3 } ] ])
-            };
+            let got = pluck(state.domain.catalogs, 'url', 'sort');
+            let exp = [ { url, sort: 3 } ];
             assert.deepStrictEqual(got, exp);
 
-            got = state.app;
-            exp = {
-                ...initialState.app,
-                current: { thread: null, catalog: url },
-                catalogs: new Map([ [ url, { ...createApp(), url } ] ])
-            };
+            got = state.app.current;
+            exp = { thread: null, catalog: url };
+            assert.deepStrictEqual(got, exp);
+
+            got = pluck(state.app.catalogs, 'url');
+            exp = [ { url } ];
             assert.deepStrictEqual(got, exp);
 
             return Promise.all([

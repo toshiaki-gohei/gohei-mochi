@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import reducer, { create, internal } from '~/content/reducers/app/threads';
+import reducer, { internal } from '~/content/reducers/app/threads';
 import { F } from '~/common/util';
 
 describe(__filename, () => {
@@ -11,7 +11,7 @@ describe(__filename, () => {
         [ 'url-thread03', F({ url: 'url-thread03' }) ]
     ])));
 
-    const APP = create();
+    const APP = internal.APP;
 
     describe('export', () => {
         it('should export reducer', () => {
@@ -81,6 +81,38 @@ describe(__filename, () => {
                 [ 'url-thread03', { url: 'url-thread03' } ]
             ]);
             assert.deepStrictEqual(got, exp);
+        });
+
+        it('should do nothing if not change props', () => {
+            let url = 'url-thread01';
+            let app = {
+                url,
+                messages: { viewer: '1234人くらい' },
+                postform: { action: 'post' },
+                delform: { action: 'del' },
+                delreq: { targets: [ 'delreq01' ] }
+            };
+            let action = { app };
+            let prev = reduce(state, action);
+
+            app = { url };
+            action = { app };
+            let next = reduce(prev, action);
+
+            let got = [ 'messages', 'postform', 'delform', 'delreq' ].every(prop => {
+                return prev.get(url)[prop] === next.get(url)[prop];
+            });
+            assert(got);
+
+            let { messages, postform, delform, delreq } = prev.get(url);
+            app = { url, messages, postform, delform, delreq };
+            action = { app };
+            next = reduce(prev, action);
+
+            got = [ 'messages', 'postform', 'delform', 'delreq' ].every(prop => {
+                return prev.get(url)[prop] === next.get(url)[prop];
+            });
+            assert(got);
         });
 
         it('should ignore unknown properties', () => {

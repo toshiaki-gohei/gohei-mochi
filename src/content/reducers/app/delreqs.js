@@ -4,25 +4,29 @@ import { F } from '~/common/util';
 
 const STATE = F(new Map());
 
-export function create(opts) {
+export function createDelreq(opts) {
     let {
         post = null, // post id
         url = null,
-        form: {
-            reason = null,
-            mode = null,
-            b = null,  // board
-            d = null,  // post no
-            dlv = null // fixed with 0?
-        } = {},
+        form = createForm(),
         status = null, // null -> stanby -> posting -> done(complete|cancel|error)
-        res
+        res = createRes()
     } = opts || {};
 
-    let form = F({ mode, b, d, dlv, reason });
-    res = createRes(res);
+    F(form);
+    F(res);
 
     return F({ post, url, form, status, res });
+}
+
+function createForm(opts) {
+    let {
+        reason = null, mode = null,
+        b = null,  // board
+        d = null,  // post no
+        dlv = null // fixed with 0?
+    } = opts || {};
+    return F({ reason, mode, b, d, dlv });
 }
 
 function createRes(opts) {
@@ -54,18 +58,28 @@ function reduce(state = STATE, action) {
     return F(newState);
 }
 
-const DELREQ = create();
+const DELREQ = createDelreq();
 
-function reduceDelreq(state = DELREQ, delreq) {
-    if (delreq == null) return state;
+function reduceDelreq(prev = DELREQ, next) {
+    if (next == null) return prev;
 
-    let { form, res } = delreq;
-    form = { ...state.form, ...form };
-    res = res ? { ...state.res, ...res } : null;
+    let form = reduceForm(prev.form, next.form);
+    let res = reduceRes(prev.res, next.res);
 
-    let newState = { ...state, ...delreq, form, res };
+    let newState = { ...prev, ...next, form, res };
 
-    return create(newState);
+    return createDelreq(newState);
+}
+
+function reduceForm(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createForm({ ...prev, ...next });
+}
+
+function reduceRes(prev, next) {
+    if (next == null) return null;
+    if (next === prev) return prev;
+    return createRes({ ...prev, ...next });
 }
 
 export const internal = {

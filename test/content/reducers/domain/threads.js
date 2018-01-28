@@ -67,6 +67,27 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
+        it('should do nothing if not change props', () => {
+            let url = 'url-thread01';
+            let thread = {
+                url,
+                expire: { message: '12:34頃消えます' },
+                thumb: { url: 'thumb01' }
+            };
+            let action = { thread };
+            let prev = reduce(state, action);
+
+            let { expire, thumb } = prev.get(url);
+            thread = { url, expire, thumb };
+            action = { thread };
+            let next = reduce(prev, action);
+
+            let got = [ 'expire', 'thumb' ].every(prop => {
+                return prev.get(url)[prop] === next.get(url)[prop];
+            });
+            assert(got);
+        });
+
         it('should ignore unknown properties', () => {
             let thread = {
                 url: 'url-thread01',

@@ -4,7 +4,7 @@ import { F } from '~/common/util';
 
 const STATE = F(new Map());
 
-export function create(opts) {
+function create(opts) {
     let {
         url = null,
 
@@ -44,10 +44,10 @@ function reduce(state = STATE, action) {
 
 const APP = create();
 
-function reduceApp(state = APP, app) {
-    if (app == null) return state;
+function reduceApp(prev = APP, next) {
+    if (next == null) return prev;
 
-    let newState = { ...state, ...app };
+    let newState = { ...prev, ...next };
 
     return create(newState);
 }

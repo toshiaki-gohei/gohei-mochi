@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import reducer, { create, internal } from '~/content/reducers/ui/popups';
+import reducer, { createPopup, internal } from '~/content/reducers/ui/popups';
 import { F } from '~/common/util';
 
 describe(__filename, () => {
@@ -57,7 +57,7 @@ describe(__filename, () => {
         });
     });
 
-    describe('create()', () => {
+    describe('createPopup()', () => {
         const Popup = () => {};
 
         it('should create popup', () => {
@@ -65,7 +65,7 @@ describe(__filename, () => {
                 class: 'class-name',
                 style: 'left: 100px; top: 200px'
             };
-            let popup = create(Popup, props);
+            let popup = createPopup(Popup, props);
 
             let { id, ...rest } = popup;
             assert(/^gohei-popup-\d{13}-\d{1,8}$/.test(id));

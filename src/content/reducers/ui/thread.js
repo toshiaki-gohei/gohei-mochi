@@ -4,17 +4,23 @@ import { F } from '~/common/util';
 
 const STATE = create();
 
-export function create(opts) {
+function create(opts) {
     let {
-        panel: { isOpen = null, type = null } = {},
+        panel = createPanel(),
         postsPopups = []
     } = opts || {};
 
-    let panel = F({ isOpen, type });
+    F(panel);
     F(postsPopups);
 
     return F({ panel, postsPopups });
 }
+
+function createPanel(opts) {
+    let { isOpen = null, type = null } = opts || {};
+    return F({ isOpen, type });
+}
+
 
 export default createReducer(STATE, {
     'SET_UI_THREAD': reduce
@@ -24,14 +30,19 @@ function reduce(state = STATE, action) {
     let { ui } = action;
     if (ui == null) return state;
 
-    let { panel } = ui;
-    panel = { ...state.panel, ...panel };
+    let panel = reducePanel(state.panel, ui.panel);
 
     let newState = { ...state, ...ui, panel };
 
     return create(newState);
 }
 
+function reducePanel(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createPanel({ ...prev, ...next });
+}
+
 export const internal = {
+    create,
     reduce
 };

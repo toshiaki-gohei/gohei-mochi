@@ -3,10 +3,10 @@ import { createReducer } from '../util';
 import { F } from '~/common/util';
 
 const STATE = F({
-    delreq: create()
+    delreq: createWorker()
 });
 
-export function create(opts) {
+function createWorker(opts) {
     let {
         tasks = [],
         id = null
@@ -16,6 +16,7 @@ export function create(opts) {
 
     return F({ tasks, id });
 }
+
 
 export default createReducer(STATE, {
     'SET_APP_WORKERS': reduce,
@@ -39,24 +40,24 @@ function clearWorkerId(state = STATE, action) {
 
     let newState = { ...state };
 
-    newState[worker] = create({ ...state[worker], id: null });
+    newState[worker] = createWorker({ ...state[worker], id: null });
 
     return F(newState);
 }
 
-const WORKER = create();
+const WORKER = createWorker();
 
-function reduceWorker(state = WORKER, worker) {
-    if (worker == null) return state;
+function reduceWorker(prev = WORKER, next) {
+    if (next == null) return prev;
+    if (prev.id != null && prev.id !== next.id) return prev;
 
-    let id = state.id ? state.id : worker.id;
+    let newState = { ...prev, ...next };
 
-    let newState = { ...state, ...worker, id };
-
-    return create(newState);
+    return createWorker(newState);
 }
 
 export const internal = {
+    createWorker,
     reduce,
     clearWorkerId
 };

@@ -1,6 +1,6 @@
 'use strict';
 import { setUiPopups } from '../reducers/actions';
-import { create as createPopup } from '../reducers/ui/popups';
+import { createPopup } from '../reducers/ui/popups';
 
 export const open = add;
 export const close = remove;

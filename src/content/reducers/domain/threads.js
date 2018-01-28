@@ -4,21 +4,21 @@ import { F } from '~/common/util';
 
 const STATE = F(new Map());
 
-export function create(opts) {
+function create(opts) {
     let {
         url = null,
         title = null,
         posts = POSTS,
-        expire,
+        expire = createExpire(),
 
         postnum = null,
         newPostnum = null,
-        thumb
+        thumb = createThumb()
     } = opts || {};
 
     F(posts);
-    expire = createExpire(expire);
-    thumb = createThumb(thumb);
+    F(expire);
+    F(thumb);
 
     return F({
         url, title, posts, expire,
@@ -64,16 +64,27 @@ function reduce(state = STATE, action) {
 
 const THREAD = create();
 
-function reduceThread(state = THREAD, thread) {
-    if (thread == null) return state;
+function reduceThread(prev = THREAD, next) {
+    if (next == null) return prev;
 
-    let { expire, thumb } = thread;
-    expire = expire ? { ...state.expire, ...expire } : null;
-    thumb = thumb ? { ...state.thumb, ...thumb } : null;
+    let expire = reduceExpire(prev.expire, next.expire);
+    let thumb = reduceThumb(prev.thumb, next.thumb);
 
-    let newState = { ...state, ...thread, expire, thumb };
+    let newState = { ...prev, ...next, expire, thumb };
 
     return create(newState);
+}
+
+function reduceExpire(prev, next) {
+    if (next == null) return null;
+    if (next === prev) return prev;
+    return createExpire({ ...prev, ...next });
+}
+
+function reduceThumb(prev, next) {
+    if (next == null) return null;
+    if (next === prev) return prev;
+    return createThumb({ ...prev, ...next });
 }
 
 export const internal = {

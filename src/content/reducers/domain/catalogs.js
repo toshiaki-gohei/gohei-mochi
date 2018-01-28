@@ -4,7 +4,7 @@ import { F } from '~/common/util';
 
 const STATE = F(new Map());
 
-export function create(opts) {
+function create(opts) {
     let {
         url = null,
         title = null,
@@ -34,7 +34,6 @@ function reduce(state = STATE, action) {
         if (url == null) throw new Error('catalog url is required');
 
         let newCatalog = reduceCatalog(state.get(url), catalog);
-        // let newCatalog = reduceCatalog(state[url], catalog);
         newState.set(url, newCatalog);
     }
 
@@ -43,10 +42,10 @@ function reduce(state = STATE, action) {
 
 const CATALOG = create();
 
-function reduceCatalog(state = CATALOG, catalog) {
-    if (catalog == null) return state;
+function reduceCatalog(prev = CATALOG, next) {
+    if (next == null) return prev;
 
-    let newState = { ...state, ...catalog };
+    let newState = { ...prev, ...next };
 
     return create(newState);
 }

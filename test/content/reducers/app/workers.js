@@ -1,19 +1,21 @@
 'use strict';
 import assert from 'assert';
-import reducer, { create, internal } from '~/content/reducers/app/workers';
+import reducer, { internal } from '~/content/reducers/app/workers';
 import { F } from '~/common/util';
 
 describe(__filename, () => {
     let state;
     beforeEach(() => state = F({
-        delreq: create({ tasks: [ 'delreq01', 'delreq02' ] })
+        delreq: createWorker({ tasks: [ 'delreq01', 'delreq02' ] })
     }));
+
+    const createWorker = internal.createWorker;
 
     describe('export', () => {
         it('should export reducer', () => {
             let got = reducer();
             let exp = {
-                delreq: create()
+                delreq: createWorker()
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -38,7 +40,24 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should set empty tasks if pass tasks as null', () => {
+        it('should reduce state if contains id', () => {
+            let delreq = {
+                tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
+                id: 'delreq-worker01'
+            };
+            let action = { delreq };
+
+            let got = reduce(state, action);
+            let exp = {
+                delreq: {
+                    tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
+                    id: 'delreq-worker01'
+                }
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should empty tasks if pass tasks as null', () => {
             let delreq = { tasks: null };
             let action = { delreq };
 
@@ -69,18 +88,19 @@ describe(__filename, () => {
             state = reduce(state, action);
 
             delreq = {
-                tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
+                tasks: [ 'delreq11', 'delreq12', 'delreq13' ],
                 id: 'delreq-worker02'
             };
             action = { delreq };
             let got = reduce(state, action);
             let exp = {
                 delreq: {
-                    tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
+                    tasks: [ 'delreq01', 'delreq02' ],
                     id: 'delreq-worker01'
                 }
             };
             assert.deepStrictEqual(got, exp);
+            assert(got.delreq === state.delreq);
         });
     });
 
@@ -88,7 +108,7 @@ describe(__filename, () => {
         const { clearWorkerId } = internal;
 
         beforeEach(() => state = F({
-            delreq: create({
+            delreq: createWorker({
                 tasks: [ 'delreq01', 'delreq02' ],
                 id: 'delreq-worker01'
             })

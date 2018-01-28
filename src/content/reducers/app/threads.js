@@ -4,20 +4,16 @@ import { F } from '~/common/util';
 
 const STATE = F(new Map());
 
-export function create(opts) {
+function create(opts) {
     let {
         url = null,
 
         displayThreshold = null,
+        messages = createMessage(),
 
-        messages: {
-            viewer = null,
-            notice = null, warning = null, deletedPostCount = null
-        } = {},
-
-        postform,
-        delform,
-        delreq,
+        postform = createPostform(),
+        delform = createDelform(),
+        delreq = createDelreq(),
 
         changeset = null, // model/thread/changeset
         idipIndex = null, // model/thread/idip-index
@@ -27,22 +23,23 @@ export function create(opts) {
         updateHttpRes = null // model/http-res
     } = opts || {};
 
-    let messages = F({
-        viewer,
-        notice, warning, deletedPostCount
-    });
-    postform = createPostform(postform);
-    delform = createDelform(delform);
-    delreq = createDelreq(delreq);
+    F(messages);
+    F(postform);
+    F(delform);
+    F(delreq);
 
     return F({
         url,
-        displayThreshold,
-        messages, postform, delform,
+        displayThreshold, messages,
+        postform, delform, delreq,
         changeset, idipIndex,
-        delreq,
         isUpdating, lastUpdatedByUser, updateHttpRes
     });
+}
+
+function createMessage(opts) {
+    let { viewer = null, notice = null, warning = null, deletedPostCount = null } = opts || {};
+    return F({ viewer, notice, warning, deletedPostCount });
 }
 
 function createPostform(opts) {
@@ -69,6 +66,7 @@ export function createDelreqTarget(opts) {
     return F({ post, checked });
 }
 
+
 export default createReducer(STATE, {
     'SET_APP_THREADS': reduce
 });
@@ -93,20 +91,40 @@ function reduce(state = STATE, action) {
 
 const APP = create();
 
-function reduceApp(state = APP, app) {
-    if (app == null) return state;
+function reduceApp(prev = APP, next) {
+    if (next == null) return prev;
 
-    let { messages, postform, delform, delreq } = app;
-    messages = { ...state.messages, ...messages };
-    postform = { ...state.postform, ...postform };
-    delform = { ...state.delform, ...delform };
-    delreq = { ...state.delreq, ...delreq };
+    let messages = reduceMessage(prev.messages, next.messages);
+    let postform = reducePostform(prev.postform, next.postform);
+    let delform = reduceDelform(prev.delform, next.delform);
+    let delreq = reduceDelreq(prev.delreq, next.delreq);
 
-    let newState = { ...state, ...app, messages, postform, delform, delreq };
+    let newState = { ...prev, ...next, messages, postform, delform, delreq };
 
     return create(newState);
 }
 
+function reduceMessage(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createMessage({ ...prev, ...next });
+}
+
+function reducePostform(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createPostform({ ...prev, ...next });
+}
+
+function reduceDelform(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createDelform({ ...prev, ...next });
+}
+
+function reduceDelreq(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createDelreq({ ...prev, ...next });
+}
+
 export const internal = {
-    reduce
+    reduce,
+    APP
 };
