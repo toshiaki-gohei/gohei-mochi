@@ -258,12 +258,14 @@ function Radio({ reason, value, changeReason }) {
     );
 }
 
-function handleSetVisibleReasons() {
+function handleSetVisibleReasons(event) {
+    event.stopPropagation();
     let isVisible = !this.state.isVisibleReasons;
     this.setState({ isVisibleReasons: isVisible });
 }
 
 function handleClickTargets(event) {
+    event.stopPropagation();
     let $el = event.currentTarget;
     let { postId } = $el.dataset;
 
@@ -277,7 +279,8 @@ function handleClickTargets(event) {
     commit('thread/setDelreqTargets', { url, target });
 }
 
-function handleClearTargets() {
+function handleClearTargets(event) {
+    event.stopPropagation();
     let { commit } = this.props;
     commit('thread/clearDelreqTargets');
 }
@@ -287,7 +290,9 @@ function handleChangeReason(event) {
     this.setState({ reason });
 }
 
-async function handleAddToTasks() {
+async function handleAddToTasks(event) {
+    event.stopPropagation();
+
     let { commit, app } = this.props;
     let { reason } = this.state;
     if (reason == null) return;

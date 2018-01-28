@@ -94,6 +94,7 @@ function handlePopupQuote(event) {
 function handleQuote(type, event) {
     let $el = event.target;
     if (!$el.classList.contains('gohei-link-btn')) return;
+    event.stopPropagation();
 
     let { commit, post } = this.props;
     let { id } = post;
@@ -104,6 +105,7 @@ function handleQuote(type, event) {
 function handleDelreq(event) {
     let $el = event.target;
     if (!$el.classList.contains('gohei-del')) return;
+    event.stopPropagation();
 
     let { commit, post, thread } = this.props;
     let { url } = thread;
@@ -115,6 +117,7 @@ function handleDelreq(event) {
 async function handleSoudane(event) {
     let $el = event.target;
     if (!$el.classList.contains('gohei-sod')) return;
+    event.stopPropagation();
 
     let { commit, post } = this.props;
     let { id } = post;

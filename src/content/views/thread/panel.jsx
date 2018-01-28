@@ -143,7 +143,8 @@ async function handleClickBody(event) {
     await commit('thread/closePanel'); // async/await for avoid errors on browser tests
 }
 
-function handleTab(type) {
+function handleTab(type, event) {
+    event.stopPropagation();
     let { commit } = this.props;
     commit('thread/openPanel', type);
 }
