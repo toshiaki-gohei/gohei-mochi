@@ -13,10 +13,7 @@ export default class Delreq extends Component {
         };
 
         this._handlers = {
-            openReasons: handleVisibleReasons.bind(this, true),
-            closeReasons: handleVisibleReasons.bind(this, false),
-            toggleReasons: handleVisibleReasons.bind(this, null),
-
+            toggleReasons: handleSetVisibleReasons.bind(this),
             clickTargets: handleClickTargets.bind(this),
             clearTargets: handleClearTargets.bind(this),
             changeReason: handleChangeReason.bind(this),
@@ -261,8 +258,8 @@ function Radio({ reason, value, changeReason }) {
     );
 }
 
-function handleVisibleReasons(isVisible) {
-    if (isVisible == null) isVisible = !this.state.isVisibleReasons;
+function handleSetVisibleReasons() {
+    let isVisible = !this.state.isVisibleReasons;
     this.setState({ isVisibleReasons: isVisible });
 }
 
