@@ -36,8 +36,8 @@ describe(__filename, () => {
                     status: 'complete', res: { ok: true, status: 200, statusText: null } } ],
                 [ 'may/b/123001', { post: 'may/b/123001' } ],
                 [ 'may/b/123002', { post: 'may/b/123002' } ],
-                [ 'may/b/123003',
-                  { post: 'may/b/123003', url: null,
+                [ 'may/b/123003', {
+                    post: 'may/b/123003', url: null,
                     form: { reason: null, mode: null, b: null, d: null, dlv: null },
                     status: null, res: null } ]
             ]);

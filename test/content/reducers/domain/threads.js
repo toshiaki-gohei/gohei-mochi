@@ -36,8 +36,8 @@ describe(__filename, () => {
                     postnum: null, newPostnum: null, thumb: null } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ],
-                [ 'url-thread04',
-                  { url: 'url-thread04', title: null,
+                [ 'url-thread04', {
+                    url: 'url-thread04', title: null,
                     posts: [], expire: null,
                     postnum: null, newPostnum: null, thumb: null } ]
             ]);

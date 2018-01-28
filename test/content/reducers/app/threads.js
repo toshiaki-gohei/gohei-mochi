@@ -125,8 +125,8 @@ describe(__filename, () => {
 
             let got = reduce(state, action);
             let exp = new Map([
-                [ 'url-thread01',
-                  { ...APP,
+                [ 'url-thread01', {
+                    ...APP,
                     url: 'url-thread01',
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
                     idipIndex: 'idip-index' } ],

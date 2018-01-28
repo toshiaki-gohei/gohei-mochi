@@ -35,8 +35,8 @@ describe(__filename, () => {
                     lastUpdatedByUser: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ],
-                [ 'url-catalog04',
-                  { url: 'url-catalog04', isUpdating: false,
+                [ 'url-catalog04', {
+                    url: 'url-catalog04', isUpdating: false,
                     lastUpdatedByUser: null, updateHttpRes: null } ]
             ]);
             assert.deepStrictEqual(got, exp);
