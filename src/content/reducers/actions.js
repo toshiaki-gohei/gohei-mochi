@@ -26,6 +26,10 @@ export const setAppTasksDelreqs = arg => {
     if (Array.isArray(arg)) return { type: 'SET_APP_TASKS_DELREQS', delreqs: arg };
     return { type: 'SET_APP_TASKS_DELREQS', delreq: arg };
 };
+export const setAppTasksPostdels = arg => {
+    if (Array.isArray(arg)) return { type: 'SET_APP_TASKS_POSTDELS', postdels: arg };
+    return { type: 'SET_APP_TASKS_POSTDELS', postdel: arg };
+};
 export const setAppWorkers = args => ({ type: 'SET_APP_WORKERS', ...args });
 export const clearAppWorkerId = worker => ({ type: 'CLEAR_APP_WORKER_ID', worker });
 

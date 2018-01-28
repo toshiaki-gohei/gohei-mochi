@@ -97,6 +97,20 @@ describe(__filename, () => {
         });
     });
 
+    describe('setAppTasksPostdels()', () => {
+        const { setAppTasksPostdels } = actions;
+
+        it('should create action', () => {
+            let got = setAppTasksPostdels([ 'payload' ]);
+            let exp = { type: 'SET_APP_TASKS_POSTDELS', postdels: [ 'payload' ] };
+            assert.deepStrictEqual(got, exp);
+
+            got = setAppTasksPostdels('payload');
+            exp = { type: 'SET_APP_TASKS_POSTDELS', postdel: 'payload' };
+            assert.deepStrictEqual(got, exp);
+        });
+    });
+
     describe('setAppWorkers()', () => {
         const { setAppWorkers } = actions;
 
