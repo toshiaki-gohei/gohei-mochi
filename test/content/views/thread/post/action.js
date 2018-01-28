@@ -16,14 +16,14 @@ describe(__filename, () => {
             let $el = render(<Action {...{ post }} />);
 
             let got = $el.outerHTML;
-            let exp = new RegExp(`^
+            let exp = `
 <div class="gohei-post-action">
 <span class="gohei-inline-icon gohei-icon-edit"></span>
-<button class="gohei-link-btn" type="button">No\\.</button>
+<button class="gohei-link-btn" type="button">No.</button>
 <button class="gohei-link-btn" type="button">コメント</button>
 </div>
-$`.replace(/\n/g, ''));
-            assert(exp.test(got));
+`.replace(/\n/g, '');
+            assert(got === exp);
         });
 
         it('should render action by post with file', () => {
@@ -31,15 +31,15 @@ $`.replace(/\n/g, ''));
             let $el = render(<Action {...{ post }} />);
 
             let got = $el.outerHTML;
-            let exp = new RegExp(`^
+            let exp = `
 <div class="gohei-post-action">
 <span class="gohei-inline-icon gohei-icon-edit"></span>
-<button class="gohei-link-btn" type="button">No\\.</button>
+<button class="gohei-link-btn" type="button">No.</button>
 <button class="gohei-link-btn" type="button">コメント</button>
 <button class="gohei-link-btn" type="button">ファイル</button>
 </div>
-$`.replace(/\n/g, ''));
-            assert(exp.test(got));
+`.replace(/\n/g, '');
+            assert(got === exp);
         });
 
         it('should not render action if is not active', () => {

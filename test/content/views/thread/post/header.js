@@ -3,7 +3,7 @@ import assert from 'assert';
 import Header from '~/content/views/thread/post/header.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown } from '@/support/dom';
+import { setup, teardown, tidy } from '@/support/dom';
 import { Post, thread } from '~/content/model';
 
 describe(__filename, () => {
@@ -22,37 +22,37 @@ describe(__filename, () => {
         it('should render header', () => {
             let $el = render(<Header {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`^
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
-<span class="gohei-date">17/01/01\\(日\\)01:23:45</span>
-<span class="gohei-no">No\\.123000001</span>
-<button (?=.*class="gohei-del gohei-link-btn").*?>del</button>
-<button (?=.*class="gohei-sod gohei-link-btn").*?">そうだねx2</button>
+<span class="gohei-date">17/01/01(日)01:23:45</span>
+<span class="gohei-no">No.123000001</span>
+<button class="gohei-del gohei-link-btn" type="button">del</button>
+<button class="gohei-sod gohei-link-btn" type="button">そうだねx2</button>
 </div>
-$`.replace(/\n/g, ''));
-            assert(exp.test(got));
+`.replace(/\n/g, ''));
+            assert(got === exp);
         });
 
         it('should render op header', () => {
             post = new Post({ ...post, index: 0 });
             let $el = render(<Header {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`^
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-header">
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
-<span class="gohei-date">17/01/01\\(日\\)01:23:45</span>
-<span class="gohei-no">No\\.123000001</span>
-<button (?=.*class="gohei-del gohei-link-btn").*?>del</button>
-<button (?=.*class="gohei-sod gohei-link-btn").*?">そうだねx2</button>
+<span class="gohei-date">17/01/01(日)01:23:45</span>
+<span class="gohei-no">No.123000001</span>
+<button class="gohei-del gohei-link-btn" type="button">del</button>
+<button class="gohei-sod gohei-link-btn" type="button">そうだねx2</button>
 </div>
-$`.replace(/\n/g, ''));
-            assert(exp.test(got));
+`.replace(/\n/g, ''));
+            assert(got === exp);
         });
 
         it('should render header with file', () => {
@@ -141,17 +141,33 @@ $`.replace(/\n/g, ''));
             post = new Post({ ...post, subject: null, name: null, mailto: null });
             let $el = render(<Header {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`^
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
-<span class="gohei-date">17/01/01\\(日\\)01:23:45</span>
-<span class="gohei-no">No\\.123000001</span>
-<button (?=.*class="gohei-del gohei-link-btn").*?>del</button>
-<button (?=.*class="gohei-sod gohei-link-btn").*?">そうだねx2</button>
+<span class="gohei-date">17/01/01(日)01:23:45</span>
+<span class="gohei-no">No.123000001</span>
+<button class="gohei-del gohei-link-btn" type="button">del</button>
+<button class="gohei-sod gohei-link-btn" type="button">そうだねx2</button>
 </div>
-$`.replace(/\n/g, ''));
-            assert(exp.test(got));
+`.replace(/\n/g, ''));
+            assert(got === exp);
+        });
+
+        it('should render op header if img server style (no subject, name, mailto)', () => {
+            post = new Post({ ...post, index: 0, subject: null, name: null, mailto: null });
+            let $el = render(<Header {...{ post }} />);
+
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
+<div class="gohei-post-header">
+<span class="gohei-date">17/01/01(日)01:23:45</span>
+<span class="gohei-no">No.123000001</span>
+<button class="gohei-del gohei-link-btn" type="button">del</button>
+<button class="gohei-sod gohei-link-btn" type="button">そうだねx2</button>
+</div>
+`.replace(/\n/g, ''));
+            assert(got === exp);
         });
 
         it('should render header if no props', () => {

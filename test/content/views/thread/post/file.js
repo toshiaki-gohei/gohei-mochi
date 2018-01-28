@@ -3,7 +3,7 @@ import assert from 'assert';
 import File, { marginLeftForThumb, internal } from '~/content/views/thread/post/file.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown } from '@/support/dom';
+import { setup, teardown, tidy } from '@/support/dom';
 import procedures from '~/content/procedures';
 import { Post, preferences } from '~/content/model';
 import { sleep } from '~/content/util';
@@ -30,38 +30,38 @@ describe(__filename, () => {
             let post = new Post({ index: 1, file });
             let $el = render(<File {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-file">
 <div>
 <a href="file-url" class="gohei-file-name" download="file-name"><span class="gohei-inline-icon gohei-icon-download"></span>file-name</a>
-<span class="gohei-file-size">\\(888 B\\)</span>
+<span class="gohei-file-size">(888 B)</span>
 </div>
 <a href="file-url" target="_blank">
-<img (=?.*class="gohei-thumb-image")(=?.*src="thumb-url")(?=.*style="width: 250px; height: 251px;").*?>
+<img class="gohei-thumb-image" src="thumb-url" style="width: 250px; height: 251px;">
 </a>
 </div>
 `.replace(/\n/g, ''));
-            assert(exp.test(got));
+            assert(got === exp);
         });
 
         it('should render file if original post', () => {
             let post = new Post({ index: 0, file });
             let $el = render(<File {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-file">
 <div>
 画像ファイル名：<a href="file-url" class="gohei-file-name" download="file-name">file-name</a>
-<span class="gohei-file-size">\\(888 B\\)</span>
+<span class="gohei-file-size">(888 B)</span>
 </div>
 <a href="file-url" target="_blank">
-<img (=?.*class="gohei-thumb-image")(=?.*src="thumb-url")(?=.*style="width: 250px; height: 251px;").*?>
+<img class="gohei-thumb-image" src="thumb-url" style="width: 250px; height: 251px;">
 </a>
 </div>
 `.replace(/\n/g, ''));
-            assert(exp.test(got));
+            assert(got === exp);
         });
 
         it('should render file if file is webm', () => {
@@ -69,19 +69,19 @@ describe(__filename, () => {
             let post = new Post({ index: 1, file });
             let $el = render(<File {...{ post }} />);
 
-            let got = $el.outerHTML;
-            let exp = new RegExp(`
+            let got = tidy($el.outerHTML);
+            let exp = tidy(`
 <div class="gohei-post-file">
 <div>
 <a href="/b/src/123001.webm" class="gohei-file-name" download="file-name"><span class="gohei-inline-icon gohei-icon-download"></span>file-name</a>
-<span class="gohei-file-size">\\(888 B\\)</span>
+<span class="gohei-file-size">(888 B)</span>
 </div>
 <a href="/b/src/123001.webm">
-<img (=?.*class="gohei-thumb-image")(=?.*src="thumb-url")(?=.*style="width: 250px; height: 251px;").*?>
+<img class="gohei-thumb-image" src="thumb-url" style="width: 250px; height: 251px;">
 </a>
 </div>
 `.replace(/\n/g, ''));
-            assert(exp.test(got));
+            assert(got === exp);
         });
 
         it('should render video if video is visible', done => {
