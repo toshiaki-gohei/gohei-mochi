@@ -18,7 +18,8 @@ describe(__filename, () => {
                 postdels: new Map()
             },
             workers: {
-                delreq: { tasks: [], id: null }
+                delreq: { tasks: [], id: null },
+                postdel: { tasks: [], id: null }
             }
         },
         ui: {

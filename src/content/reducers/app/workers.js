@@ -3,7 +3,8 @@ import { createReducer } from '../util';
 import { F } from '~/common/util';
 
 const STATE = F({
-    delreq: createWorker()
+    delreq: createWorker(),
+    postdel: createWorker()
 });
 
 function createWorker(opts) {
@@ -24,12 +25,14 @@ export default createReducer(STATE, {
 });
 
 function reduce(state = STATE, action) {
-    let { delreq } = action;
+    let { delreq, postdel } = action;
 
     delreq = reduceWorker(state.delreq, delreq);
+    postdel = reduceWorker(state.postdel, postdel);
 
     let newState = {
-        delreq
+        delreq,
+        postdel
     };
 
     return F(newState);

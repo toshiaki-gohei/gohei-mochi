@@ -6,7 +6,8 @@ import { F } from '~/common/util';
 describe(__filename, () => {
     let state;
     beforeEach(() => state = F({
-        delreq: createWorker({ tasks: [ 'delreq01', 'delreq02' ] })
+        delreq: createWorker({ tasks: [ 'delreq01', 'delreq02' ] }),
+        postdel: createWorker()
     }));
 
     const createWorker = internal.createWorker;
@@ -15,7 +16,8 @@ describe(__filename, () => {
         it('should export reducer', () => {
             let got = reducer();
             let exp = {
-                delreq: createWorker()
+                delreq: { tasks: [], id: null },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -35,9 +37,12 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
                     id: null
-                }
+                },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
+            assert(got.postdel === state.postdel);
         });
 
         it('should reduce state if contains id', () => {
@@ -52,9 +57,12 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02', 'delreq03' ],
                     id: 'delreq-worker01'
-                }
+                },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
+            assert(got.postdel === state.postdel);
         });
 
         it('should empty tasks if pass tasks as null', () => {
@@ -63,9 +71,12 @@ describe(__filename, () => {
 
             let got = reduce(state, action);
             let exp = {
-                delreq: { tasks: [], id: null }
+                delreq: { tasks: [], id: null },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
+            assert(got.postdel === state.postdel);
         });
 
         it('should set id', () => {
@@ -77,9 +88,12 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02' ],
                     id: 'delreq-worker01'
-                }
+                },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
+            assert(got.postdel === state.postdel);
         });
 
         it('should do nothing if worker already is running', () => {
@@ -97,10 +111,13 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02' ],
                     id: 'delreq-worker01'
-                }
+                },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
             assert(got.delreq === state.delreq);
+            assert(got.postdel === state.postdel);
         });
     });
 
@@ -111,7 +128,8 @@ describe(__filename, () => {
             delreq: createWorker({
                 tasks: [ 'delreq01', 'delreq02' ],
                 id: 'delreq-worker01'
-            })
+            }),
+            postdel: createWorker()
         }));
 
         it('should clear worker id', () => {
@@ -120,9 +138,12 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02' ],
                     id: null
-                }
+                },
+                postdel: { tasks: [], id: null }
             };
             assert.deepStrictEqual(got, exp);
+
+            assert(got.postdel === state.postdel);
         });
     });
 });
