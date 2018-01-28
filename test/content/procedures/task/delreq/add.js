@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as procedures from '~/content/procedures/task/delreq/add';
+import add, { internal } from '~/content/procedures/task/delreq/add';
 import createStore from '~/content/reducers';
 import { setup, teardown } from '@/support/dom';
 import { pluckFromMap as pluck } from '@/support/util';
@@ -26,8 +26,6 @@ describe(__filename, () => {
     const DELREQ_URL = 'https://may.2chan.net/del.php?guid=on';
 
     describe('add()', () => {
-        const { add } = procedures;
-
         beforeEach(() => store = createStore({
             domain: { posts: createPosts([ '100', '101', '102' ]) }
         }));
@@ -99,7 +97,7 @@ describe(__filename, () => {
     });
 
     describe('delreqUrl', () => {
-        const { delreqUrl } = procedures.internal;
+        const { delreqUrl } = internal;
 
         it('should return delreq url', () => {
             let got = delreqUrl('https://may.2chan.net/b/res/123456789.htm');

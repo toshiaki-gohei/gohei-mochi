@@ -3,6 +3,8 @@ import { setAppTasksDelreqs } from '~/content/reducers/actions';
 import { createDelreq } from '~/content/reducers/app/tasks/delreqs';
 import { type as urltype, separate } from '~/common/url';
 
+export default add;
+
 export function add(store, opts) {
     let { url: threadOrCatalogUrl, posts, reason, status } = opts;
     let { domain, app } = store.getState();

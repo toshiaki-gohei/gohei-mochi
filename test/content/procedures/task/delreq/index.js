@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as procedures from '~/content/procedures/thread';
+import * as procedures from '~/content/procedures/task/delreq';
 
 describe(__filename, () => {
     describe('export', () => {
