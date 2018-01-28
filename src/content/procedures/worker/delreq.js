@@ -1,6 +1,6 @@
 'use strict';
 import { setAppWorkers } from '../../reducers/actions';
-import { submit } from '../delreq';
+import { submitDelreq } from '../task';
 import { sleep } from '~/content/util';
 
 const SLEEP_TIME = 5 * 1000;
@@ -17,7 +17,7 @@ async function _run(store, opts) {
     let count = 0;
     for (let delreq of targets(store)) {
         if (count++ !== 0) await sleep(sleepTime);
-        await submit(store, delreq);
+        await submitDelreq(store, delreq);
     }
 
     let tasks = remainders(store).map(({ post }) => post);
@@ -27,7 +27,7 @@ async function _run(store, opts) {
 function delreqs(store) {
     let { app } = store.getState();
     let worker = app.workers.delreq;
-    return worker.tasks.map(postId => app.delreqs.get(postId));
+    return worker.tasks.map(postId => app.tasks.delreqs.get(postId));
 }
 
 function targets(store) {

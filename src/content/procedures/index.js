@@ -1,8 +1,8 @@
 'use strict';
 import * as catalog from './catalog';
-import * as delreq from './delreq';
 import * as popup from './popup';
 import * as preferences from './preferences';
+import * as task from './task';
 import * as thread from './thread';
 import * as worker from './worker';
 import * as sync from './sync';
@@ -10,9 +10,9 @@ import * as sync from './sync';
 export function defaultMap(store) {
     return {
         ...makeMap(store, 'catalog', catalog),
-        ...makeMap(store, 'delreq', delreq),
         ...makeMap(store, 'popup', popup),
         ...makeMap(store, 'preferences', preferences),
+        ...makeMap(store, 'task', task),
         ...makeMap(store, 'thread', thread),
         ...makeMap(store, 'worker', worker),
         ...makeMap(store, 'sync', sync)

@@ -1,5 +1,6 @@
 'use strict';
-import { createReducer } from '../util';
+import { createReducer } from '../../util';
+import { createRes, reduceRes } from './common';
 import { F } from '~/common/util';
 
 const STATE = F(new Map());
@@ -21,7 +22,8 @@ export function createDelreq(opts) {
 
 function createForm(opts) {
     let {
-        reason = null, mode = null,
+        reason = null,
+        mode = null,
         b = null,  // board
         d = null,  // post no
         dlv = null // fixed with 0?
@@ -29,15 +31,9 @@ function createForm(opts) {
     return F({ reason, mode, b, d, dlv });
 }
 
-function createRes(opts) {
-    if (opts == null) return null;
-    let { ok = null, status = null, statusText = null } = opts;
-    return F({ ok, status, statusText });
-}
-
 
 export default createReducer(STATE, {
-    'SET_APP_DELREQS': reduce
+    'SET_APP_TASKS_DELREQS': reduce
 });
 
 function reduce(state = STATE, action) {
@@ -74,12 +70,6 @@ function reduceDelreq(prev = DELREQ, next) {
 function reduceForm(prev, next) {
     if (next == null || next === prev) return prev;
     return createForm({ ...prev, ...next });
-}
-
-function reduceRes(prev, next) {
-    if (next == null) return null;
-    if (next === prev) return prev;
-    return createRes({ ...prev, ...next });
 }
 
 export const internal = {

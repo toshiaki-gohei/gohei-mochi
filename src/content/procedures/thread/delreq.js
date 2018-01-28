@@ -1,7 +1,7 @@
 'use strict';
 import { setAppThreads } from '../../reducers/actions';
 import { createDelreqTarget } from '../../reducers/app/threads';
-import { add } from '../delreq';
+import { addDelreqs } from '../task';
 import { register } from '../worker';
 
 export function addDelreqTargets(store, { url, postId, postIds }) {
@@ -19,7 +19,7 @@ export function addDelreqTargets(store, { url, postId, postIds }) {
 
     let targets = new Map(delreq.targets);
     for (let key of postIds) {
-        let checked = app.delreqs.has(key) ? false : true;
+        let checked = app.tasks.delreqs.has(key) ? false : true;
         let target = createDelreqTarget({ post: key, checked });
         targets.set(key, target);
     }
@@ -107,7 +107,7 @@ export async function registerDelreqTasks(store, { url, reason }) {
 
     let posts = postIds;
     let status = 'stanby';
-    await add(store, { url, posts, reason, status });
+    await addDelreqs(store, { url, posts, reason, status });
 
     let tasks = postIds;
     await register(store, 'delreq', tasks);

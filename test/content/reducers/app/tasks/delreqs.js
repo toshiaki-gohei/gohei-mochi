@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import reducer, { internal } from '~/content/reducers/app/delreqs';
+import reducer, { internal } from '~/content/reducers/app/tasks/delreqs';
 import { F } from '~/common/util';
 
 describe(__filename, () => {

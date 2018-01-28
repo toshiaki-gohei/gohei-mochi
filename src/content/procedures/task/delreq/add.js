@@ -1,6 +1,6 @@
 'use strict';
-import { setAppDelreqs } from '../../reducers/actions';
-import { createDelreq } from '../../reducers/app/delreqs';
+import { setAppTasksDelreqs } from '~/content/reducers/actions';
+import { createDelreq } from '~/content/reducers/app/tasks/delreqs';
 import { type as urltype, separate } from '~/common/url';
 
 export function add(store, opts) {
@@ -8,7 +8,7 @@ export function add(store, opts) {
     let { domain, app } = store.getState();
 
     let postIds = posts || [];
-    postIds = postIds.filter(ignoreContainings(app.delreqs));
+    postIds = postIds.filter(ignoreContainings(app.tasks.delreqs));
 
     let { boardKey } = separate(threadOrCatalogUrl);
     let url = delreqUrl(threadOrCatalogUrl);
@@ -20,7 +20,7 @@ export function add(store, opts) {
         return createDelreq({ post: id, url, form, status });
     });
 
-    store.dispatch(setAppDelreqs(delreqs));
+    store.dispatch(setAppTasksDelreqs(delreqs));
 }
 
 function ignoreContainings(delreqs) {

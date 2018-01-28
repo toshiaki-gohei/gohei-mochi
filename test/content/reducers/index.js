@@ -13,8 +13,12 @@ describe(__filename, () => {
             current: { thread: null, catalog: null },
             threads: new Map(),
             catalogs: new Map(),
-            delreqs: new Map(),
-            workers: { delreq: { tasks: [], id: null } }
+            tasks: {
+                delreqs: new Map()
+            },
+            workers: {
+                delreq: { tasks: [], id: null }
+            }
         },
         ui: {
             thread: {

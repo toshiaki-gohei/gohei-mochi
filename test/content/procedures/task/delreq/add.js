@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as procedures from '~/content/procedures/delreq/add';
+import * as procedures from '~/content/procedures/task/delreq/add';
 import createStore from '~/content/reducers';
 import { setup, teardown } from '@/support/dom';
 import { pluckFromMap as pluck } from '@/support/util';
@@ -10,7 +10,7 @@ describe(__filename, () => {
     after(() => teardown());
 
     let store;
-    const getDelreqs = () => store.getState().app.delreqs;
+    const getDelreqs = () => store.getState().app.tasks.delreqs;
 
     const createPosts = nolist => {
         let posts = nolist.map((no, index) => ({ id: `may/b/${no}`, index, no }));
@@ -78,7 +78,7 @@ describe(__filename, () => {
             ]);
             store = createStore({
                 domain: { posts: createPosts([ '100', '101', '102' ]) },
-                app: { delreqs }
+                app: { tasks: { delreqs } }
             });
 
             let posts = postIds();

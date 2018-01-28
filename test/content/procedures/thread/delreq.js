@@ -2,7 +2,7 @@
 import assert from 'assert';
 import * as procedures from '~/content/procedures/thread/delreq';
 import createStore from '~/content/reducers';
-import { setAppThreads, setAppDelreqs } from '~/content/reducers/actions';
+import { setAppThreads, setAppTasksDelreqs } from '~/content/reducers/actions';
 import { setup, teardown } from '@/support/dom';
 import { pluckFromMap as pluck } from '@/support/util';
 
@@ -83,8 +83,8 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should add delreq targets if contains app.delreqs', () => {
-            store.dispatch(setAppDelreqs([
+        it('should add delreq targets if contains app.tasks.delreqs', () => {
+            store.dispatch(setAppTasksDelreqs([
                 { post: 'post01', status: 'complete', res: { ok: true, status: 200 } },
                 { post: 'post03', status: null }
             ]));
@@ -334,7 +334,7 @@ describe(__filename, () => {
             };
             assert.deepStrictEqual(got , exp);
 
-            got = pluck(app.delreqs, 'post');
+            got = pluck(app.tasks.delreqs, 'post');
             exp = [ { post: 'may/b/100' }, { post: 'may/b/102' } ];
             assert.deepStrictEqual(got , exp);
 

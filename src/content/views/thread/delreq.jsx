@@ -84,13 +84,13 @@ function RightPane({ commit, state, app, changeReason }) {
 }
 
 function TargetList({ commit, app, handlers }) {
-    let { current, threads, delreqs } = app;
+    let { current, threads, tasks } = app;
     let { delreq } = threads.get(current.thread);
 
     let $rows = [];
     for (let [ key, { post: postId, checked } ] of delreq.targets) {
         let post = commit('sync/post', postId);
-        let delreq = delreqs.get(key);
+        let delreq = tasks.delreqs.get(key);
         let $row = isTarget(delreq)
             ? <Target {...{ checked, post, handlers }} key={key} />
             : <NonTarget {...{ delreq, post }} key={key} />;
@@ -146,11 +146,10 @@ function getStatusText(res) {
 }
 
 function TaskList({ commit, app }) {
-    let { delreqs, workers } = app;
-    let { tasks } = workers.delreq;
+    let { tasks, workers } = app;
 
-    let $rows = tasks.map(id => {
-        let delreq = delreqs.get(id);
+    let $rows = workers.delreq.tasks.map(id => {
+        let delreq = tasks.delreqs.get(id);
         let { post, form: { reason }, status, res } = delreq;
 
         let { index } = commit('sync/post', post);

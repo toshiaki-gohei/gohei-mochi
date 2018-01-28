@@ -1,8 +1,8 @@
 'use strict';
 import assert from 'assert';
-import submit, { internal } from '~/content/procedures/delreq/submit';
+import submit, { internal } from '~/content/procedures/task/delreq/submit';
 import createStore from '~/content/reducers';
-import { setAppDelreqs } from '~/content/reducers/actions';
+import { setAppTasksDelreqs } from '~/content/reducers/actions';
 import { encode, decode } from '~/content/util/encoding';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
@@ -18,10 +18,10 @@ describe(__filename, () => {
         let delreqs = [
             { post: 'may/b/123000' }, { post: 'may/b/123001' }, { post: 'may/b/123002' }
         ];
-        store.dispatch(setAppDelreqs(delreqs));
+        store.dispatch(setAppTasksDelreqs(delreqs));
     });
 
-    const getDelreq = postId => store.getState().app.delreqs.get(postId);
+    const getDelreq = postId => store.getState().app.tasks.delreqs.get(postId);
 
     describe('submit()', () => {
         let backup;

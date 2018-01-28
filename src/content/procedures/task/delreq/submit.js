@@ -1,8 +1,8 @@
 'use strict';
-import { setAppDelreqs } from '../../reducers/actions';
-import fetch from '../../util/fetch';
-import FormData from '../../util/form-data';
-import { textify } from '../../util/html';
+import { setAppTasksDelreqs } from '~/content/reducers/actions';
+import fetch from '~/content/util/fetch';
+import FormData from '~/content/util/form-data';
+import { textify } from '~/content/util/html';
 
 export default submit;
 
@@ -12,7 +12,7 @@ export async function submit(store, delreq) {
     let fd = makeFormData(form);
     let opts = { headers: fd.headers, body: fd.blobify() };
 
-    store.dispatch(setAppDelreqs({ post: id, status: 'posting' }));
+    store.dispatch(setAppTasksDelreqs({ post: id, status: 'posting' }));
 
     let res;
     try {
@@ -31,7 +31,7 @@ export async function submit(store, delreq) {
         res = checkError(res);
     }
 
-    store.dispatch(setAppDelreqs({ post: id, status, res }));
+    store.dispatch(setAppTasksDelreqs({ post: id, status, res }));
 }
 
 function makeFormData(form) {

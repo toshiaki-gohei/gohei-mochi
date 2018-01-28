@@ -2,7 +2,7 @@
 import assert from 'assert';
 import run from '~/content/procedures/worker/delreq';
 import createStore from '~/content/reducers';
-import { setAppDelreqs, setAppWorkers } from '~/content/reducers/actions';
+import { setAppTasksDelreqs, setAppWorkers } from '~/content/reducers/actions';
 import { setup, teardown } from '@/support/dom';
 import fetch from '~/content/util/fetch';
 import { pluckFromMap as pluck } from '@/support/util';
@@ -27,7 +27,7 @@ describe(__filename, () => {
                 { post: 'may/b/123004', url: 'url-delreq04' },
                 { post: 'may/b/123005', url: 'url-delreq05' }
             ];
-            store.dispatch(setAppDelreqs(delreqs));
+            store.dispatch(setAppTasksDelreqs(delreqs));
             let tasks = [ 'may/b/123001', 'may/b/123002', 'may/b/123003', 'may/b/123004' ];
             store.dispatch(setAppWorkers({ delreq: { tasks } }));
 
@@ -52,7 +52,7 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
 
             let { app } = store.getState();
-            got = pluck(app.delreqs, 'post', 'status', 'res');
+            got = pluck(app.tasks.delreqs, 'post', 'status', 'res');
             exp = [
                 { post: 'may/b/123001', status: 'complete',
                   res: { ok: true, status: null, statusText: null } },
@@ -82,7 +82,7 @@ describe(__filename, () => {
                 { post: 'may/b/123005', url: 'url-delreq05', status: 'cancel' },
                 { post: 'may/b/123006', url: 'url-delreq06', status: 'error' }
             ];
-            store.dispatch(setAppDelreqs(delreqs));
+            store.dispatch(setAppTasksDelreqs(delreqs));
             let tasks = delreqs.map(({ post }) => post);
             store.dispatch(setAppWorkers({ delreq: { tasks } }));
 

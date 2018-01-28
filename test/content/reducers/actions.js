@@ -83,16 +83,16 @@ describe(__filename, () => {
         });
     });
 
-    describe('setAppDelreqs()', () => {
-        const { setAppDelreqs } = actions;
+    describe('setAppTasksDelreqs()', () => {
+        const { setAppTasksDelreqs } = actions;
 
         it('should create action', () => {
-            let got = setAppDelreqs([ 'payload' ]);
-            let exp = { type: 'SET_APP_DELREQS', delreqs: [ 'payload' ] };
+            let got = setAppTasksDelreqs([ 'payload' ]);
+            let exp = { type: 'SET_APP_TASKS_DELREQS', delreqs: [ 'payload' ] };
             assert.deepStrictEqual(got, exp);
 
-            got = setAppDelreqs('payload');
-            exp = { type: 'SET_APP_DELREQS', delreq: 'payload' };
+            got = setAppTasksDelreqs('payload');
+            exp = { type: 'SET_APP_TASKS_DELREQS', delreq: 'payload' };
             assert.deepStrictEqual(got, exp);
         });
     });

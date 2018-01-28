@@ -10,7 +10,7 @@ import procedures, { defaultMap } from '~/content/procedures';
 import { pluckFromMap as pluck } from '@/support/util';
 import { sleep } from '~/content/util';
 
-const { setDomainPosts, setAppThreads, setAppDelreqs, setAppWorkers } = actions;
+const { setDomainPosts, setAppThreads, setAppTasksDelreqs, setAppWorkers } = actions;
 
 describe(__filename, () => {
     before(() => setup());
@@ -58,7 +58,7 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render left delreq list', () => {
-            store.dispatch(setAppDelreqs([
+            store.dispatch(setAppTasksDelreqs([
                 { post: 'may/b/100', status: 'complete', res: { ok: true, status: 200 } },
                 { post: 'may/b/101', status: 'stanby' },
                 { post: 'may/b/102', status: null }
@@ -119,7 +119,7 @@ $`.replace(/\n/g, ''));
                 { post: 'may/b/102', form: { reason: 101 }, status: 'stanby' },
                 { post: 'may/b/103', form: { reason: 101 }, status: null }
             ];
-            store.dispatch(setAppDelreqs(delreqs));
+            store.dispatch(setAppTasksDelreqs(delreqs));
             let tasks = delreqs.map(({ post }) => post);
             store.dispatch(setAppWorkers({ delreq: { tasks } }));
 
@@ -203,7 +203,7 @@ $`.replace(/\n/g, ''));
         beforeEach(() => {
             let posts = createPosts([ '100', '101', '102' ]);
             store.dispatch(setDomainPosts(posts));
-            store.dispatch(setAppDelreqs([
+            store.dispatch(setAppTasksDelreqs([
                 { post: 'may/b/100', status: 'complete', res: { ok: true, status: 200 } },
                 { post: 'may/b/101', status: 'stanby' },
                 { post: 'may/b/102', status: null }
