@@ -8,7 +8,7 @@ export function createRes(opts) {
 }
 
 export function reduceRes(prev, next) {
-    if (next == null) return null;
-    if (next === prev) return prev;
+    if (next === null) return null;
+    if (next === undefined || next === prev) return prev;
     return createRes({ ...prev, ...next });
 }

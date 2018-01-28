@@ -75,9 +75,10 @@ describe(__filename, () => {
             action = { delreq };
             let next = reduce(prev, action);
 
-            let got = next.get(post);
-            assert(got.form === prev.get(post).form);
-            assert(got.res === null);
+            let got = [ 'form', 'res' ].every(prop => {
+                return prev.get(post)[prop] === next.get(post)[prop];
+            });
+            assert(got);
 
             let { form, res } = prev.get(post);
             delreq = { post, form, res };

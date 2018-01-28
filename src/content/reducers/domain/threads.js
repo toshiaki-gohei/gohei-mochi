@@ -76,14 +76,14 @@ function reduceThread(prev = THREAD, next) {
 }
 
 function reduceExpire(prev, next) {
-    if (next == null) return null;
-    if (next === prev) return prev;
+    if (next === null) return null;
+    if (next === undefined || next === prev) return prev;
     return createExpire({ ...prev, ...next });
 }
 
 function reduceThumb(prev, next) {
-    if (next == null) return null;
-    if (next === prev) return prev;
+    if (next === null) return null;
+    if (next === undefined || next === prev) return prev;
     return createThumb({ ...prev, ...next });
 }
 
