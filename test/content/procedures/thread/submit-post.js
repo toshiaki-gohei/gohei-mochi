@@ -26,18 +26,7 @@ describe(__filename, () => {
             let { ok, status, statusText } = res;
             assert(ok === false);
             assert(status === 499);
-            assert(/^network error: .+/.test(statusText));
-        });
-
-        it('should not throw exception if throw exception in fetch', async () => {
-            fetch.post = () => { throw new Error('unknown error'); };
-
-            let got = await submit(store, { url: 'http://example.net', formdata });
-            let exp = {
-                ok: false, status: 499,
-                statusText: 'なんかエラーだって: unknown error'
-            };
-            assert.deepStrictEqual(got, exp);
+            assert(/^fetch error: .+/.test(statusText));
         });
 
         it('should handle correctly if response is error of "200 OK"', async () => {

@@ -7,31 +7,16 @@ import { textify } from '~/content/util/html';
 export default submit;
 
 export async function submit(store, delreq) {
-    let { post: id, url, form } = delreq;
+    let { post, url, form } = delreq;
 
     let fd = makeFormData(form);
     let opts = { headers: fd.headers, body: fd.blobify() };
 
-    store.dispatch(setAppTasksDelreqs({ post: id, status: 'posting' }));
+    store.dispatch(setAppTasksDelreqs({ post, status: 'posting' }));
 
-    let res;
-    try {
-        res = await fetch.post(url, opts);
-    } catch (e) {
-        res = { ok: false, status: 499, statusText: `なんかエラーだって: ${e.message}` };
-    }
+    let res = await fetch.post(url, opts);
 
-    let status = null;
-    if (!res.ok) {
-        status = 'error';
-    } else if (res.ok && isSuccess(res.text)) {
-        status = 'complete';
-    } else {
-        status = 'error';
-        res = checkError(res);
-    }
-
-    store.dispatch(setAppTasksDelreqs({ post: id, status, res }));
+    setResponse(store, res, delreq);
 }
 
 function makeFormData(form) {
@@ -41,6 +26,22 @@ function makeFormData(form) {
         fd.set(name, value);
     }
     return fd;
+}
+
+function setResponse(store, res, delreq) {
+    let status = null;
+
+    if (!res.ok) {
+        status = 'error';
+    } else if (res.ok && isSuccess(res.text)) {
+        status = 'complete';
+    } else {
+        status = 'error';
+        res = checkError(res);
+    }
+
+    let { post } = delreq;
+    store.dispatch(setAppTasksDelreqs({ post, status, res }));
 }
 
 function isSuccess(html) {

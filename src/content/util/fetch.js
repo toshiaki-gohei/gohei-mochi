@@ -16,7 +16,7 @@ function fetch(url, opts) {
 
     let p1 = new Promise(async resolve => {
         let res = await _fetch(url, rest).catch(err => new window.Response(null, {
-            ok: false, status: 499, statusText: `network error: ${err.message}`
+            ok: false, status: 499, statusText: `fetch error: ${err.message}`
         }));
         clearTimeout(timeoutId);
         resolve(res);

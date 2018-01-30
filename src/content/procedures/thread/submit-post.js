@@ -7,12 +7,7 @@ export default submit;
 export async function submit(store, { url, formdata: fd }) {
     let opts = { headers: fd.headers, body: fd.blobify(), timeout: TIMEOUT };
 
-    let res;
-    try {
-        res = await fetch.post(url, opts);
-    } catch (e) {
-        res = { ok: false, status: 499, statusText: `なんかエラーだって: ${e.message}` };
-    }
+    let res = await fetch.post(url, opts);
 
     if (res.ok && !isSuccess(res.text)) return checkError(res);
 

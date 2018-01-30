@@ -16,12 +16,7 @@ export async function soudane(store, { id, url = null }) {
 
     url = url || sodurl(thread.url, post);
 
-    let res;
-    try {
-        res = await fetch.get(url);
-    } catch (e) {
-        res = { ok: false, status: 499, statusText: `なんかエラーだって: ${e.message}` };
-    }
+    let res = await fetch.get(url);
 
     if (!res.ok) return res;
 

@@ -172,26 +172,7 @@ describe(__filename, () => {
             let app = getApp(url);
             let { status, statusText } = app.updateHttpRes;
             assert(status === 499);
-            assert(/^network error: .+/.test(statusText));
-
-            let { sort } = getCatalog(url);
-            assert(sort == 3);
-            let { isUpdating } = app;
-            assert(isUpdating === false);
-        });
-
-        it('should set state correctly if throw exception in fetch', async () => {
-            let url = 'http://example.net';
-            store.dispatch(setAppCatalogs({ url }));
-
-            fetch.getCatalog = () => { throw new Error('unknown error'); };
-
-            await update(store, url, { sort: 3 });
-
-            let app = getApp(url);
-            let { status, statusText } = app.updateHttpRes;
-            assert(status === 499);
-            assert(statusText === 'なんかエラーだって: unknown error');
+            assert(/^fetch error: .+/.test(statusText));
 
             let { sort } = getCatalog(url);
             assert(sort == 3);

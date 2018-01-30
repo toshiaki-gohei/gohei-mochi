@@ -6,7 +6,6 @@ import { Post } from '~/content/model';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
 import { pluckFromMap as pluck } from '@/support/util';
-import fetch from '~/content/util/fetch';
 
 describe(__filename, () => {
     before(() => setup());
@@ -36,28 +35,13 @@ describe(__filename, () => {
     const getPosts = () => store.getState().domain.posts;
 
     describe('soudane()', () => {
-        let backup;
-        beforeEach(() => backup = fetch.get);
-        afterEach(() => fetch.get = backup);
-
         it('should return response if network error occurs', async () => {
             let res = await soudane(store, { id: 'may/b/123001', url: 'about:config' });
 
             let { ok, status, statusText } = res;
             assert(ok === false);
             assert(status === 499);
-            assert(/^network error: .+/.test(statusText));
-        });
-
-        it('should not throw exception if throw exception in fetch', async () => {
-            fetch.get = () => { throw new Error('unknown error'); };
-
-            let got = await soudane(store, { id: 'may/b/123001', url: 'about:config' });
-            let exp = {
-                ok: false, status: 499,
-                statusText: 'なんかエラーだって: unknown error'
-            };
-            assert.deepStrictEqual(got, exp);
+            assert(/^fetch error: .+/.test(statusText));
         });
     });
 

@@ -19,12 +19,7 @@ export async function update(store, url) {
 
     let lastUpdatedByUser = new Date();
 
-    let res;
-    try {
-        res = await fetch.getThread(url, opts);
-    } catch (e) {
-        res = { ok: false, status: 499, statusText: `なんかエラーだって: ${e.message}` };
-    }
+    let res = await fetch.getThread(url, opts);
 
     store.dispatch(setAppThreads({ url, isUpdating: false, lastUpdatedByUser }));
 

@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import { get, post, getThread, getCatalog, internal } from '~/content/util/fetch';
+import fetch, { internal } from '~/content/util/fetch';
 import { decode } from '~/content/util/encoding';
 import FormData from '~/content/util/form-data';
 import { setup, teardown, isBrowser } from '@/support/dom';
@@ -11,11 +11,11 @@ describe(__filename, () => {
     after(() => teardown());
 
     describe('get()', () => {
-        it('should throw not exception if network error occurs', async () => {
-            let res = await get('about:config');
+        it('should not throw exception if network error occurs', async () => {
+            let res = await fetch.get('about:config');
             assert(res.ok === false);
             assert(res.status === 499);
-            assert(/^network error: .+/.test(res.statusText));
+            assert(/^fetch error: .+/.test(res.statusText));
         });
     });
 
@@ -32,7 +32,7 @@ describe(__filename, () => {
                 res.end('テスト');
             });
 
-            let res = await get(url());
+            let res = await fetch.get(url());
             assert(res.ok === true);
             assert(res.status === 200);
             assert(res.text === 'テスト');
@@ -48,7 +48,7 @@ describe(__filename, () => {
                 res.end('テスト');
             });
 
-            let res = await get(url());
+            let res = await fetch.get(url());
             assert(res.ok === true);
             assert(res.status === 200);
             assert(res.text === 'テスト');
@@ -65,7 +65,7 @@ describe(__filename, () => {
                 res.end(Buffer.from([0x83, 0x65, 0x83, 0x58, 0x83, 0x67]), 'binary');
             });
 
-            let res = await get(url());
+            let res = await fetch.get(url());
             assert(res.ok === true);
             assert(res.status === 200);
             assert(res.text === 'テスト');
@@ -77,7 +77,7 @@ describe(__filename, () => {
                 res.end();
             });
 
-            let res = await get(url());
+            let res = await fetch.get(url());
             assert(res.ok === true);
             assert(res.status === 200);
         });
@@ -100,7 +100,7 @@ describe(__filename, () => {
                 }
             };
 
-            let res = await get(url(), opts);
+            let res = await fetch.get(url(), opts);
             assert(res.ok === false);
             assert(res.status === 304);
         });
@@ -111,7 +111,7 @@ describe(__filename, () => {
                 res.end('page not found');
             });
 
-            let res = await get(url());
+            let res = await fetch.get(url());
             assert(res.ok === false);
             assert(res.status === 404);
             assert(res.text === 'page not found');
@@ -130,7 +130,7 @@ describe(__filename, () => {
                 setTimeout(svr, 100, res);
             });
 
-            let res = await get(url(), { timeout: 50 });
+            let res = await fetch.get(url(), { timeout: 50 });
             assert(res.ok === false);
             assert(res.status === 599);
             assert(res.statusText === 'request timeout');
@@ -152,7 +152,7 @@ describe(__filename, () => {
                 res.end('<html><body><span id="tit">test-title</span></body></html>');
             });
 
-            let res = await getThread(url());
+            let res = await fetch.getThread(url());
             assert(res.status === 200);
             let got = res.contents.thread.title;
             assert(got === 'test-title');
@@ -172,7 +172,7 @@ describe(__filename, () => {
                 res.end('<html><body><span id="tit">test-title</span></body></html>');
             });
 
-            let res = await getCatalog(url());
+            let res = await fetch.getCatalog(url());
             assert(res.status === 200);
             let got = res.contents.catalog.title;
             assert(got === 'test-title');
@@ -181,10 +181,10 @@ describe(__filename, () => {
 
     describe('post()', () => {
         it('should throw not exception if network error occurs', async () => {
-            let res = await post('about:config');
+            let res = await fetch.post('about:config');
             assert(res.ok === false);
             assert(res.status === 499);
-            assert(/^network error: .+/.test(res.statusText));
+            assert(/^fetch error: .+/.test(res.statusText));
         });
     });
 
@@ -227,7 +227,7 @@ Content-Type: text/plain; charset=Shift_JIS
             let headers = fd.headers;
             let body = fd.blobify();
 
-            let res = await post(url(), { headers, body });
+            let res = await fetch.post(url(), { headers, body });
             assert(res.status === 200);
             assert(res.text === 'テスト');
         });
@@ -245,7 +245,7 @@ Content-Type: text/plain; charset=Shift_JIS
                 setTimeout(svr, 100, res);
             });
 
-            let res = await post(url(), { timeout: 50 });
+            let res = await fetch.post(url(), { timeout: 50 });
             assert(res.ok === false);
             assert(res.status === 599);
             assert(res.statusText === 'request timeout');

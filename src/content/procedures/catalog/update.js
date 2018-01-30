@@ -20,12 +20,7 @@ export async function update(store, url, { sort = null } = {}) {
 
     let lastUpdatedByUser = new Date();
 
-    let res;
-    try {
-        res = await fetch.getCatalog(requrl, opts);
-    } catch (e) {
-        res = { ok: false, status: 499, statusText: `なんかエラーだって: ${e.message}` };
-    }
+    let res = await fetch.getCatalog(requrl, opts);
 
     store.dispatch(setAppCatalogs({ url, isUpdating: false, lastUpdatedByUser }));
 

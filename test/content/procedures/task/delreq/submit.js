@@ -30,7 +30,7 @@ describe(__filename, () => {
 
         const post = 'may/b/123001';
 
-        it('should set status while submiting', async () => {
+        it('should set status while submitting', async () => {
             fetch.post = () => {
                 let { status } = getDelreq(post);
                 assert(status === 'posting');
@@ -44,32 +44,6 @@ describe(__filename, () => {
             assert(delreq.status === 'complete');
             let got = delreq.res;
             let exp = { ok: true, status: 200, statusText: 'OK' };
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should return response if network error occurs', async () => {
-            await submit(store, { url: 'about:config', post });
-
-            let delreq = getDelreq(post);
-            assert(delreq.status === 'error');
-            let { ok, status, statusText } = delreq.res;
-            assert(ok === false);
-            assert(status === 499);
-            assert(/^network error: .+/.test(statusText));
-        });
-
-        it('should not throw exception if throw exception in fetch', async () => {
-            fetch.post = () => { throw new Error('unknown error'); };
-
-            await submit(store, { url: 'http://example.net', post });
-
-            let delreq = getDelreq(post);
-            assert(delreq.status === 'error');
-            let got = delreq.res;
-            let exp = {
-                ok: false, status: 499,
-                statusText: 'なんかエラーだって: unknown error'
-            };
             assert.deepStrictEqual(got, exp);
         });
 

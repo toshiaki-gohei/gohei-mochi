@@ -137,25 +137,7 @@ describe(__filename, () => {
             let app = getApp(url);
             let { status, statusText } = app.updateHttpRes;
             assert(status === 499);
-            assert(/^network error: .+/.test(statusText));
-
-            let { changeset, isUpdating } = app;
-            assert(changeset == null);
-            assert(isUpdating === false);
-        });
-
-        it('should set state correlctly if throw exception in fetch', async () => {
-            let url = 'http://example.net';
-            store.dispatch(setAppThreads({ url, changeset: 'dummy data' }));
-
-            fetch.getThread = () => { throw new Error('unknown error'); };
-
-            await update(store, url);
-
-            let app = getApp(url);
-            let { status, statusText } = app.updateHttpRes;
-            assert(status === 499);
-            assert(statusText === 'なんかエラーだって: unknown error');
+            assert(/^fetch error: .+/.test(statusText));
 
             let { changeset, isUpdating } = app;
             assert(changeset == null);
