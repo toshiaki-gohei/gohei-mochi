@@ -73,11 +73,10 @@ function parseExpire($body) {
     return { message: msg, date: parseExpireDate(msg) };
 }
 
-function parseExpireDate(message) {
+function parseExpireDate(message, now = new Date()) {
     if (!/^(.+)頃消えます$/.test(message)) return null;
     let text = RegExp.$1;
 
-    let now = new Date();
     let year = now.getFullYear(), month = now.getMonth() + 1, date = now.getDate(),
         hour = 0, min = 0;
 
@@ -85,6 +84,12 @@ function parseExpireDate(message) {
     if (/(\d+)月/.test(text)) [ month, date ] = [ +RegExp.$1, 1 ];
     if (/(\d+)日/.test(text)) date = +RegExp.$1;
     if (/(\d\d):(\d\d)$/.test(text)) [ hour, min ] = [ +RegExp.$1, +RegExp.$2 ];
+
+    let expire = new Date(year, month - 1, date, hour, min);
+
+    if (expire.getTime() >= now.getTime()) return expire;
+
+    if (expire.getDate() < now.getDate()) ++month;
 
     return new Date(year, month - 1, date, hour, min);
 }

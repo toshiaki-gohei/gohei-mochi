@@ -64,21 +64,29 @@ describe(__filename, () => {
 
     describe('parseExpireDate()', () => {
         const { parseExpireDate } = internal;
-        const { year, month, date } = now();
 
         it('should return expire date', () => {
-            let got = parseExpireDate('12:34頃消えます');
-            assert(got.toISOString() === `${year}-${month}-${date}T03:34:00.000Z`);
+            let now = new Date('2018-01-23T01:23:00+09:00');
+            let got = parseExpireDate('12:34頃消えます', now);
+            assert(got.toISOString() === '2018-01-23T03:34:00.000Z');
         });
 
         it('should return expire date (date and time)', () => {
-            let got = parseExpireDate('23日12:34頃消えます');
-            assert(got.toISOString() === `${year}-${month}-23T03:34:00.000Z`);
+            let now = new Date('2018-01-23T01:23:00+09:00');
+            let got = parseExpireDate('23日12:34頃消えます', now);
+            assert(got.toISOString() === '2018-01-23T03:34:00.000Z');
         });
 
         it('should return expire date (year and month)', () => {
-            let got = parseExpireDate(`${year % 100 + 1}年1月頃消えます`);
-            assert(got.toISOString() === `${year}-12-31T15:00:00.000Z`);
+            let now = new Date('2017-01-23T01:23:00+09:00');
+            let got = parseExpireDate('18年1月頃消えます', now);
+            assert(got.toISOString() === '2017-12-31T15:00:00.000Z');
+        });
+
+        it('should return expire date if expire is over next month', () => {
+            let now = new Date('2018-01-31T22:00:00+09:00');
+            let got = parseExpireDate('01日01:23頃消えます', now);
+            assert(got.toISOString() === '2018-01-31T16:23:00.000Z');
         });
 
         it('should return null if cannot parse expire', () => {
