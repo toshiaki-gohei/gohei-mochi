@@ -50,8 +50,9 @@ function createPostform(opts) {
 }
 
 function createDelform(opts) {
-    let { action = null } = opts || {};
-    return F({ action });
+    let { action = null, targets = new Map() } = opts || {};
+    F(targets);
+    return F({ action, targets });
 }
 
 function createDelreq(opts) {
@@ -60,7 +61,7 @@ function createDelreq(opts) {
     return F({ targets });
 }
 
-export function createDelreqTarget(opts) {
+export function createCheckTarget(opts) {
     // post: post id
     let { post = null, checked = true } = opts || {};
     return F({ post, checked });

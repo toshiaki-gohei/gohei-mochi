@@ -29,7 +29,7 @@ describe(__filename, () => {
                   messages: { viewer: '1234人くらい' },
                   postform: { action: 'post' },
                   delform: { action: 'del' },
-                  delreq: { targets: [ 'delreq01' ] } },
+                  delreq: { targets: new Map([ [ 'delreq01', null ] ]) } },
                 { url: 'url-thread04' }
             ];
             let action = { apps };
@@ -44,8 +44,8 @@ describe(__filename, () => {
                         notice: null, warning: null, deletedPostCount: null
                     },
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
-                    delform: { action: 'del' },
-                    delreq: { targets: [ 'delreq01' ] },
+                    delform: { action: 'del', targets: new Map() },
+                    delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ],
@@ -60,7 +60,7 @@ describe(__filename, () => {
                 messages: { viewer: '1234人くらい' },
                 postform: { action: 'post' },
                 delform: { action: 'del' },
-                delreq: { targets: [ 'delreq01' ] }
+                delreq: { targets: new Map([ [ 'delreq01', null ] ]) }
             };
             let action = { app };
 
@@ -74,8 +74,8 @@ describe(__filename, () => {
                         notice: null, warning: null, deletedPostCount: null
                     },
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
-                    delform: { action: 'del' },
-                    delreq: { targets: [ 'delreq01' ] },
+                    delform: { action: 'del', targets: new Map() },
+                    delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ]
@@ -90,7 +90,7 @@ describe(__filename, () => {
                 messages: { viewer: '1234人くらい' },
                 postform: { action: 'post' },
                 delform: { action: 'del' },
-                delreq: { targets: [ 'delreq01' ] }
+                delreq: { targets: new Map([ [ 'delreq01', null ] ]) }
             };
             let action = { app };
             let prev = reduce(state, action);

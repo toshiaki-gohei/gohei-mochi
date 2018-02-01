@@ -1,8 +1,8 @@
 'use strict';
 import assert from 'assert';
-import * as procedures from '~/content/procedures/thread/delreq';
+import * as procedures from '~/content/procedures/thread/delform';
 import createStore from '~/content/reducers';
-import { setAppThreads, setAppTasksDelreqs } from '~/content/reducers/actions';
+import { setAppThreads, setAppTasksPostdels } from '~/content/reducers/actions';
 import { setup, teardown } from '@/support/dom';
 import { pluckFromMap as pluck } from '@/support/util';
 
@@ -14,17 +14,18 @@ describe(__filename, () => {
     });
 
     const URL = 'http://example.net/thread01';
-    const getDelreq = () => store.getState().app.threads.get(URL).delreq;
+    const getDelform = () => store.getState().app.threads.get(URL).delform;
 
-    describe('addDelreqTargets()', () => {
-        const { addDelreqTargets } = procedures;
+    describe('addDelformTargets()', () => {
+        const { addDelformTargets } = procedures;
 
-        it('should add delreq targets', () => {
+        it('should add delform targets', () => {
             let postIds = [ 'post01', 'post02' ];
-            addDelreqTargets(store, { url: URL, postIds });
+            addDelformTargets(store, { url: URL, postIds });
 
-            let got = getDelreq();
+            let got = getDelform();
             let exp = {
+                action: null,
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: true } ],
                     [ 'post02', { post: 'post02', checked: true } ]
@@ -33,16 +34,17 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should add delreq targets if contains app.tasks.delreqs', () => {
-            store.dispatch(setAppTasksDelreqs([
+        it('should add delform targets if contains app.tasks.postdels', () => {
+            store.dispatch(setAppTasksPostdels([
                 { post: 'post01', status: 'complete', res: { ok: true, status: 200 } },
                 { post: 'post03', status: null }
             ]));
             let postIds = [ 'post01', 'post02', 'post03' ];
-            addDelreqTargets(store, { url: URL, postIds });
+            addDelformTargets(store, { url: URL, postIds });
 
-            let got = getDelreq();
+            let got = getDelform();
             let exp = {
+                action: null,
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: false } ],
                     [ 'post02', { post: 'post02', checked: true } ],
@@ -53,28 +55,29 @@ describe(__filename, () => {
         });
     });
 
-    describe('setDelreqTargets()', () => {
-        const { setDelreqTargets } = procedures;
+    describe('setDelformTargets()', () => {
+        const { setDelformTargets } = procedures;
 
         beforeEach(() => {
-            let delreq = {
+            let delform = {
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: false } ],
                     [ 'post02', { post: 'post02', checked: true } ]
                 ])
             };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
+            store.dispatch(setAppThreads({ url: URL, delform }));
         });
 
-        it('should set delreq targets', () => {
+        it('should set delform targets', () => {
             let targets = [
                 { post: 'post01', checked: true },
                 { post: 'post02', checked: false }
             ];
-            setDelreqTargets(store, { url: URL, targets });
+            setDelformTargets(store, { url: URL, targets });
 
-            let got = getDelreq();
+            let got = getDelform();
             let exp = {
+                action: null,
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: true } ],
                     [ 'post02', { post: 'post02', checked: false } ]
@@ -84,52 +87,52 @@ describe(__filename, () => {
         });
     });
 
-    describe('removeDelreqTargets()', () => {
-        const { removeDelreqTargets } = procedures.internal;
+    describe('removeDelformTargets()', () => {
+        const { removeDelformTargets } = procedures.internal;
 
         beforeEach(() => {
-            let delreq = {
+            let delform = {
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: false } ],
                     [ 'post02', { post: 'post02', checked: true } ]
                 ])
             };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
+            store.dispatch(setAppThreads({ url: URL, delform }));
         });
 
-        it('should remove delreq targets', () => {
+        it('should remove delform targets', () => {
             let postIds = [ 'post01', 'post02' ];
-            removeDelreqTargets(store, { url: URL, postIds });
+            removeDelformTargets(store, { url: URL, postIds });
 
-            let got = getDelreq();
-            let exp = { targets: new Map() };
+            let got = getDelform();
+            let exp = { action: null, targets: new Map() };
             assert.deepStrictEqual(got , exp);
         });
     });
 
-    describe('clearDelreqTargets()', () => {
-        const { clearDelreqTargets } = procedures;
+    describe('clearDelformTargets()', () => {
+        const { clearDelformTargets } = procedures;
 
         beforeEach(() => {
-            let delreq = {
+            let delform = {
                 targets: new Map([
                     [ 'post01', { post: 'post01', checked: false } ],
                     [ 'post02', { post: 'post02', checked: true } ]
                 ])
             };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
+            store.dispatch(setAppThreads({ url: URL, delform }));
         });
 
-        it('should clear delreq targets', () => {
-            clearDelreqTargets(store, { url: URL });
-            let got = getDelreq();
-            let exp = { targets: new Map() };
+        it('should clear delform targets', () => {
+            clearDelformTargets(store, { url: URL });
+            let got = getDelform();
+            let exp = { action: null, targets: new Map() };
             assert.deepStrictEqual(got , exp);
         });
     });
 
-    describe('registerDelreqTasks()', () => {
-        const { registerDelreqTasks } = procedures;
+    describe('registerPostdelTasks()', () => {
+        const { registerPostdelTasks } = procedures;
 
         before(() => setup());
         after(() => teardown());
@@ -141,38 +144,39 @@ describe(__filename, () => {
                 domain: { posts: new Map(posts.map(post => [ post.id, post ])) },
                 app: { current: { thread: URL } }
             });
-            let delreq = {
+            let delform = {
                 targets: new Map([
                     [ 'may/b/100', { post: 'may/b/100', checked: true } ],
                     [ 'may/b/101', { post: 'may/b/101', checked: false } ],
                     [ 'may/b/102', { post: 'may/b/102', checked: true } ]
                 ])
             };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
+            store.dispatch(setAppThreads({ url: URL, delform }));
         });
 
         const URL = 'https://may.2chan.net/b/res/123456789.htm';
 
         it('should register tasks', async () => {
-            let reason = 110;
+            let form = { pwd: 'password' };
 
-            await registerDelreqTasks(store, { url: URL, reason });
+            await registerPostdelTasks(store, { url: URL, ...form });
 
             let { app } = store.getState();
 
-            let got = app.threads.get(URL).delreq;
+            let got = app.threads.get(URL).delform;
             let exp = {
+                action: null,
                 targets: new Map([
                     [ 'may/b/101', { post: 'may/b/101', checked: false } ]
                 ])
             };
             assert.deepStrictEqual(got , exp);
 
-            got = pluck(app.tasks.delreqs, 'post');
+            got = pluck(app.tasks.postdels, 'post');
             exp = [ { post: 'may/b/100' }, { post: 'may/b/102' } ];
             assert.deepStrictEqual(got , exp);
 
-            got = app.workers.delreq.tasks;
+            got = app.workers.postdel.tasks;
             exp = [ 'may/b/100', 'may/b/102' ];
             assert.deepStrictEqual(got , exp);
         });
