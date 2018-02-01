@@ -1,5 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
+import { preventDefault } from '../../util';
 
 export default class DropBox extends Component {
     constructor(props) {
@@ -80,8 +81,4 @@ function handleDrop(event) {
     let { files } = event.dataTransfer;
     let { setFiles } = this.props;
     setFiles(files);
-}
-
-function preventDefault(event) {
-    event.preventDefault();
 }

@@ -18,3 +18,12 @@ export function isThreadLazyDisplay(appThread) {
     if (displayThreshold == null) return false;
     return true;
 }
+
+
+export function preventDefault(event) {
+    event.preventDefault();
+}
+
+export function stopPropagation(event) {
+    event.stopPropagation();
+}
