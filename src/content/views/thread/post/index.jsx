@@ -27,13 +27,16 @@ export default class Post extends Component {
 
         if (post == null) return null;
 
-        let handlers = this._handlers;
-
-        let props = { commit, post, app, handlers, isActive };
         let { expire } = thread || {};
+        let { delform, idipIndex } = app || {};
 
-        if (post.index === 0) return <OriginalPost {...{ ...props, expire }} />;
-        return <Reply {...props} />;
+        let handlers = this._handlers;
+        let isChecked = isPostChecked(post, delform);
+
+        let props = { commit, post, handlers, isChecked, isActive };
+
+        if (post.index !== 0) return <Reply {...{ ...props, idipIndex }} />;
+        return <OriginalPost {...{ ...props, expire, app }} />;
     }
 }
 
@@ -49,6 +52,8 @@ function makeHandlers() {
     let quoteComment = handleQuote.bind(this, 'comment');
     let quoteFile = handleQuote.bind(this, 'file');
 
+    let changePostdel = handleChangePostdel.bind(this);
+
     let delreq = handleDelreq.bind(this);
     let soudane = handleSoudane.bind(this);
 
@@ -59,8 +64,15 @@ function makeHandlers() {
         popupPostsById, popupPostsByIp, popupQuote,
         quoteNo, quoteComment, quoteFile,
         delreq, soudane,
+        changePostdel,
         enter, leave
     };
+}
+
+function isPostChecked(post, delform) {
+    let { targets } = delform || {};
+    if (targets == null) return false;
+    return targets.has(post.id) ? true : false;
 }
 
 function handlePopupPostsById(event) {
@@ -100,6 +112,23 @@ function handleQuote(type, event) {
     let { id } = post;
     commit('thread/quote', { type, id });
     commit('thread/openPanel', P_TYPE.FORM_POST);
+}
+
+function handleChangePostdel(event) {
+    let $el = event.target;
+    if (!$el.classList.contains(CN.post.POSTDEL_CHECKBOX)) return;
+    event.stopPropagation();
+
+    let { commit, post, thread } = this.props;
+    let { url } = thread;
+
+    if (!$el.checked) {
+        commit('thread/removeDelformTargets', { url, postId: post.id });
+        return;
+    }
+
+    commit('thread/addDelformTargets', { url, postId: post.id });
+    commit('thread/openPanel', P_TYPE.FORM_DEL);
 }
 
 function handleDelreq(event) {

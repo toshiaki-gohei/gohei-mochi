@@ -7,7 +7,7 @@ export const addDelformTargets = util.makeAdd('delform', 'postdels');
 
 export const setDelformTargets = util.makeSet('delform');
 
-const removeDelformTargets = util.makeRemove('delform');
+export const removeDelformTargets = util.makeRemove('delform');
 
 export const clearDelformTargets = util.makeClear('delform');
 

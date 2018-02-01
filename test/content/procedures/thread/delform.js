@@ -88,7 +88,7 @@ describe(__filename, () => {
     });
 
     describe('removeDelformTargets()', () => {
-        const { removeDelformTargets } = procedures.internal;
+        const { removeDelformTargets } = procedures;
 
         beforeEach(() => {
             let delform = {

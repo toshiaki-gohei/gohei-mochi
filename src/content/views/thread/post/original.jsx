@@ -15,20 +15,18 @@ export default class OriginalPost extends Component {
     }
 
     render() {
-        let { commit, post, expire, app, handlers, isActive = false } = this.props;
+        let { commit, post, expire, app, handlers, isChecked, isActive = false } = this.props;
         if (post == null) return null;
 
         let { messages, idipIndex } = app || {};
-
-        let { enter, leave, ...rest } = handlers || {};
-        handlers = rest;
+        let { enter, leave } = handlers || {};
 
         let displayAll = this._displayAll;
 
         return (
 <div className={CLASS_NAME} onMouseEnter={enter} onMouseLeave={leave}>
   <File {...{ commit, post }} />
-  <Header {...{ post, idipIndex, handlers }} />
+  <Header {...{ post, idipIndex, handlers, isChecked }} />
   <Body {...{ post, handlers }} />
   <Action {...{ post, handlers, isActive }} />
   <Expire {...{ expire }} />

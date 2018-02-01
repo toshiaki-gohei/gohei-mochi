@@ -7,17 +7,14 @@ import File from './file.jsx';
 import Action from './action.jsx';
 
 export default function Reply(props) {
-    let { commit, post, app, handlers, isActive = false } = props;
+    let { commit, post, idipIndex, handlers, isChecked, isActive = false } = props;
     if (post == null) return null;
 
-    let { idipIndex } = app || {};
-
-    let { enter, leave, ...rest } = handlers || {};
-    handlers = rest;
+    let { enter, leave } = handlers || {};
 
     return (
 <div className={CLASS_NAME} onMouseEnter={enter} onMouseLeave={leave}>
-  <Header {...{ post, idipIndex, handlers }} />
+  <Header {...{ post, idipIndex, handlers, isChecked }} />
   <File {...{ commit, post }} />
   <Body {...{ post, handlers }} />
   <Action {...{ post, handlers, isActive }} />

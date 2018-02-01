@@ -1,8 +1,9 @@
 'use strict';
 import React from 'react';
+import { CLASS_NAME as CN } from '~/content/constants';
 import { marginLeftForThumb } from './file.jsx';
 
-export default function Header({ post, idipIndex, handlers }) {
+export default function Header({ post, idipIndex, handlers, isChecked = false }) {
     let { id, index, no, date, userId, userIp, del, sod, file } = post || {};
     let { popupPostsById, popupPostsByIp, delreq, soudane } = handlers || {};
 
@@ -12,6 +13,7 @@ export default function Header({ post, idipIndex, handlers }) {
     return (
 <div className="gohei-post-header" style={style}>
   <Index {...post} />
+  <Checkbox {...{ isChecked, handlers }} />
   <Subject {...post} />
   <Name {...post} />
   <Mailto {...post} />
@@ -30,6 +32,12 @@ export default function Header({ post, idipIndex, handlers }) {
 function Index({ index }) {
     if (index === 0) return null;
     return <span className="gohei-index">{index}</span>;
+}
+
+function Checkbox({ isChecked, handlers }) {
+    let { changePostdel } = handlers || {};
+    return <input type="checkbox" className={CN.post.POSTDEL_CHECKBOX}
+                  checked={isChecked} onChange={changePostdel} />;
 }
 
 function Subject({ subject }) {

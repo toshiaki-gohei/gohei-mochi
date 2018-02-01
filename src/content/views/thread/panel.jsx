@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import Postform from './form-post/index.jsx';
 import Delreq from './delreq.jsx';
-import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
+import { CLASS_NAME as CN, THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 
 export default class Panel extends Component {
     constructor(props) {
@@ -139,6 +139,8 @@ function handleClose(event) {
 async function handleClickBody(event) {
     let $el = event.target;
     if (isOnPanel($el)) return;
+    if ($el.classList.contains(CN.post.POSTDEL_CHECKBOX)) return;
+
     let { commit } = this.props;
     await commit('thread/closePanel'); // async/await for avoid errors on browser tests
 }

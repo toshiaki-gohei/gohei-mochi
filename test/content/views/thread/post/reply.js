@@ -27,6 +27,14 @@ $`.replace(/\n/g, ''));
             assert(exp.test(got));
         });
 
+        it('should render checked checkbox if post is checked', () => {
+            let isChecked = true;
+            let handlers = { changePostdel: () => {} };
+            let $el = render(<Reply {...{ post, isChecked, handlers }} />);
+            let got = $el.querySelector('.gohei-postdel-checkbox');
+            assert(got.checked === true);
+        });
+
         it('should render action if post is active', () => {
             let $el = render(<Reply {...{ post, isActive: true }} />);
             let got = $el.querySelector('.gohei-post-action');
