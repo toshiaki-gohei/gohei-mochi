@@ -1,5 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
+import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 import { F } from '~/common/util';
 
 export default class Delreq extends Component {
@@ -14,7 +15,7 @@ export default class Delreq extends Component {
 
         this._handlers = {
             toggleReasons: handleSetVisibleReasons.bind(this),
-            clickTargets: handleClickTargets.bind(this),
+            clickTarget: handleClickTarget.bind(this),
             clearTargets: handleClearTargets.bind(this),
             changeReason: handleChangeReason.bind(this),
             addToTasks: handleAddToTasks.bind(this)
@@ -30,10 +31,10 @@ export default class Delreq extends Component {
         let { changeReason, ...rest } = this._handlers;
         let handlers = rest;
 
-        let styleDelreq = panel.type === 'DELREQ' ? null : { display: 'none' };
+        let style = panel.type === P_TYPE.DELREQ ? null : { display: 'none' };
 
         return (
-<div className="gohei-delreq" style={styleDelreq}>
+<div className="gohei-delreq" style={style}>
   <div>削除依頼</div>
   <LeftPane {...{ commit, state, app, handlers }} />
   <RightPane {...{ commit, state, app, changeReason }} />
@@ -110,10 +111,10 @@ function isTarget(delreq) {
 
 function Target({ checked, post, handlers }) {
     let { id, index, no } = post;
-    let { clickTargets } = handlers;
+    let { clickTarget } = handlers;
 
     return (
-<tr className="gohei-tr" data-post-id={id} onClick={clickTargets}>
+<tr className="gohei-tr" data-post-id={id} onClick={clickTarget}>
   <td className="gohei-td gohei-text-center gohei-selectable">
     <input type="checkbox" checked={checked} onChange={noop} />
   </td>
@@ -263,7 +264,7 @@ function handleSetVisibleReasons(event) {
     this.setState({ isVisibleReasons: isVisible });
 }
 
-function handleClickTargets(event) {
+function handleClickTarget(event) {
     event.stopPropagation();
     let $el = event.currentTarget;
     let { postId } = $el.dataset;

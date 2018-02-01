@@ -78,13 +78,13 @@ export default class Postform extends Component {
 
         if (panel == null || postform == null) return null;
 
-        let stylePostForm = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
+        let style = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
 
         let { action, hiddens, comment, file } = postform || {};
         let { submit, setFiles, ...handlers } = this._handlers;
 
         return (
-<div className="gohei-postform" style={stylePostForm}>
+<div className="gohei-postform" style={style}>
   <div className="gohei-err-msg gohei-text-error">{errmsg}</div>
   <form action={action} method="POST" encType="multipart/form-data"
         ref={$el => this._$form = $el} onSubmit={submit}>
