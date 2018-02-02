@@ -34,17 +34,6 @@ describe(__filename, () => {
 
     const getPosts = () => store.getState().domain.posts;
 
-    describe('soudane()', () => {
-        it('should return response if network error occurs', async () => {
-            let res = await soudane(store, { id: 'may/b/123001', url: 'about:config' });
-
-            let { ok, status, statusText } = res;
-            assert(ok === false);
-            assert(status === 499);
-            assert(/^fetch error: .+/.test(statusText));
-        });
-    });
-
     (isBrowser ? describe.skip : describe)('soudane(): use http server', () => {
         let server;
         beforeEach(async () => server = await createServer());

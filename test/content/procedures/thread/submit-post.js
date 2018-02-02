@@ -11,8 +11,6 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    const store = null;
-
     describe('submit()', () => {
         let backup;
         beforeEach(() => backup = fetch.post);
@@ -20,19 +18,10 @@ describe(__filename, () => {
 
         const formdata = new FormData();
 
-        it('should return response if network error occurs', async () => {
-            let res = await submit(store, { url: 'about:config', formdata });
-
-            let { ok, status, statusText } = res;
-            assert(ok === false);
-            assert(status === 499);
-            assert(/^fetch error: .+/.test(statusText));
-        });
-
         it('should handle correctly if response is error of "200 OK"', async () => {
             fetch.post = () => ({ ok: true, status: 200, text: 'error content' });
 
-            let got = await submit(store, { url: 'http://example.net', formdata });
+            let got = await submit(null, { url: 'http://example.net', formdata });
             let exp = {
                 ok: false, status: 200,
                 statusText: 'なんかエラーだって: console にレスポンスを出力',
@@ -91,7 +80,7 @@ cookie-pwd
             fd.set('com', 'test');
             fd.set('pwd', 'cookie-pwd');
 
-            let res = await submit(store, { url: getUrl(), formdata: fd });
+            let res = await submit(null, { url: getUrl(), formdata: fd });
             assert(res.status === 200);
         });
     });
