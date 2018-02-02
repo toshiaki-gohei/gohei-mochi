@@ -133,13 +133,18 @@ Content-Disposition: form-data; name="dlv"
         const { isSuccess } = internal;
 
         it('should return true if succeed to delreq', () => {
-            let html = `
+            let text = `
 <html><head><META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=Shift_JIS">
 <title>削除依頼フォーム</title>
 </head><body>登録しました<a href="javascript:void(0);" onclick="history.go(-2);return(false);">戻る</a></body></html>
 `.replace(/\n/g, '');
-            let got = isSuccess(html);
+            let got = isSuccess({ ok: true, text });
             assert(got === true);
+        });
+
+        it('should return false if fail to submit', () => {
+            let got = isSuccess({ ok: false });
+            assert(got === false);
         });
     });
 
@@ -154,9 +159,8 @@ Content-Disposition: form-data; name="dlv"
         <center><font color=red size=5><b>同じIPアドレスからの削除依頼があります<br><br></b></font></center>
         <br><br><hr size=1><a href="javascript:void(0);" onclick="history.go(-2);return(false);">戻る</a></body></html>
 `.replace(/\n/g, '');
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: '同じIPアドレスからの削除依頼があります'
@@ -166,9 +170,8 @@ Content-Disposition: form-data; name="dlv"
 
         it('should set parsed message if can parse response body', () => {
             let text = '<body>unknown <b>error</b> message</body>';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'unknown error message'
@@ -178,14 +181,19 @@ Content-Disposition: form-data; name="dlv"
 
         it('should set res.ok false if response is unknown error message', () => {
             let text = 'unknown error message';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'なんかエラーだって: console にレスポンスを出力'
             };
             assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return res as it is if res.ok is false', () => {
+            let res = { ok: false };
+            let got = checkError(res);
+            assert(got === res);
         });
     });
 });

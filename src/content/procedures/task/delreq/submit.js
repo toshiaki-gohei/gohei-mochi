@@ -31,9 +31,7 @@ function makeFormData(form) {
 function setResponse(store, res, delreq) {
     let status = null;
 
-    if (!res.ok) {
-        status = 'error';
-    } else if (res.ok && isSuccess(res.text)) {
+    if (isSuccess(res)) {
         status = 'complete';
     } else {
         status = 'error';
@@ -44,9 +42,13 @@ function setResponse(store, res, delreq) {
     store.dispatch(setAppTasksDelreqs({ post, status, res }));
 }
 
-function isSuccess(html) {
+function isSuccess(res) {
+    let { ok, text } = res;
+
+    if (!ok) return false;
+
     switch (true) {
-    case /<body>登録しました/.test(html):
+    case /<body>登録しました/.test(text):
         return true;
     default:
         return false;
@@ -54,7 +56,9 @@ function isSuccess(html) {
 }
 
 function checkError(res) {
-    let { text } = res;
+    let { ok, text } = res;
+
+    if (!ok) return res;
 
     res.ok = false;
 

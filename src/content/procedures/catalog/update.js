@@ -24,7 +24,7 @@ export async function update(store, url, { sort = null } = {}) {
 
     store.dispatch(setAppCatalogs({ url, isUpdating: false, lastUpdatedByUser }));
 
-    setRes(store, { url, res });
+    setResponse(store, { url, res });
 }
 
 function options(catalog) {
@@ -34,7 +34,7 @@ function options(catalog) {
     return { headers };
 }
 
-function setRes(store, { url, res }) {
+function setResponse(store, { url, res }) {
     let { domain, app } = store.getState();
 
     let { updateHttpRes } = app.catalogs.get(url);

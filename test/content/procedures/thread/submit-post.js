@@ -68,8 +68,8 @@ cookie-pwd
 
                     res.writeHead(200, { 'Content-type': 'text/plain; charset=Shift_JIS' });
                     let sjis = encode(`
-更新延期  スレッド<font color="#dd0000">123456789</font>に切り替えます 処理時間0.123秒
-`.replace(/\n/g, '\r\n'));
+<body>更新延期  スレッド<font color="#dd0000">123456789</font>に切り替えます 処理時間0.123秒</body>
+`.replace(/\n/g, ''));
                     res.end(Buffer.from(sjis), 'binary');
                 });
             });
@@ -81,6 +81,7 @@ cookie-pwd
             fd.set('pwd', 'cookie-pwd');
 
             let res = await submit(null, { url: getUrl(), formdata: fd });
+            assert(res.ok === true);
             assert(res.status === 200);
         });
     });
@@ -89,27 +90,27 @@ cookie-pwd
         const { isSuccess } = internal;
 
         it('should return true if succeed to post', () => {
-            let html = `
+            let text = `
 <html>
 <head></head>
 <body>更新延期  スレッド<font color="#dd0000">123456789</font>に切り替えます 処理時間0.123秒</body>
 </html>
 `.replace(/\n/g, '');
-            let got = isSuccess(html);
+            let got = isSuccess({ ok: true, text });
             assert(got === true);
 
-            html = `
+            text = `
 <html>
 <head><META HTTP-EQUIV="refresh" content="1;URL=res/123456789.htm"></head>
 <body> スレッド<font color="#dd0000">123456789</font>に切り替えます 処理時間0.123秒</body>
 </html>
 `.replace(/\n/g, '');
-            got = isSuccess(html);
+            got = isSuccess({ ok: true, text });
             assert(got === true);
         });
 
         it('should return true if succeed to post with image', () => {
-            let html = `
+            let text = `
 <html>
 <head></head>
 <body>
@@ -118,8 +119,13 @@ cookie-pwd
 </body>
 </html>
 `.replace(/\n/g, '');
-            let got = isSuccess(html);
+            let got = isSuccess({ ok: true, text });
             assert(got === true);
+        });
+
+        it('should return false if fail to submit', () => {
+            let got = isSuccess({ ok: false });
+            assert(got === false);
         });
     });
 
@@ -135,9 +141,8 @@ cookie-pwd
 </div>
 </html>
 `.replace(/\n/g, '');
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'アップロードに失敗しました。同じ画像があります'
@@ -147,9 +152,8 @@ cookie-pwd
 
         it('should set cookie error message if already known error message', () => {
             let text = '<body>cookieを有効にしてもう一度送信してください</body>';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'cookieを有効にしてもう一度送信してください'
@@ -165,9 +169,8 @@ cookie-pwd
         <div align=center><font color=red size=5><b>何か<br>書いて下さい<br><br><a href=/b/futaba.htm>リロード</a></b></font></div>
         <br><br><hr size=1></body></html>
 `;
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: '何か書いて下さい'
@@ -177,9 +180,8 @@ cookie-pwd
 
         it('should set parsed message if can parse response body', () => {
             let text = '<body>unknown <b>error</b> message</body>';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'unknown error message'
@@ -189,14 +191,19 @@ cookie-pwd
 
         it('should set res.ok false if response is unknown error message', () => {
             let text = 'unknown error message';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'なんかエラーだって: console にレスポンスを出力'
             };
             assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return res as it is if res.ok is false', () => {
+            let res = { ok: false };
+            let got = checkError(res);
+            assert(got === res);
         });
     });
 });

@@ -5,7 +5,7 @@ import createStore from '~/content/reducers';
 import { Post } from '~/content/model';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
-import { pluckFromMap as pluck } from '@/support/util';
+import { pick, pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
     before(() => setup());
@@ -49,10 +49,12 @@ describe(__filename, () => {
 
             let res = await soudane(store, { id: 'may/b/123001', url: getUrl() });
 
-            assert(res.status === 200);
+            let got = pick(res, 'ok', 'status');
+            let exp = { ok: true, status: 200 };
+            assert.deepStrictEqual(got, exp);
 
-            let got = pluck(getPosts(), 'index', 'name', 'sod');
-            let exp = [
+            got = pluck(getPosts(), 'index', 'name', 'sod');
+            exp = [
                 { index: 0, name: 'スレあき', sod: null },
                 { index: 1, name: 'としあき1', sod: 10 },
                 { index: 2, name: 'としあき2', sod: null }
@@ -70,10 +72,15 @@ describe(__filename, () => {
 
             let res = await soudane(store, { id: 'may/b/123001', url: getUrl() });
 
-            assert(res.status === 404);
-            assert(res.text === 'error');
+            let got = pick(res, 'ok', 'status', 'text');
+            let exp = {
+                ok: false,
+                status: 404,
+                text: 'error'
+            };
+            assert.deepStrictEqual(got, exp);
 
-            let got = getPosts();
+            got = getPosts();
             assert(got === initial);
         });
 
@@ -87,11 +94,16 @@ describe(__filename, () => {
 
             let res = await soudane(store, { id: 'may/b/123001', url: getUrl() });
 
-            assert(res.status === 200);
-            assert(res.statusText === 'could not parse res.text');
-            assert(res.text === 'error');
+            let got = pick(res, 'ok', 'status', 'statusText', 'text');
+            let exp = {
+                ok: false,
+                status: 200,
+                statusText: 'could not parse res.text',
+                text: 'error'
+            };
+            assert.deepStrictEqual(got, exp);
 
-            let got = getPosts();
+            got = getPosts();
             assert(got === initial);
         });
     });

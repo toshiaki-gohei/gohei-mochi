@@ -23,7 +23,7 @@ export async function update(store, url) {
 
     store.dispatch(setAppThreads({ url, isUpdating: false, lastUpdatedByUser }));
 
-    setRes(store, { url, res });
+    setResponse(store, { url, res });
 }
 
 function options(thread) {
@@ -33,7 +33,7 @@ function options(thread) {
     return { headers };
 }
 
-function setRes(store, { url, res }) {
+function setResponse(store, { url, res }) {
     let { domain, app } = store.getState();
 
     let { updateHttpRes } = app.threads.get(url);

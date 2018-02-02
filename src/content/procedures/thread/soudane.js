@@ -18,13 +18,9 @@ export async function soudane(store, { id, url = null }) {
 
     let res = await fetch.get(url);
 
-    if (!res.ok) return res;
+    if (!isSuccess(res)) return checkError(res);
 
     let sod = +res.text;
-    if (!Number.isInteger(+sod)) {
-        res.statusText = 'could not parse res.text';
-        return res;
-    }
 
     post = new Post({ ...post.object(), sod });
     store.dispatch(setDomainPosts(post));
@@ -38,6 +34,29 @@ function sodurl(url, post) {
     let { href, origin } = url;
     let { boardKey } = separate(href);
     return `${origin}/sd.php?${boardKey}.${post.no}`;
+}
+
+function isSuccess(res) {
+    let { ok, text } = res;
+
+    if (!ok) return false;
+
+    if (Number.isInteger(+text)) return true;
+    return false;
+}
+
+function checkError(res) {
+    let { ok, text } = res;
+
+    if (!ok) return res;
+
+    res.ok = false;
+
+    if (!Number.isInteger(+text)) {
+        res.statusText = 'could not parse res.text';
+    }
+
+    return res;
 }
 
 export const internal = {

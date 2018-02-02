@@ -9,16 +9,20 @@ export async function submit(store, { url, formdata: fd }) {
 
     let res = await fetch.post(url, opts);
 
-    if (res.ok && !isSuccess(res.text)) return checkError(res);
+    if (isSuccess(res)) return res;
 
-    return res;
+    return checkError(res);
 }
 
 const TIMEOUT = 60 * 1000;
 
-function isSuccess(html) {
+function isSuccess(res) {
+    let { ok, text } = res;
+
+    if (!ok) return false;
+
     switch (true) {
-    case /<body>.+スレッド<font.*?>\d+<\/font>に切り替えます.+<\/body>/.test(html):
+    case /<body>.+スレッド<font.*?>\d+<\/font>に切り替えます.+<\/body>/.test(text):
         return true;
     default:
         return false;
@@ -26,7 +30,9 @@ function isSuccess(html) {
 }
 
 function checkError(res) {
-    let { text } = res;
+    let { ok, text } = res;
+
+    if (!ok) return res;
 
     res.ok = false;
 
