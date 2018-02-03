@@ -1,12 +1,10 @@
 'use strict';
 import { setAppWorkers, clearAppWorkerId } from '../../reducers/actions';
 import delreq from './delreq';
-import postdel from './postdel';
 import genId from '../../util/id-generator';
 
 const workers = {
-    delreq,
-    postdel
+    delreq
 };
 
 export function register(store, name, tasks) {

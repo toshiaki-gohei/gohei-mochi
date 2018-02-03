@@ -1,37 +1,33 @@
 'use strict';
+import { setAppThreads } from '~/content/reducers/actions';
+import { createCheckTarget } from '~/content/reducers/app/threads';
 import * as util from './util/check-target';
-import { addPostdels } from '../task';
-import { register } from '../worker';
 
-export const addDelformTargets = util.makeAdd('delform', 'postdels');
+export function addDelformTargets(store, { url, postId, postIds }) {
+    let { app } = store.getState();
+    if (url == null) url = app.current.thread;
+    if (url == null) throw new TypeError('thread url is required');
+
+    if (postId != null) postIds = [ postId ];
+    if (postIds == null || postIds.length === 0) return;
+
+    let { delform } = app.threads.get(url);
+
+    postIds = util.uniq(postIds, delform.targets);
+    if (postIds.length === 0) return;
+
+    let targets = new Map(delform.targets);
+    for (let key of postIds) {
+        let target = createCheckTarget({ post: key, checked: true });
+        targets.set(key, target);
+    }
+
+    delform = { targets };
+    store.dispatch(setAppThreads({ url, delform }));
+}
 
 export const setDelformTargets = util.makeSet('delform');
 
 export const removeDelformTargets = util.makeRemove('delform');
 
 export const clearDelformTargets = util.makeClear('delform');
-
-export async function registerPostdelTasks(store, opts) {
-    let { url, ...form } = opts || {};
-
-    let { app } = store.getState();
-    let { delform } = app.threads.get(url);
-
-    let postIds = [];
-    for (let [ , { post, checked } ] of delform.targets) {
-        if (!checked) continue;
-        postIds.push(post);
-    }
-    removeDelformTargets(store, { url, postIds });
-
-    let posts = postIds;
-    let status = 'stanby';
-    await addPostdels(store, { url, posts, ...form, status });
-
-    let tasks = postIds;
-    await register(store, 'postdel', tasks);
-}
-
-export const internal = {
-    removeDelformTargets
-};

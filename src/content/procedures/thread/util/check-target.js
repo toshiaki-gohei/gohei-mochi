@@ -2,33 +2,7 @@
 import { setAppThreads } from '~/content/reducers/actions';
 import { createCheckTarget } from '~/content/reducers/app/threads';
 
-export function makeAdd(name, taskName) {
-    return (store, { url, postId, postIds }) => {
-        let { app } = store.getState();
-        if (url == null) url = app.current.thread;
-        if (url == null) throw new TypeError('thread url is required');
-
-        if (postId != null) postIds = [ postId ];
-        if (postIds == null || postIds.length === 0) return;
-
-        let container = app.threads.get(url)[name];
-
-        postIds = uniq(container.targets, postIds);
-        if (postIds.length === 0) return;
-
-        let targets = new Map(container.targets);
-        for (let key of postIds) {
-            let checked = app.tasks[taskName].has(key) ? false : true;
-            let target = createCheckTarget({ post: key, checked });
-            targets.set(key, target);
-        }
-
-        container = { targets };
-        store.dispatch(setAppThreads({ url, [name]: container }));
-    };
-}
-
-function uniq(targets, postIds) {
+export function uniq(postIds, targets) {
     return postIds.filter(id => !targets.has(id));
 }
 

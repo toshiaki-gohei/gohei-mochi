@@ -3,8 +3,7 @@ import { setAppThreads } from '../../reducers/actions';
 import { getCurrentAppThread } from '../../reducers/getters';
 
 export {
-    addDelformTargets, setDelformTargets, removeDelformTargets, clearDelformTargets,
-    registerPostdelTasks
+    addDelformTargets, setDelformTargets, removeDelformTargets, clearDelformTargets
 } from './delform';
 export {
     addDelreqTargets, setDelreqTargets, clearDelreqTargets, registerDelreqTasks

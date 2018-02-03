@@ -1,8 +1,8 @@
 'use strict';
 import assert from 'assert';
-import submit, { internal } from '~/content/procedures/task/postdel/submit';
+import submit, { internal } from '~/content/procedures/thread/submit-del';
 import createStore from '~/content/reducers';
-import { setDomainPosts, setAppTasksPostdels } from '~/content/reducers/actions';
+import { setDomainPosts } from '~/content/reducers/actions';
 import { encode, decode } from '~/content/util/encoding';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
@@ -17,48 +17,22 @@ describe(__filename, () => {
         store = createStore();
         let posts = [ 123000, 123001, 123002 ]
             .map((no, index) => ({ id: `may/b/${no}`, index, no }));
-        let postdels = posts.map(({ id }) => ({ post: id }));
         store.dispatch(setDomainPosts(posts));
-        store.dispatch(setAppTasksPostdels(postdels));
     });
-
-    const getPostdel = postId => store.getState().app.tasks.postdels.get(postId);
 
     describe('submit()', () => {
         let backup;
         beforeEach(() => backup = fetch.post);
         afterEach(() => fetch.post = backup);
 
-        const post = 'may/b/123001';
-
-        it('should set status while submitting', async () => {
-            fetch.post = () => {
-                let { status } = getPostdel(post);
-                assert(status === 'posting');
-                let text = '<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">';
-                return { ok: true, status: 200, statusText: 'OK', text };
-            };
-
-            await submit(store, { url: 'http://example.net', post });
-
-            let postdel = getPostdel(post);
-            assert(postdel.status === 'complete');
-            let got = postdel.res;
-            let exp = { ok: true, status: 200, statusText: 'OK' };
-            assert.deepStrictEqual(got, exp);
-        });
-
         it('should handle correctly if response is error of "200 OK"', async () => {
             fetch.post = () => ({ ok: true, status: 200, text: 'error content' });
 
-            await submit(store, { url: 'http://example.net', post });
-
-            let postdel = getPostdel(post);
-            assert(postdel.status === 'error');
-            let got = postdel.res;
+            let got = await submit(store, { url: 'http://example.net' });
             let exp = {
                 ok: false, status: 200,
-                statusText: 'なんかエラーだって: console にレスポンスを出力'
+                statusText: 'なんかエラーだって: console にレスポンスを出力',
+                text: 'error content'
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -71,7 +45,7 @@ describe(__filename, () => {
 
         const getUrl = () => `http://localhost:${server.address().port}`;
 
-        it('should submit postdel', async () => {
+        it('should submit post', async () => {
             server.on('request', (req, res) => {
                 let body = Buffer.from([]);
                 req.on('data', chunk => { body = Buffer.concat([ body, chunk ]); });
@@ -91,33 +65,30 @@ password
 Content-Disposition: form-data; name="123001"
 
 delete
+--${boundary}
+Content-Disposition: form-data; name="123002"
+
+delete
 --${boundary}--
 `.replace(/\n/g, '\r\n');
                     assert(got === exp);
 
                     res.writeHead(200, { 'Content-type': 'text/plain; charset=Shift_JIS' });
-                    let sjis = encode('<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">');
+                    let sjis = encode(`
+<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">
+`.replace(/\n/g, ''));
                     res.end(Buffer.from(sjis), 'binary');
                 });
             });
 
-            let postdel = {
-                post: 'may/b/123001',
-                url: getUrl(),
-                form: {
-                    mode: 'usrdel',
-                    onlyimgdel: null,
-                    pwd: 'password'
-                }
+            let form = {
+                posts: [ 'may/b/123001', 'may/b/123002' ],
+                pwd: 'password'
             };
 
-            await submit(store, postdel);
-
-            postdel = getPostdel('may/b/123001');
-            assert(postdel.status === 'complete');
-            let got = postdel.res;
-            let exp = { ok: true, status: 200, statusText: 'OK' };
-            assert.deepStrictEqual(got, exp);
+            let res = await submit(store, { url: getUrl(), ...form });
+            assert(res.ok === true);
+            assert(res.status === 200);
         });
     });
 
@@ -125,9 +96,14 @@ delete
         const { isSuccess } = internal;
 
         it('should return true if succeed to postdel', () => {
-            let html = '<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">';
-            let got = isSuccess(html);
+            let text = '<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">';
+            let got = isSuccess({ ok: true, text });
             assert(got === true);
+        });
+
+        it('should return false if fail to submit', () => {
+            let got = isSuccess({ ok: false });
+            assert(got === false);
         });
     });
 
@@ -145,9 +121,8 @@ delete
         <br><br><hr size=1>
 </body></html>
 `.replace(/\n/g, '');
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: '削除したい記事をチェックしてください'
@@ -164,9 +139,8 @@ delete
         <br><br><hr size=1>
 </body></html>
 `.replace(/\n/g, '');
-            res = { ok: true, text };
 
-            got = checkError(res);
+            got = checkError({ ok: true, text });
             exp = {
                 ok: false, text,
                 statusText: '削除できる記事が見つからないかパスワードが間違っています。No.123001を削除する権限はありません'
@@ -176,9 +150,8 @@ delete
 
         it('should set parsed message if can parse response body', () => {
             let text = '<body>unknown <b>error</b> message</body>';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'unknown error message'
@@ -188,14 +161,19 @@ delete
 
         it('should set res.ok false if response is unknown error message', () => {
             let text = 'unknown error message';
-            let res = { ok: true, text };
 
-            let got = checkError(res);
+            let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
                 statusText: 'なんかエラーだって: console にレスポンスを出力'
             };
             assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return res as it is if res.ok is false', () => {
+            let res = { ok: false };
+            let got = checkError(res);
+            assert(got === res);
         });
     });
 });

@@ -14,12 +14,10 @@ describe(__filename, () => {
             threads: new Map(),
             catalogs: new Map(),
             tasks: {
-                delreqs: new Map(),
-                postdels: new Map()
+                delreqs: new Map()
             },
             workers: {
-                delreq: { tasks: [], id: null },
-                postdel: { tasks: [], id: null }
+                delreq: { tasks: [], id: null }
             }
         },
         ui: {

@@ -25,8 +25,7 @@ describe(__filename, () => {
 
             let got = getWorkers();
             let exp = {
-                delreq: { tasks: [ 'task-delreq01', 'task-delreq02' ], id: null },
-                postdel: { tasks: [], id: null }
+                delreq: { tasks: [ 'task-delreq01', 'task-delreq02' ], id: null }
             };
             assert.deepStrictEqual(got, exp);
         });
@@ -40,8 +39,7 @@ describe(__filename, () => {
                 delreq: {
                     tasks: [ 'delreq01', 'delreq02', 'delreq03', 'delreq04' ],
                     id: null
-                },
-                postdel: { tasks: [], id: null }
+                }
             };
             assert.deepStrictEqual(got, exp);
         });

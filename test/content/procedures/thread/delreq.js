@@ -33,6 +33,56 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
+        it('should add a delreq target', () => {
+            let postId = 'post01';
+            addDelreqTargets(store, { url: URL, postId });
+
+            let got = getDelreq();
+            let exp = {
+                targets: new Map([
+                    [ 'post01', { post: 'post01', checked: true } ]
+                ])
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should do nothing if contains delreq targets', () => {
+            let postIds = [ 'post01', 'post02' ];
+            addDelreqTargets(store, { url: URL, postIds });
+            let prev = getDelreq();
+
+            postIds = [ 'post02' ];
+            addDelreqTargets(store, { url: URL, postIds });
+
+            let got = getDelreq();
+            let exp = {
+                targets: new Map([
+                    [ 'post01', { post: 'post01', checked: true } ],
+                    [ 'post02', { post: 'post02', checked: true } ]
+                ])
+            };
+            assert.deepStrictEqual(got, exp);
+            assert(got === prev);
+        });
+
+        it('should add delreq targets ignored containing ids', () => {
+            let postIds = [ 'post01', 'post02' ];
+            addDelreqTargets(store, { url: URL, postIds });
+
+            postIds = [ 'post02', 'post03' ];
+            addDelreqTargets(store, { url: URL, postIds });
+
+            let got = getDelreq();
+            let exp = {
+                targets: new Map([
+                    [ 'post01', { post: 'post01', checked: true } ],
+                    [ 'post02', { post: 'post02', checked: true } ],
+                    [ 'post03', { post: 'post03', checked: true } ]
+                ])
+            };
+            assert.deepStrictEqual(got, exp);
+        });
+
         it('should add delreq targets if contains app.tasks.delreqs', () => {
             store.dispatch(setAppTasksDelreqs([
                 { post: 'post01', status: 'complete', res: { ok: true, status: 200 } },

@@ -1,58 +1,47 @@
 'use strict';
-import { setAppTasksPostdels } from '~/content/reducers/actions';
 import fetch from '~/content/util/fetch';
 import FormData from '~/content/util/form-data';
 import { textify } from '~/content/util/html';
 
 export default submit;
 
-export async function submit(store, postdel) {
-    let { post, url, form } = postdel;
-
-    let fd = makeFormData(store, post, form);
-    let opts = { headers: fd.headers, body: fd.blobify() };
-
-    store.dispatch(setAppTasksPostdels({ post, status: 'posting' }));
+export async function submit(store, { url, ...form }) {
+    let fd = makeFormData(store, form);
+    let opts = { headers: fd.headers, body: fd.blobify(), timeout: TIMEOUT };
 
     let res = await fetch.post(url, opts);
 
-    setResponse(store, res, postdel);
+    if (isSuccess(res)) return res;
+
+    return checkError(res);
 }
 
-function makeFormData(store, postId, form) {
+const TIMEOUT = 60 * 1000;
+
+function makeFormData(store, form) {
+    let { posts = [], mode = 'usrdel', pwd = '', onlyimgdel } = form || {};
+
     let fd = new FormData();
+    fd.set('mode', mode);
+    fd.set('pwd', pwd);
+    if (onlyimgdel != null) fd.set('onlyimgdel', onlyimgdel);
 
-    for (let name in form) {
-        let value = form[name];
-        if (value == null) continue;
-        fd.set(name, value);
+    let map = store.getState().domain.posts;
+    for (let postId of posts) {
+        let { no } = map.get(postId);
+        fd.set(no, 'delete');
     }
-
-    let { no } = store.getState().domain.posts.get(postId);
-    fd.set(no, 'delete');
 
     return fd;
 }
 
-function setResponse(store, res, postdel) {
-    let status = null;
+function isSuccess(res) {
+    let { ok, text } = res;
 
-    if (!res.ok) {
-        status = 'error';
-    } else if (res.ok && isSuccess(res.text)) {
-        status = 'complete';
-    } else {
-        status = 'error';
-        res = checkError(res);
-    }
+    if (!ok) return false;
 
-    let { post } = postdel;
-    store.dispatch(setAppTasksPostdels({ post, status, res }));
-}
-
-function isSuccess(html) {
     switch (true) {
-    case /<META HTTP-EQUIV="refresh" content="0;URL=res\/\d+\.htm">/.test(html):
+    case /<META HTTP-EQUIV="refresh" content="0;URL=res\/\d+\.htm">/.test(text):
         return true;
     default:
         return false;
@@ -60,7 +49,9 @@ function isSuccess(html) {
 }
 
 function checkError(res) {
-    let { text } = res;
+    let { ok, text } = res;
+
+    if (!ok) return res;
 
     res.ok = false;
 

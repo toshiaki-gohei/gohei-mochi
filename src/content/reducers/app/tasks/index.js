@@ -1,8 +1,7 @@
 'use strict';
 import { combineReducers } from 'redux';
 import delreqs from './delreqs';
-import postdels from './postdels';
 
-const reducer = combineReducers({ delreqs, postdels });
+const reducer = combineReducers({ delreqs });
 
 export default reducer;
