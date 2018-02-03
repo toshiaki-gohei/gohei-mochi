@@ -39,6 +39,7 @@ describe(__filename, () => {
 <button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
 <div class="gohei-postform" style="display: none;">.+</div>
+<div class="gohei-delform" style="display: none;">.+</div>
 <div class="gohei-delreq" style="display: none;">.+</div>
 </div>
 <ul class="gohei-tabsbar">.+</ul>
@@ -64,6 +65,7 @@ $`.replace(/\n/g, ''));
 <button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 <div class="gohei-tab-content">
 <div class="gohei-postform">.+</div>
+<div class="gohei-delform" style="display: none;">.+</div>
 <div class="gohei-delreq" style="display: none;">.+</div>
 </div>
 <ul class="gohei-tabsbar">.+</ul>

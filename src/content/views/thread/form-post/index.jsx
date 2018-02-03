@@ -11,11 +11,8 @@ export default class Postform extends Component {
         super(props);
 
         this.state = {
-            name: cookie.get('namec'),
-            pwd: cookie.get('pwdc'),
             files: null,
-
-            isPosting: false,
+            isSubmitting: false,
             errmsg: null
         };
 
@@ -67,16 +64,18 @@ export default class Postform extends Component {
     _setCookie(formdata) {
         let name = formdata.get('name');
         let pwd = formdata.get('pwd');
-        this.setState({ name, pwd });
         cookie.set('namec', name);
         cookie.set('pwdc', pwd);
     }
 
     render() {
         let { commit, panel, postform } = this.props;
-        let { name, files, errmsg } = this.state;
+        let { files, errmsg } = this.state;
 
         if (panel == null || postform == null) return null;
+
+        let namec = cookie.get('namec');
+        let pwdc = cookie.get('pwdc');
 
         let style = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
 
@@ -92,7 +91,7 @@ export default class Postform extends Component {
     <div className="gohei-row">
       <div className="gohei-col1">おなまえ</div>
       <div className="gohei-col2">
-        <input type="text" className="gohei-input-name" name="name" defaultValue={name} />
+        <input type="text" className="gohei-input-name" name="name" defaultValue={namec} />
       </div>
     </div>
     <div className="gohei-row">
@@ -105,7 +104,7 @@ export default class Postform extends Component {
       <div className="gohei-col1">題名</div>
       <div className="gohei-col2">
         <input type="text" className="gohei-input-subject" name="sub" />
-        <Submit {...this.state} />
+        <SubmitBtn {...this.state} />
       </div>
     </div>
     <div className="gohei-row">
@@ -121,7 +120,7 @@ export default class Postform extends Component {
     </div>
     <div className="gohei-row">
       <div className="gohei-col1">削除キー</div>
-      <div className="gohei-col2"><DeleteKey {...this.state} /></div>
+      <div className="gohei-col2"><DeleteKey {...{ pwdc }} /></div>
     </div>
   </form>
   <DropBox {...{ setFiles }} />
@@ -137,11 +136,11 @@ function Hiddens({ hiddens }) {
     return <div className="gohei-hiddens">{$hiddens}</div>;
 }
 
-function Submit({ isPosting }) {
-    let labelSubmit = isPosting ? '送信中…' : '送信する';
-    let disabledSubmit = isPosting ? true : false;
+function SubmitBtn({ isSubmitting }) {
+    let labelSubmit = isSubmitting ? '送信中…' : '送信する';
+    let isDisabled = isSubmitting ? true : false;
     return <button type="submit" className="gohei-btn"
-                   disabled={disabledSubmit}>{labelSubmit}</button>;
+                   disabled={isDisabled}>{labelSubmit}</button>;
 }
 
 function LabelComment({ handlers }) {
@@ -161,11 +160,11 @@ function Comment({ comment, handlers }) {
                      ref={setRefComment} onChange={changeComment} />;
 }
 
-function DeleteKey({ pwd }) {
+function DeleteKey({ pwdc }) {
     return (
 <Fragment>
   <input type="password" className="gohei-input-password" name="pwd"
-         maxLength="12" defaultValue={pwd} />
+         maxLength="12" defaultValue={pwdc} />
   <span className="gohei-font-smaller">(削除用。英数字で8字以内)</span>
   <object type="application/x-shockwave-flash" id="cnt" data="/bin/count.swf" width="0" height="0" aria-label="" aria-hidden="true"></object>
 </Fragment>
@@ -190,11 +189,11 @@ async function handleSubmit(event) {
         return;
     }
 
-    this.setState({ isPosting: true, errmsg: null });
+    this.setState({ isSubmitting: true, errmsg: null });
 
     let res = await commit('thread/submitPost', { url, formdata: fd });
 
-    this.setState({ isPosting: false });
+    this.setState({ isSubmitting: false });
 
     if (res.ok) {
         this._setCookie(fd);

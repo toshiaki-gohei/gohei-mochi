@@ -41,25 +41,33 @@ describe(__filename, () => {
         });
     });
 
-    describe('isThreadLazyDisplay()', () => {
-        const { isThreadLazyDisplay } = util;
+    describe('TASK_STATUS_TEXT', () => {
+        const { TASK_STATUS_TEXT } = util;
 
-        it('should return true if displayThreshold has value', () => {
-            let app = { displayThreshold: 200 };
-            let got = isThreadLazyDisplay(app);
-            assert(got === true);
+        it('should be exported', () => {
+            assert(TASK_STATUS_TEXT != null);
+            assert(typeof TASK_STATUS_TEXT === 'object');
+        });
+    });
+
+    describe('ellipsisify', () => {
+        const { ellipsisify } = util;
+
+        it('should ellipsisify', () => {
+            let got = ellipsisify('foobar', 3);
+            let exp = 'foo...';
+            assert(got === exp);
         });
 
-        it('should return false if displayThreshold is null', () => {
-            let app = { displayThreshold: null };
-            let got = isThreadLazyDisplay(app);
-            assert(got === false);
+        it('should not ellipsisify if text is not over length', () => {
+            let got = ellipsisify('foo', 3);
+            let exp = 'foo';
+            assert(got === exp);
         });
 
-        it('should return false if app is null', () => {
-            let app = null;
-            let got = isThreadLazyDisplay(app);
-            assert(got === false);
+        it('should return null if not pass text', () => {
+            assert(ellipsisify() === null);
+            assert(ellipsisify(null) === null);
         });
     });
 });

@@ -1,4 +1,5 @@
 'use strict';
+import { F } from '~/common/util';
 
 export function hasChanged(self, nextProps, nextState) {
     let { props, state } = self;
@@ -13,12 +14,20 @@ export function hasChanged(self, nextProps, nextState) {
     return false;
 }
 
-export function isThreadLazyDisplay(appThread) {
-    let { displayThreshold } = appThread || {};
-    if (displayThreshold == null) return false;
-    return true;
-}
+export const TASK_STATUS_TEXT = F({
+    null: '',
+    stanby: '待機中',
+    posting: '送信中',
+    complete: '完了',
+    cancel: 'キャンセル',
+    error: 'エラー'
+});
 
+export function ellipsisify(text, length) {
+    if (text == null) return null;
+    if (text.length <= length) return text;
+    return `${text.substr(0, length)}...`;
+}
 
 export function preventDefault(event) {
     event.preventDefault();

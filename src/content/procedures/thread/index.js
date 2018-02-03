@@ -14,6 +14,7 @@ export { openQuotePopup, openPostsPopup, closePostsPopup, clearPostsPopup } from
 export { setComment, setFile } from './postform';
 export { quote } from './quote';
 export { soudane } from './soudane';
+export { submit as submitDel } from './submit-del';
 export { submit as submitPost } from './submit-post';
 export { update } from './update';
 

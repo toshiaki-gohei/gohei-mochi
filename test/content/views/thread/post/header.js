@@ -86,7 +86,7 @@ $`.replace(/\n/g, ''));
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post-header" style="margin-left: 290px;">
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input (?=.*type="checkbox")(?=.*class="gohei-postdel-checkbox")(?=.*value="on").+?>
 <span class="gohei-subject">無念</span>
 .+?
 </div>
@@ -184,7 +184,7 @@ $`.replace(/\n/g, ''));
             let exp = new RegExp(`^
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input (?=.*type="checkbox")(?=.*class="gohei-postdel-checkbox")(?=.*value="on").+?>
 .+?
 </div>
 $`.replace(/\n/g, ''));

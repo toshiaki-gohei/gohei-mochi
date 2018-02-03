@@ -25,6 +25,7 @@ export const DISPLAY_THRESHOLD = F({
 
 export const THREAD_PANEL_TYPE = F({
     FORM_POST: 'FORM_POST',
+    FORM_DEL: 'FORM_DEL',
     DELREQ: 'DELREQ'
 });
 

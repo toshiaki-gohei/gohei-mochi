@@ -25,7 +25,7 @@ describe(__filename, () => {
         let { panel } = ui.thread;
         props = { postform, panel };
     });
-    beforeEach(() => document.cookie = '');
+    beforeEach(() => dispose());
 
     const URL = 'http://example.net/thread01';
 
@@ -86,10 +86,6 @@ $`.replace(/\n/g, ''));
 </form>
 `.replace(/\n/g, ''));
             assert(exp.test(got));
-
-            let { name, pwd } = $el.state;
-            assert(name === 'cookie name');
-            assert(pwd === 'cookie pwd');
         });
 
         it('should render error message if set state.errmsg', () => {
@@ -161,8 +157,8 @@ $`.replace(/\n/g, ''));
             let p1 = new Promise(resolve => {
                 submit = async args => {
                     await sleep(1);
-                    let { isPosting, errmsg } = $el.state;
-                    resolve({ args, isPosting, errmsg });
+                    let { isSubmitting, errmsg } = $el.state;
+                    resolve({ args, isSubmitting, errmsg });
                     return { ok: true };
                 };
             });
@@ -194,11 +190,11 @@ $`.replace(/\n/g, ''));
             });
 
             return Promise.all([
-                p1.then(({ args, isPosting, errmsg }) => {
+                p1.then(({ args, isSubmitting, errmsg }) => {
                     let { url, formdata } = args;
                     assert(url === 'http://example.net/submit-url');
                     assert(formdata != null);
-                    assert(isPosting === true);
+                    assert(isSubmitting === true);
                     assert(errmsg === null);
                 }),
                 p2.then(comment => {
@@ -208,8 +204,8 @@ $`.replace(/\n/g, ''));
                     assert(file === null);
                 }),
                 p4.then(() => {
-                    let { isPosting } = $el.state;
-                    assert(isPosting === false);
+                    let { isSubmitting } = $el.state;
+                    assert(isSubmitting === false);
                 })
             ]);
         });
@@ -300,9 +296,6 @@ $`.replace(/\n/g, ''));
             });
 
             return p.then(() => {
-                let { name, pwd } = $el.state;
-                assert(name === 'test name');
-                assert(pwd === 'test pwd');
                 let namec = cookie.get('namec');
                 let pwdc = cookie.get('pwdc');
                 assert(namec === 'test name');
@@ -353,3 +346,8 @@ $`.replace(/\n/g, ''));
         });
     });
 });
+
+function dispose() {
+    cookie.remove('namec');
+    cookie.remove('pwdc');
+}

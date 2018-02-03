@@ -5,7 +5,7 @@ import Header from './header.jsx';
 import Body from './body.jsx';
 import File from './file.jsx';
 import Action from './action.jsx';
-import { isThreadLazyDisplay } from '../../util';
+import { isThreadLazyDisplay } from '../util';
 
 export default class OriginalPost extends Component {
     constructor(props) {

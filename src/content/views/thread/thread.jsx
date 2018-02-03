@@ -1,7 +1,7 @@
 'use strict';
 import React, { Component } from 'react';
 import Post from './post/index.jsx';
-import { isThreadLazyDisplay } from '../util';
+import { isThreadLazyDisplay } from './util';
 import { DISPLAY_THRESHOLD } from '../../constants';
 
 export default class Thread extends Component {

@@ -1,6 +1,7 @@
 'use strict';
 import React, { Component } from 'react';
 import Postform from './form-post/index.jsx';
+import Delform from './form-del.jsx';
 import Delreq from './delreq.jsx';
 import { CLASS_NAME as CN, THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 
@@ -15,8 +16,9 @@ export default class Panel extends Component {
             open: handleOpen.bind(this),
             close: handleClose.bind(this),
 
-            formPost: handleTab.bind(this, P_TYPE.FORM_POST),
-            delreq: handleTab.bind(this, P_TYPE.DELREQ)
+            showPostform: handleTab.bind(this, P_TYPE.FORM_POST),
+            showDelform: handleTab.bind(this, P_TYPE.FORM_DEL),
+            showDelreq: handleTab.bind(this, P_TYPE.DELREQ)
         };
         this._handleClickBody = handleClickBody.bind(this);
     }
@@ -75,12 +77,13 @@ function Content({ commit, panel, app, handlers }) {
 
 function TabsBar({ panel, handlers }) {
     let css = tabCss(panel);
-    let { formPost, delreq } = handlers;
+    let { showPostform, showDelform, showDelreq } = handlers;
 
     return (
 <ul className="gohei-tabsbar">
-  <li className={css.formPost} onClick={formPost} onKeyPress={formPost} role="tab">レス</li>
-  <li className={css.delreq} onClick={delreq} onKeyPress={delreq} role="tab">削除依頼</li>
+  <li className={css.postform} onClick={showPostform} onKeyPress={showPostform} role="tab">レス投稿</li>
+  <li className={css.delform} onClick={showDelform} onKeyPress={showDelform} role="tab">レス削除</li>
+  <li className={css.delreq} onClick={showDelreq} onKeyPress={showDelreq} role="tab">削除依頼</li>
 </ul>
     );
 }
@@ -92,27 +95,31 @@ function TabContent({ commit, panel, app }) {
     return (
 <div className="gohei-tab-content">
   <Postform {...{ commit, panel, postform }} />
+  <Delform {...{ commit, panel, app }} />
   <Delreq {...{ commit, panel, app }} />
 </div>
     );
 }
 
 function tabCss(panel) {
-    let formPost, delreq;
-    formPost = delreq = 'gohei-tab';
+    let postform, delform, delreq;
+    postform = delform = delreq = 'gohei-tab';
 
     let active = ' gohei-active';
 
     switch (panel.type) {
     case P_TYPE.FORM_POST:
-        formPost += active;
+        postform += active;
+        break;
+    case P_TYPE.FORM_DEL:
+        delform += active;
         break;
     case P_TYPE.DELREQ:
         delreq += active;
         break;
     }
 
-    return { formPost, delreq };
+    return { postform, delform, delreq };
 }
 
 function isOnPanel($el) {

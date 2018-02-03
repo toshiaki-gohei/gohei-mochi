@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import Delreq, { internal } from '~/content/views/thread/delreq.jsx';
+import Delreq from '~/content/views/thread/delreq.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
 import { setup, teardown, tidy } from '@/support/dom';
@@ -24,8 +24,8 @@ describe(__filename, () => {
         });
         store.dispatch(setAppThreads({ url: URL }));
 
-        let { app, ui } = store.getState();
-        props = { panel: ui.thread.panel, app };
+        let { app, ui: { thread: { panel } } } = store.getState();
+        props = { panel, app };
     });
 
     const URL = 'http://example.net/thread01';
@@ -75,14 +75,14 @@ $`.replace(/\n/g, ''));
             store.dispatch(setAppThreads({ url: URL, delreq }));
 
             let commit = procedures(store);
-            let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
+            let { app, ui: { thread: { panel } } } = store.getState();
+            let $el = render(<Delreq {...{ commit, panel, app }} />);
 
             let tdCss = 'gohei-td gohei-selectable';
 
-            let got = tidy($el.querySelector('.gohei-left-pane .gohei-delreq-list').outerHTML);
+            let got = tidy($el.querySelector('.gohei-left-pane .gohei-list').outerHTML);
             let exp = tidy(`
-<table class="gohei-delreq-list">
+<table class="gohei-list">
 <tbody>
 <tr class="gohei-tr">
 <td class="gohei-td gohei-text-center" title="">完了</td>
@@ -124,12 +124,12 @@ $`.replace(/\n/g, ''));
             store.dispatch(setAppWorkers({ delreq: { tasks } }));
 
             let commit = procedures(store);
-            let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
+            let { app, ui: { thread: { panel } } } = store.getState();
+            let $el = render(<Delreq {...{ commit, panel, app }} />);
 
-            let got = $el.querySelector('.gohei-right-pane .gohei-delreq-list').outerHTML;
+            let got = $el.querySelector('.gohei-right-pane .gohei-list').outerHTML;
             let exp = `
-<table class="gohei-delreq-list">
+<table class="gohei-list">
 <tbody>
 <tr class="gohei-tr">
 <td class="gohei-td" title="">完了</td><td class="gohei-td">0</td>
@@ -171,10 +171,10 @@ $`.replace(/\n/g, ''));
             store.dispatch(setAppThreads({ url: URL, delreq }));
 
             let commit = procedures(store);
-            let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit, panel: ui.thread.panel, app }} />);
+            let { app, ui: { thread: { panel } } } = store.getState();
+            let $el = render(<Delreq {...{ commit, panel, app }} />);
 
-            let $rows = $el.querySelectorAll('.gohei-delreq-list .gohei-tr');
+            let $rows = $el.querySelectorAll('.gohei-list .gohei-tr');
             simulate.click($rows[0]);
 
             await sleep(1);
@@ -191,8 +191,8 @@ $`.replace(/\n/g, ''));
                 'thread/clearDelreqTargets': () => done()
             });
 
-            let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
+            let { app, ui: { thread: { panel } } } = store.getState();
+            let $el = render(<Delreq {...{ commit: mock, panel, app }} />);
 
             let $btn = $el.querySelector('.gohei-clear-btn');
             simulate.click($btn);
@@ -229,8 +229,8 @@ $`.replace(/\n/g, ''));
                 'worker/run': run
             });
 
-            let { app, ui } = store.getState();
-            let $el = render(<Delreq {...{ commit: mock, panel: ui.thread.panel, app }} />);
+            let { app, ui: { thread: { panel } } } = store.getState();
+            let $el = render(<Delreq {...{ commit: mock, panel, app }} />);
 
             $el.setState({ reason: 110, isVisibleReasons: true }, () => {
                 let $btn = $el.querySelector('.gohei-delreq-btn');
@@ -249,47 +249,6 @@ $`.replace(/\n/g, ''));
                 let got = $el.state.isVisibleReasons;
                 assert(got === false);
             });
-        });
-    });
-
-    describe('hasChecked()', () => {
-        const { hasChecked } = internal;
-
-        it('should return true if contains checked delreqs', () => {
-            const delreq = {
-                targets: new Map([
-                    [ 'post01', { post: 'post01', checked: false } ],
-                    [ 'post02', { post: 'post02', checked: true } ]
-                ])
-            };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
-
-            let { app } = store.getState();
-            let got = hasChecked(app);
-            assert(got === true);
-        });
-
-        it('should return false if not contains checked delreqs', () => {
-            const delreq = {
-                targets: new Map([
-                    [ 'post01', { post: 'post01', checked: false } ],
-                    [ 'post02', { post: 'post02', checked: false } ]
-                ])
-            };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
-
-            let { app } = store.getState();
-            let got = hasChecked(app);
-            assert(got === false);
-        });
-
-        it('should return false if delreqs is empty', () => {
-            const delreq = { targets: new Map([]) };
-            store.dispatch(setAppThreads({ url: URL, delreq }));
-
-            let { app } = store.getState();
-            let got = hasChecked(app);
-            assert(got === false);
         });
     });
 });

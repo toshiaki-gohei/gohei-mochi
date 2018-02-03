@@ -83,6 +83,7 @@ delete
 
             let form = {
                 posts: [ 'may/b/123001', 'may/b/123002' ],
+                onlyimgdel: null,
                 pwd: 'password'
             };
 

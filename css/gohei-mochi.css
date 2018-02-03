@@ -446,6 +446,8 @@ input[type="file"] {
     max-height: 250px;
 }
 
+.gohei-delform > .gohei-left-pane,
+.gohei-delform > .gohei-right-pane,
 .gohei-delreq > .gohei-left-pane,
 .gohei-delreq > .gohei-right-pane {
     display: inline-block;
@@ -455,8 +457,14 @@ input[type="file"] {
     vertical-align: top;
 }
 
+.gohei-delform .gohei-row,
 .gohei-delreq .gohei-row {
     margin: 4px 0;
+}
+
+.gohei-delform .gohei-row.gohei-scroll {
+    height: 15em;
+    overflow-y: auto;
 }
 
 .gohei-delreq .gohei-row.gohei-scroll {
@@ -464,25 +472,30 @@ input[type="file"] {
     overflow-y: auto;
 }
 
-.gohei-delreq .gohei-delreq-list {
+.gohei-delform .gohei-list,
+.gohei-delreq .gohei-list {
     border-collapse: collapse;
 }
 
-.gohei-delreq .gohei-delreq-list .gohei-tr {
+.gohei-delform .gohei-list .gohei-tr,
+.gohei-delreq .gohei-list .gohei-tr {
     vertical-align: middle;
 }
 
-.gohei-delreq .gohei-delreq-list .gohei-tr > .gohei-td {
+.gohei-delform .gohei-list .gohei-tr > .gohei-td,
+.gohei-delreq .gohei-list .gohei-tr > .gohei-td {
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     padding: 0 0.3em;
 }
 
-.gohei-delreq .gohei-delreq-list .gohei-tr > .gohei-selectable {
+.gohei-delform .gohei-list .gohei-tr > .gohei-selectable,
+.gohei-delreq .gohei-list .gohei-tr > .gohei-selectable {
     cursor: pointer;
 }
 
-.gohei-delreq .gohei-delreq-list .gohei-tr:hover > .gohei-selectable {
+.gohei-delform .gohei-list .gohei-tr:hover > .gohei-selectable,
+.gohei-delreq .gohei-list .gohei-tr:hover > .gohei-selectable {
     border-bottom: 1px solid #800000;
 }
 
@@ -490,6 +503,7 @@ input[type="file"] {
     margin-left: 4.5em;
 }
 
+.gohei-delform .gohei-submit-btn,
 .gohei-delreq .gohei-delreq-btn {
     position: relative;
     width: 10em;
@@ -497,9 +511,15 @@ input[type="file"] {
     left: -5em;
 }
 
+.gohei-delform .gohei-clear-btn,
 .gohei-delreq .gohei-clear-btn {
     margin-left: 4px;
     font-size: smaller;
+}
+
+.gohei-delform .gohei-input-password {
+    width: 8em;
+    margin-left: 4px;
 }
 
 .gohei-delreq .gohei-reasons {

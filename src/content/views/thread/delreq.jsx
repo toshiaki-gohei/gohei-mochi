@@ -1,6 +1,8 @@
 'use strict';
 import React, { Component } from 'react';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
+import { TASK_STATUS_TEXT, ellipsisify } from '../util';
+import { hasCheckedTarget } from './util';
 import { F } from '~/common/util';
 
 export default class Delreq extends Component {
@@ -14,9 +16,9 @@ export default class Delreq extends Component {
         };
 
         this._handlers = {
-            toggleReasons: handleSetVisibleReasons.bind(this),
             clickTarget: handleClickTarget.bind(this),
             clearTargets: handleClearTargets.bind(this),
+            toggleReasons: handleSetVisibleReasons.bind(this),
             changeReason: handleChangeReason.bind(this),
             addToTasks: handleAddToTasks.bind(this)
         };
@@ -100,7 +102,7 @@ function TargetList({ commit, app, handlers }) {
 
     if ($rows.length == 0) $rows = <EmptyList />;
 
-    return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
+    return <table className="gohei-list"><tbody>{$rows}</tbody></table>;
 }
 
 function isTarget(delreq) {
@@ -134,7 +136,7 @@ function NonTarget({ delreq, post }) {
 
     return (
 <tr className="gohei-tr">
-  <td className="gohei-td gohei-text-center" title={statusText}>{DELREQ_STATUS_TEXT[status]}</td>
+  <td className="gohei-td gohei-text-center" title={statusText}>{TASK_STATUS_TEXT[status]}</td>
   <td className="gohei-td">{index}</td>
   <td className="gohei-td">No.{no}</td>
 </tr>
@@ -160,16 +162,16 @@ function TaskList({ commit, app }) {
 
         return (
 <tr className="gohei-tr" key={id}>
-  <td className="gohei-td" title={statusText}>{DELREQ_STATUS_TEXT[status]}</td>
+  <td className="gohei-td" title={statusText}>{TASK_STATUS_TEXT[status]}</td>
   <td className="gohei-td">{index}</td>
-  <td className="gohei-td" title={reasonText}>{shorthand(reasonText, 6)}</td>
+  <td className="gohei-td" title={reasonText}>{ellipsisify(reasonText, 6)}</td>
 </tr>
         );
     });
 
     if ($rows.length == 0) $rows = <EmptyList />;
 
-    return <table className="gohei-delreq-list"><tbody>{$rows}</tbody></table>;
+    return <table className="gohei-list"><tbody>{$rows}</tbody></table>;
 }
 
 function EmptyList() {
@@ -208,7 +210,7 @@ function DelreqBtn({ app, reason, handlers }) {
 
     let isDisabled = false;
     if (reason == null) isDisabled = true;
-    if (!hasChecked(app)) isDisabled = true;
+    if (!hasCheckedTarget(app, 'delreq')) isDisabled = true;
 
     return <button className="gohei-btn gohei-delreq-btn" type="button"
                    disabled={isDisabled} onClick={addToTasks}>削除依頼をする</button>;
@@ -258,6 +260,27 @@ function Radio({ reason, value, changeReason }) {
     );
 }
 
+const REASON_TEXT = F({
+    101: '中傷・侮辱・名誉毀損',
+    102: '脅迫・自殺',
+    103: '個人情報・プライバシー',
+    104: 'つきまとい・ストーカー',
+    105: '連投・負荷増大・無意味な羅列',
+    106: '広告・spam',
+    107: '売春・援交',
+    108: '侵害・妨害',
+    110: '荒らし・嫌がらせ・混乱の元',
+    111: '政治・宗教・民族',
+
+    201: 'グロ画像(２次)',
+    202: '猥褻画像・無修正画像(２次)',
+
+    301: 'グロ画像(３次)',
+    302: 'エロ画像(３次)',
+    303: '児童ポルノ画像(３次)',
+    304: '猥褻画像・無修正画像(３次)',
+});
+
 function handleSetVisibleReasons(event) {
     event.stopPropagation();
     let isVisible = !this.state.isVisibleReasons;
@@ -304,53 +327,3 @@ async function handleAddToTasks(event) {
     await commit('thread/registerDelreqTasks', { url, reason });
     commit('worker/run', 'delreq');
 }
-
-const REASON_TEXT = F({
-    101: '中傷・侮辱・名誉毀損',
-    102: '脅迫・自殺',
-    103: '個人情報・プライバシー',
-    104: 'つきまとい・ストーカー',
-    105: '連投・負荷増大・無意味な羅列',
-    106: '広告・spam',
-    107: '売春・援交',
-    108: '侵害・妨害',
-    110: '荒らし・嫌がらせ・混乱の元',
-    111: '政治・宗教・民族',
-
-    201: 'グロ画像(２次)',
-    202: '猥褻画像・無修正画像(２次)',
-
-    301: 'グロ画像(３次)',
-    302: 'エロ画像(３次)',
-    303: '児童ポルノ画像(３次)',
-    304: '猥褻画像・無修正画像(３次)',
-});
-
-const DELREQ_STATUS_TEXT = F({
-    null: '',
-    stanby: '待機中',
-    posting: '送信中',
-    complete: '完了',
-    cancel: 'キャンセル',
-    error: 'エラー'
-});
-
-function shorthand(text, length) {
-    if (text == null) return text;
-    if (text.length <= length) return text;
-    return `${text.substr(0, length)}...`;
-}
-
-function hasChecked(app) {
-    let { current, threads } = app;
-    let { delreq } = threads.get(current.thread);
-
-    for (let [ , { checked } ] of delreq.targets) {
-        if (checked) return true;
-    }
-    return false;
-}
-
-export const internal = {
-    hasChecked
-};
