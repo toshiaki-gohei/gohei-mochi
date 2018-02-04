@@ -113,16 +113,11 @@ delete
 
         it('should set postdel failed message if already known error message', () => {
             let text = `
-<html><head><META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=Shift_JIS">
-<title>二次元裏＠ふたば</title>
-</head>
-<body>
-<br><br><hr size=1><br><br>
+<body><br><br><hr size=1><br><br>
         <div align=center><font color=red size=5><b>削除したい記事をチェックしてください<br><br><a href=/b/futaba.htm>リロード</a></b></font></div>
         <br><br><hr size=1>
 </body></html>
 `.replace(/\n/g, '');
-
             let got = checkError({ ok: true, text });
             let exp = {
                 ok: false, text,
@@ -131,20 +126,28 @@ delete
             assert.deepStrictEqual(got, exp);
 
             text = `
-<html><head><META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=Shift_JIS">
-<title>二次元裏＠ふたば</title>
-</head>
-<body>
-<br><br><hr size=1><br><br>
+<body><br><br><hr size=1><br><br>
         <div align=center><font color=red size=5><b>削除できる記事が見つからないかパスワードが間違っています<br>No.123001を削除する権限はありません<br><a href=/b/futaba.htm>リロード</a></b></font></div>
         <br><br><hr size=1>
 </body></html>
 `.replace(/\n/g, '');
-
             got = checkError({ ok: true, text });
             exp = {
                 ok: false, text,
                 statusText: '削除できる記事が見つからないかパスワードが間違っています。No.123001を削除する権限はありません'
+            };
+            assert.deepStrictEqual(got, exp);
+
+            text = `
+<body><br><br><hr size=1><br><br>
+        <div align=center><font color=red size=5><b>削除できる記事が見つからないかパスワードが間違っています<br>No.123001削除済みです<br>No.123002削除済みです<br><br><a href=/b/futaba.htm>リロード</a></b></font></div>
+        <br><br><hr size=1>
+</body></html>
+`.replace(/\n/g, '');
+            got = checkError({ ok: true, text });
+            exp = {
+                ok: false, text,
+                statusText: '削除できる記事が見つからないかパスワードが間違っています。No.123001削除済みですNo.123002削除済みです'
             };
             assert.deepStrictEqual(got, exp);
         });

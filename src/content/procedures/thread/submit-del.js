@@ -59,7 +59,7 @@ function checkError(res) {
     case /<b>削除したい記事をチェックしてください<br>/.test(text):
         res.statusText = '削除したい記事をチェックしてください';
         break;
-    case /<b>削除できる記事が見つからないかパスワードが間違っています<br>(.+?)<br>/.test(text):
+    case /<b>削除できる記事が見つからないかパスワードが間違っています<br>(.+)<br><a href=\/b\/futaba\.htm>/.test(text):
         res.statusText = '削除できる記事が見つからないかパスワードが間違っています。'
             + textify(RegExp.$1);
         break;
