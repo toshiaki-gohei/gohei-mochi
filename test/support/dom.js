@@ -2,13 +2,17 @@
 
 export const isBrowser = typeof window !== 'undefined';
 
-export function setup() {
+export function setup(opts) {
     if (!shouldSetup()) return;
 
+    let {
+        url = 'http://example.net/initial-setting'
+    } = opts || {};
+
+    let html = '<!doctype html><html><body></body></html>';
+
     const JSDOM = require('jsdom').JSDOM;
-    const dom = new JSDOM('<!doctype html><html><body></body></html>', {
-        url: 'http://example.net/initial-setting'
-    });
+    const dom = new JSDOM(html, { url });
     const { window } = dom;
 
     global.jsdom = dom;
