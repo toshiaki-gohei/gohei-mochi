@@ -70,7 +70,7 @@ function handleClose(event) {
     let { commit } = this.props;
 
     // mouse moved from popup to next(overlap) popup
-    if ($related && $related.classList.contains(CN.POPUP)) return;
+    if ($related && $related.classList && $related.classList.contains(CN.POPUP)) return;
 
     // mouse went back from popup to previous(under) popup
     if (isOnPopup($related)) {
@@ -111,7 +111,7 @@ function calcY({ event: { target: $target }, $el: { offsetHeight } }) {
 
 function isOnPopup($el) {
     while ($el) {
-        if ($el.classList.contains(CN.POPUP)) return true;
+        if ($el.classList && $el.classList.contains(CN.POPUP)) return true;
         if ($el === document.body) return false;
         $el = $el.parentNode;
     }
