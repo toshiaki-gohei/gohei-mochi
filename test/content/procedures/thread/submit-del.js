@@ -96,7 +96,7 @@ delete
     describe('isSuccess()', () => {
         const { isSuccess } = internal;
 
-        it('should return true if succeed to postdel', () => {
+        it('should return true if succeed to submit', () => {
             let text = '<META HTTP-EQUIV="refresh" content="0;URL=res/123456000.htm">';
             let got = isSuccess({ ok: true, text });
             assert(got === true);
@@ -111,7 +111,7 @@ delete
     describe('checkError()', () => {
         const { checkError } = internal;
 
-        it('should set postdel failed message if already known error message', () => {
+        it('should set delete failed message if already known error message', () => {
             let text = `
 <body><br><br><hr size=1><br><br>
         <div align=center><font color=red size=5><b>削除したい記事をチェックしてください<br><br><a href=/b/futaba.htm>リロード</a></b></font></div>

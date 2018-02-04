@@ -119,7 +119,7 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
-        it('should change delform state if click postdel list', async () => {
+        it('should change delform state if click target list', async () => {
             store.dispatch(setDomainPosts(createPosts([ '100' ])));
             let delform = {
                 targets: new Map([
@@ -143,7 +143,7 @@ $`.replace(/\n/g, ''));
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should clear postdel list if click clear button', done => {
+        it('should clear target list if click clear button', done => {
             let mock = procedures(store, {
                 ...defaultMap(store),
                 'thread/clearDelformTargets': () => done()

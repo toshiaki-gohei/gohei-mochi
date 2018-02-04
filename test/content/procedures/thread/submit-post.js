@@ -89,7 +89,7 @@ cookie-pwd
     describe('isSuccess()', () => {
         const { isSuccess } = internal;
 
-        it('should return true if succeed to post', () => {
+        it('should return true if succeed to submit', () => {
             let text = `
 <html>
 <head></head>
@@ -109,7 +109,7 @@ cookie-pwd
             assert(got === true);
         });
 
-        it('should return true if succeed to post with image', () => {
+        it('should return true if succeed to submit with image', () => {
             let text = `
 <html>
 <head></head>
