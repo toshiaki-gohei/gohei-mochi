@@ -127,19 +127,20 @@ describe(__filename, () => {
     describe('Expire()', () => {
         const { Expire } = internal;
 
-        const message = 'expire message';
+        const expire = { message: 'expire message', date: new Date() };
 
         it('should render expire message', () => {
-            let date = new Date(Date.now() + 1000 * 60 * 35);
-            let $el = render(<Expire {...{ message, date }} />);
+            let $el = render(<Expire {...{ expire }} />);
             let got = $el.outerHTML;
             let exp = '<span>expire message</span>';
             assert(got === exp);
         });
 
         it('should render expire message with danger if expire is near', () => {
-            let date = new Date(Date.now() + 1000 * 60 * 25);
-            let $el = render(<Expire {...{ message, date }} />);
+            let warning = 'このスレは古いので、もうすぐ消えます。';
+            let app = { messages: { warning } };
+
+            let $el = render(<Expire {...{ expire, app }} />);
             let got = $el.outerHTML;
             let exp = '<span class="gohei-text-danger">expire message</span>';
             assert(got === exp);

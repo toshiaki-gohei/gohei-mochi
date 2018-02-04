@@ -18,7 +18,7 @@ export default class Console extends Component {
         return (
 <div className="gohei-console">
   <div className="gohei-msg">
-    <span>{viewer}</span><span>/</span><Expire {...expire} />
+    <span>{viewer}</span><span>/</span><Expire {...{ expire, app }} />
   </div>
   <div className="gohei-thread-action">
     <UpdateBtn {...{ app, handler: this._handleUpdate }} />
@@ -35,17 +35,19 @@ export default class Console extends Component {
     }
 }
 
-function Expire(expire = {}) {
-    let { message, date } = expire;
+function Expire({ expire, app }) {
+    let { message, date } = expire || {};
     if (message == null || date == null) return null;
 
-    let time = date.getTime() - Date.now();
-    if (time < 0) time = 0;
-    let isTextDanger = (time / 1000 / 60 < 30) ? true : false;
-
-    let css = isTextDanger ? 'gohei-text-danger' : null;
+    let css = isTextDanger(app) ? 'gohei-text-danger' : null;
 
     return <span className={css}>{message}</span>;
+}
+
+function isTextDanger(app) {
+    let { messages: { warning } = {} } = app || {};
+    if (/^このスレは古いので/.test(warning)) return true;
+    return false;
 }
 
 function UpdateBtn({ app, handler }) {
