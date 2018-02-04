@@ -81,9 +81,9 @@ function TabsBar({ panel, handlers }) {
 
     return (
 <ul className="gohei-tabsbar">
-  <li className={css.postform} onClick={showPostform} onKeyPress={showPostform} role="tab">レス投稿</li>
+  <li className={css.postform} onClick={showPostform} onKeyPress={showPostform} role="tab">レス</li>
   <li className={css.delform} onClick={showDelform} onKeyPress={showDelform} role="tab">レス削除</li>
-  <li className={css.delreq} onClick={showDelreq} onKeyPress={showDelreq} role="tab">削除依頼</li>
+  <li className={css.delreq} onClick={showDelreq} onKeyPress={showDelreq} role="tab">DEL</li>
 </ul>
     );
 }
