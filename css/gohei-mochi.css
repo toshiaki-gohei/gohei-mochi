@@ -517,6 +517,8 @@ input[type="file"] {
 
 .gohei-delreq .gohei-reasons {
     margin: 4px 0;
+    height: 17em;
+    overflow-y: scroll;
 }
 
 .gohei-delreq .gohei-reasons > .gohei-radio {
