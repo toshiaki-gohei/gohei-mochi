@@ -1,3 +1,10 @@
+## 0.3.0 (2018-02-04)
+
+* add a feature to delete posts 
+* modify to collapse sequences of whitespace in post blockquote
+* modify to use window.performance instead of stopwatch
+* fix to parse expire correctly when expire is over next month
+
 ## 0.2.1 (2018-01-25)
 
 * fix not to close post form on click in panel
