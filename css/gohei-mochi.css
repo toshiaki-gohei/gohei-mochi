@@ -265,12 +265,13 @@ input[type="file"] {
     color: #d84442;
 }
 
-.gohei-thread {
+.gohei-app-thread > main > .gohei-thread,
+.gohei-app-thread > main > .gohei-console {
     margin-right: 170px;
     margin-bottom: 8px;
 }
 
-.gohei-thread > .gohei-newpost-msg {
+.gohei-app-thread > main > .gohei-thread > .gohei-newpost-msg {
     color: #a05050;
     font-size: 0.8em;
     border-top: 1px solid #eeaa88;
@@ -278,7 +279,7 @@ input[type="file"] {
     padding: 4px 0;
 }
 
-.gohei-thread > .gohei-display-more {
+.gohei-app-thread > main > .gohei-thread > .gohei-display-more {
     text-align: center;
 }
 
