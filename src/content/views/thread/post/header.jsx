@@ -35,9 +35,9 @@ function Index({ index }) {
 }
 
 function Checkbox({ isChecked, handlers }) {
-    let { changePostdel } = handlers || {};
-    return <input type="checkbox" className={CN.post.POSTDEL_CHECKBOX}
-                  checked={isChecked} onChange={changePostdel} />;
+    let { changeCheckBox } = handlers || {};
+    return <input type="checkbox" className={CN.post.DELFORM_CHECKBOX}
+                  checked={isChecked} onChange={changeCheckBox} />;
 }
 
 function Subject({ subject }) {

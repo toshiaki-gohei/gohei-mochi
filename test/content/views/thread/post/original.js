@@ -90,9 +90,9 @@ $`.replace(/\n/g, ''));
 
         it('should render checked checkbox if post is checked', () => {
             let isChecked = true;
-            let handlers = { changePostdel: () => {} };
+            let handlers = { changeCheckBox: () => {} };
             let $el = render(<Op {...{ post, isChecked, handlers }} />);
-            let got = $el.querySelector('.gohei-postdel-checkbox');
+            let got = $el.querySelector('.gohei-delform-checkbox');
             assert(got.checked === true);
         });
 

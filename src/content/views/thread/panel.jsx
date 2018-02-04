@@ -146,7 +146,7 @@ function handleClose(event) {
 async function handleClickBody(event) {
     let $el = event.target;
     if (isOnPanel($el)) return;
-    if ($el.classList.contains(CN.post.POSTDEL_CHECKBOX)) return;
+    if ($el.classList.contains(CN.post.DELFORM_CHECKBOX)) return;
 
     let { commit } = this.props;
     await commit('thread/closePanel'); // async/await for avoid errors on browser tests

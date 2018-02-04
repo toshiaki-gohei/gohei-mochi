@@ -4,7 +4,7 @@ import { F } from '~/common/util';
 export const CLASS_NAME = F({
     POST: 'gohei-post',
     post: F({
-        POSTDEL_CHECKBOX: 'gohei-postdel-checkbox',
+        DELFORM_CHECKBOX: 'gohei-delform-checkbox',
         QUOTE: 'gohei-quote',
         DELETE: 'gohei-delete',
         DELETE_NA: 'gohei-delete-na-'

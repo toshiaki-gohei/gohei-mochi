@@ -52,7 +52,7 @@ function makeHandlers() {
     let quoteComment = handleQuote.bind(this, 'comment');
     let quoteFile = handleQuote.bind(this, 'file');
 
-    let changePostdel = handleChangePostdel.bind(this);
+    let changeCheckBox = handleChangeCheckBox.bind(this);
 
     let delreq = handleDelreq.bind(this);
     let soudane = handleSoudane.bind(this);
@@ -64,7 +64,7 @@ function makeHandlers() {
         popupPostsById, popupPostsByIp, popupQuote,
         quoteNo, quoteComment, quoteFile,
         delreq, soudane,
-        changePostdel,
+        changeCheckBox,
         enter, leave
     };
 }
@@ -114,9 +114,9 @@ function handleQuote(type, event) {
     commit('thread/openPanel', P_TYPE.FORM_POST);
 }
 
-function handleChangePostdel(event) {
+function handleChangeCheckBox(event) {
     let $el = event.target;
-    if (!$el.classList.contains(CN.post.POSTDEL_CHECKBOX)) return;
+    if (!$el.classList.contains(CN.post.DELFORM_CHECKBOX)) return;
     event.stopPropagation();
 
     let { commit, post, thread } = this.props;

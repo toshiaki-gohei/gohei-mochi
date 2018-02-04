@@ -26,7 +26,7 @@ describe(__filename, () => {
             let exp = tidy(`
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input type="checkbox" class="gohei-delform-checkbox" value="on">
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
 <span class="gohei-date">17/01/01(日)01:23:45</span>
@@ -45,7 +45,7 @@ describe(__filename, () => {
             let got = tidy($el.outerHTML);
             let exp = tidy(`
 <div class="gohei-post-header">
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input type="checkbox" class="gohei-delform-checkbox" value="on">
 <span class="gohei-subject">無念</span>
 <span class="gohei-name">としあき</span>
 <span class="gohei-date">17/01/01(日)01:23:45</span>
@@ -86,7 +86,7 @@ $`.replace(/\n/g, ''));
             let got = $el.outerHTML;
             let exp = new RegExp(`^
 <div class="gohei-post-header" style="margin-left: 290px;">
-<input (?=.*type="checkbox")(?=.*class="gohei-postdel-checkbox")(?=.*value="on").+?>
+<input (?=.*type="checkbox")(?=.*class="gohei-delform-checkbox")(?=.*value="on").+?>
 <span class="gohei-subject">無念</span>
 .+?
 </div>
@@ -148,7 +148,7 @@ $`.replace(/\n/g, ''));
             let exp = tidy(`
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input type="checkbox" class="gohei-delform-checkbox" value="on">
 <span class="gohei-date">17/01/01(日)01:23:45</span>
 <span class="gohei-no">No.123000001</span>
 <button class="gohei-del gohei-link-btn" type="button">del</button>
@@ -165,7 +165,7 @@ $`.replace(/\n/g, ''));
             let got = tidy($el.outerHTML);
             let exp = tidy(`
 <div class="gohei-post-header">
-<input type="checkbox" class="gohei-postdel-checkbox" value="on">
+<input type="checkbox" class="gohei-delform-checkbox" value="on">
 <span class="gohei-date">17/01/01(日)01:23:45</span>
 <span class="gohei-no">No.123000001</span>
 <button class="gohei-del gohei-link-btn" type="button">del</button>
@@ -177,19 +177,19 @@ $`.replace(/\n/g, ''));
 
         it('should render checked checkbox if isChecked is true', () => {
             let isChecked = true;
-            let handlers = { changePostdel: () => {} };
+            let handlers = { changeCheckBox: () => {} };
             let $el = render(<Header {...{ post, isChecked, handlers }} />);
 
             let got = tidy($el.outerHTML);
             let exp = new RegExp(`^
 <div class="gohei-post-header">
 <span class="gohei-index">1</span>
-<input (?=.*type="checkbox")(?=.*class="gohei-postdel-checkbox")(?=.*value="on").+?>
+<input (?=.*type="checkbox")(?=.*class="gohei-delform-checkbox")(?=.*value="on").+?>
 .+?
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
-            got = $el.querySelector('.gohei-postdel-checkbox');
+            got = $el.querySelector('.gohei-delform-checkbox');
             assert(got.checked === true);
         });
 
@@ -209,10 +209,10 @@ $`.replace(/\n/g, ''));
         beforeEach(() => handlers = {});
 
         it('should handle to change checkbox', done => {
-            handlers.changePostdel = () => done();
+            handlers.changeCheckBox = () => done();
             let $el = render(<Header {...{ post, handlers }} />);
 
-            let $checkbox = $el.querySelector('.gohei-postdel-checkbox');
+            let $checkbox = $el.querySelector('.gohei-delform-checkbox');
             simulate.change($checkbox);
         });
 
