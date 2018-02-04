@@ -1,5 +1,5 @@
 'use strict';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Post from './post/index.jsx';
 import { isThreadLazyDisplay } from './util';
 import { DISPLAY_THRESHOLD } from '../../constants';
@@ -71,9 +71,9 @@ function ThreadNormal({ commit, thread, app }) {
 
     return (
 <div className="gohei-thread">
-  {renderPosts(oldPosts, props)}
+  <Posts {...{ ...props, posts: oldPosts }} />
   <NewPostMessage {...{ newPostsCount }} />
-  {renderPosts(newPosts, props)}
+  <Posts {...{ ...props, posts: newPosts }} />
 </div>
     );
 }
@@ -88,19 +88,20 @@ function ThreadLazyDisplay({ commit, thread, app, handlers, intersection }) {
 
     return (
 <div className="gohei-thread">
-  {renderPosts(postIds, props)}
+  <Posts {...{ ...props, posts: postIds }} />
   <DisplayMore {...{ handlers, intersection }} />
 </div>
     );
 }
 
-function renderPosts(postIds, { commit, thread, app }) {
-    return postIds.map(postId => {
+function Posts({ commit, posts, thread, app }) {
+    let $posts = posts.map(postId => {
         let post = commit('sync/post', postId);
         let props = { commit, post, thread, app };
         if (post.index === 0) return <Post {...props} key={post.index} />;
         return <PostWithLeftMark {...props} key={post.index} />;
     });
+    return <Fragment>{$posts}</Fragment>;
 }
 
 function PostWithLeftMark(props) {
