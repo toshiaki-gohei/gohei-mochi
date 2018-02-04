@@ -19,7 +19,7 @@ function create(opts) {
         idipIndex = null, // model/thread/idip-index
 
         isUpdating = false,
-        lastUpdatedByUser = null,
+        updatedAt = null,
         updateHttpRes = null // model/http-res
     } = opts || {};
 
@@ -33,7 +33,7 @@ function create(opts) {
         displayThreshold, messages,
         postform, delform, delreq,
         changeset, idipIndex,
-        isUpdating, lastUpdatedByUser, updateHttpRes
+        isUpdating, updatedAt, updateHttpRes
     });
 }
 

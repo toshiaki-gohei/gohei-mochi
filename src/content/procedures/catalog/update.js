@@ -18,11 +18,11 @@ export async function update(store, url, { sort = null } = {}) {
     let requrl = catalogUrl(url, sort);
     let opts = options(app.catalogs.get(url));
 
-    let lastUpdatedByUser = new Date();
+    let updatedAt = new Date();
 
     let res = await fetch.getCatalog(requrl, opts);
 
-    store.dispatch(setAppCatalogs({ url, isUpdating: false, lastUpdatedByUser }));
+    store.dispatch(setAppCatalogs({ url, isUpdating: false, updatedAt }));
 
     setResponse(store, { url, res });
 }

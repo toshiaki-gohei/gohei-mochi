@@ -17,11 +17,11 @@ export async function update(store, url) {
 
     let opts = options(app.threads.get(url));
 
-    let lastUpdatedByUser = new Date();
+    let updatedAt = new Date();
 
     let res = await fetch.getThread(url, opts);
 
-    store.dispatch(setAppThreads({ url, isUpdating: false, lastUpdatedByUser }));
+    store.dispatch(setAppThreads({ url, isUpdating: false, updatedAt }));
 
     setResponse(store, { url, res });
 }

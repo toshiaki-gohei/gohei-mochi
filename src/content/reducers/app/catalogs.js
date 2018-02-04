@@ -9,13 +9,13 @@ function create(opts) {
         url = null,
 
         isUpdating = false,
-        lastUpdatedByUser = null,
+        updatedAt = null,
         updateHttpRes = null // model/http-res
     } = opts || {};
 
     return F({
         url,
-        isUpdating, lastUpdatedByUser, updateHttpRes
+        isUpdating, updatedAt, updateHttpRes
     });
 }
 

@@ -52,7 +52,7 @@ describe(__filename, () => {
         it('should render action', () => {
             store.dispatch(setAppThreads({
                 url: URL,
-                lastUpdatedByUser: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
+                updatedAt: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
                 updateHttpRes: { status: 304 }
             }));
             let app = store.getState().app.threads.get(URL);
@@ -95,7 +95,7 @@ describe(__filename, () => {
                     exposedIpPosts: [ { index: 2, no: '12302', userIp: 'IP02' } ],
                     deletedPosts: [ { index: 3, no: '12303' } ]
                 }),
-                lastUpdatedByUser: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
+                updatedAt: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
                 updateHttpRes: { status: 200 }
             }));
             let app = store.getState().app.threads.get(URL);

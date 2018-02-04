@@ -6,7 +6,7 @@ import { F } from '~/common/util';
 describe(__filename, () => {
     let state;
     beforeEach(() => state = F(new Map([
-        [ 'url-catalog01', F({ url: 'url-catalog01', lastUpdatedByUser: 'date' }) ],
+        [ 'url-catalog01', F({ url: 'url-catalog01', updatedAt: 'date' }) ],
         [ 'url-catalog02', F({ url: 'url-catalog02' }) ],
         [ 'url-catalog03', F({ url: 'url-catalog03' }) ]
     ])));
@@ -32,12 +32,12 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01', isUpdating: false,
-                    lastUpdatedByUser: 'date', updateHttpRes: 'http-res' } ],
+                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ],
                 [ 'url-catalog04', {
                     url: 'url-catalog04', isUpdating: false,
-                    lastUpdatedByUser: null, updateHttpRes: null } ]
+                    updatedAt: null, updateHttpRes: null } ]
             ]);
             assert.deepStrictEqual(got, exp);
         });
@@ -50,7 +50,7 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01', isUpdating: false,
-                    lastUpdatedByUser: 'date', updateHttpRes: 'http-res' } ],
+                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);
@@ -65,7 +65,7 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01', isUpdating: false,
-                    lastUpdatedByUser: 'date', updateHttpRes: 'http-res' } ],
+                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);

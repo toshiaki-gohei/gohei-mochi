@@ -94,7 +94,7 @@ describe(__filename, () => {
             let { sort } = getCatalog(url);
             assert(sort === 3);
 
-            let { isUpdating, lastUpdatedByUser, updateHttpRes } = getApp(url);
+            let { isUpdating, updatedAt, updateHttpRes } = getApp(url);
             assert(isUpdating === false);
 
             let got = updateHttpRes;
@@ -105,7 +105,7 @@ describe(__filename, () => {
             };
             assert.deepEqual(got, exp);
 
-            got = Math.ceil(lastUpdatedByUser / (1000 * 10));
+            got = Math.ceil(updatedAt / (1000 * 10));
             exp = Math.ceil(Date.now() / (1000 * 10));
             assert(got === exp);
         });

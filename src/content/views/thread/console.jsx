@@ -58,8 +58,8 @@ function UpdateBtn({ app, handler }) {
                    disabled={isDisabled} onClick={handler}>{label}</button>;
 }
 
-function LastUpdated({ lastUpdatedByUser: date }) {
-    let str = hms(date);
+function LastUpdated({ updatedAt }) {
+    let str = hms(updatedAt);
     return <span className="gohei-last-updated">{ str ? `(${str})` : null }</span>;
 }
 
