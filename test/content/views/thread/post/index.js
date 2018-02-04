@@ -214,7 +214,7 @@ $`.replace(/\n/g, ''));
         });
     });
 
-    describe('popup quote event', () => {
+    describe('quote event', () => {
         let mock, p1, p2;
         beforeEach(() => {
             let quote, openPanel;
