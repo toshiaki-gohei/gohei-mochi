@@ -105,8 +105,15 @@ describe(__filename, () => {
         });
 
         it('should merge correctly if delete file', () => {
-            let a = new Post({ index: 1, no: '12301', file: { url: 'file-url' } });
-            let b = new Post({ index: 1, no: '12301' });
+            let a = new Post({
+                index: 1, no: '12301', file: { url: 'file-url' },
+                raw: { body: 'before body', blockquote: 'before blockquote' }
+            });
+            let b = new Post({
+                index: 1, no: '12301',
+                raw: { body: 'after body', blockquote: 'after blockquote' },
+                state: STATE.DELETE_FILE
+            });
 
             let { post, change } = merge(a, b);
 
@@ -121,6 +128,12 @@ describe(__filename, () => {
             exp = {
                 ...b.object(),
                 file: { url: 'file-url', name: null, size: null, thumb: null },
+                raw: {
+                    header: null,
+                    body: 'after body',
+                    fileH: null, fileT: null,
+                    blockquote: '<span class="gohei-delete">ファイルが削除されました</span><br />before blockquote'
+                },
                 state: STATE.DELETE_FILE
             };
             assert.deepStrictEqual(got, exp);

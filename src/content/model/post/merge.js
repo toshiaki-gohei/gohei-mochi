@@ -1,5 +1,6 @@
 'use strict';
 import Post, { BR_TAG, STATE } from './index';
+import { CLASS_NAME as CN } from '~/content/constants';
 
 export default function merge(a, b) {
     let merged = a.object();
@@ -7,6 +8,8 @@ export default function merge(a, b) {
     let isChangedH = mergeHeader(merged, a, b);
     let isChangedB = mergeBody(merged, a, b);
     let isChangedF = mergeFile(merged, a, b);
+
+    if (isChangedB || isChangedF) mergeBlockquote(merged, a, b);
 
     let change = null;
     if (isChangedH || isChangedB || isChangedF) {
@@ -41,7 +44,7 @@ function mergeBody(merged = {}, a, b) {
 
     if (b.state) {
         merged.state = b.state;
-        merged.raw.blockquote = mergeBlockquote(a, b);
+        merged.raw.blockquote = a.raw.blockquote;
         isChanged = true;
     }
     merged.raw.body = b.raw.body;
@@ -63,9 +66,22 @@ function mergeFile(merged = {}, a, b) {
     return isChanged;
 }
 
-function mergeBlockquote(a, b) {
+function mergeBlockquote(merged, a, b) {
     let lines = b.raw.blockquote.split(BR_TAG);
-    let deleteMessage = lines[0];
+    let msg = '';
 
-    return `${deleteMessage}${BR_TAG}${a.raw.blockquote}`;
+    switch (merged.state) {
+    case STATE.DELETE_BY_DELETER:
+    case STATE.DELETE_BY_THREAKI:
+    case STATE.DELETE_BY_WRITER:
+        msg = lines[0];
+        break;
+    case STATE.DELETE_FILE:
+        msg = `<span class="${CN.post.DELETE}">ファイルが削除されました</span>`;
+        break;
+    default:
+        return;
+    }
+
+    merged.raw.blockquote = `${msg}${BR_TAG}${merged.raw.blockquote}`;
 }
