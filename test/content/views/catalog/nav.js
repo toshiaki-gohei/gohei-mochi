@@ -3,8 +3,10 @@ import assert from 'assert';
 import Nav from '~/content/views/catalog/nav.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown } from '@/support/dom';
-import procedures from '~/content/procedures';
+import { setup, teardown, disposePreferences } from '@/support/dom';
+import createStore from '~/content/reducers';
+import { setDomainCatalogs, setAppCatalogs } from '~/content/reducers/actions';
+import procedures, { defaultMap } from '~/content/procedures';
 import { CATALOG_SORT } from '~/content/constants';
 import cookie from 'js-cookie';
 
@@ -12,11 +14,19 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    let props;
-    beforeEach(() => props = {
-        catalog: { url: 'http://example.net/?mode=cat' },
-        app: {}
+    let store, props;
+    beforeEach(() => {
+        store = createStore();
+        store.dispatch(setDomainCatalogs({ url: URL }));
+        store.dispatch(setAppCatalogs({ url: URL }));
+
+        let { domain, app } = store.getState();
+        let catalog = domain.catalogs.get(URL);
+        let appCatalog = app.catalogs.get(URL);
+        props = { catalog, app: appCatalog };
     });
+
+    const URL = 'http://example.net/?mode=cat';
 
     describe('render()', () => {
         it('should render nav', () => {
@@ -80,9 +90,13 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render bolder menu link', () => {
-            props.catalog.sort = CATALOG_SORT.NEWEST;
+            store.dispatch(setDomainCatalogs({
+                url: URL,
+                sort: CATALOG_SORT.NEWEST
+            }));
+            let catalog = store.getState().domain.catalogs.get(URL);
 
-            let $el = render(<Nav {...props} />);
+            let $el = render(<Nav {...{ ...props, catalog }} />);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`
@@ -96,8 +110,13 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render updating message if catalog is updating', () => {
-            props.app.isUpdating = true;
-            let $el = render(<Nav {...props} />);
+            store.dispatch(setAppCatalogs({
+                url: URL,
+                isUpdating: true
+            }));
+            let app = store.getState().app.catalogs.get(URL);
+
+            let $el = render(<Nav {...{ ...props, app }} />);
 
             let got = $el.querySelector('.gohei-update-btn').outerHTML;
             let exp = `
@@ -116,39 +135,40 @@ $`.replace(/\n/g, ''));
     });
 
     describe('event', () => {
-        it('should commit procedure if click update', () => {
-            let set, update;
-            let p1 = new Promise(resolve => set = resolve);
-            let p2 = new Promise(resolve => update = resolve);
+        after(() => disposePreferences());
 
-            let mock = procedures(null, {
-                'preferences/set': set,
+        it('should commit procedure if click update', () => {
+            let update;
+            let p = new Promise(resolve => update = resolve);
+
+            let mock = procedures(store, {
+                ...defaultMap(store),
                 'catalog/update': (...args) => update(args)
             });
 
-            props.catalog.sort = CATALOG_SORT.NEWEST;
+            store.dispatch(setDomainCatalogs({ url: URL, sort: CATALOG_SORT.NEWEST }));
+            let catalog = store.getState().domain.catalogs.get(URL);
+
             cookie.set('cxyl', '15x10x5x1x2');
 
-            let $el = render(<Nav {...{ ...props, commit: mock }} />);
+            let $el = render(<Nav {...{ ...props, commit: mock, catalog }} />);
 
             let $btn = $el.querySelector('.gohei-update-btn');
             simulate.click($btn);
 
-            return Promise.all([
-                p1.then(prefs => {
-                    let got = prefs.catalog;
-                    let exp = {
-                        colnum: 15, rownum: 10,
-                        title: { length: 5, position: 1 },
-                        thumb: { size: 2 }
-                    };
-                    assert.deepStrictEqual(got, exp);
-                }),
-                p2.then(([ url, { sort } ]) => {
-                    assert(url === 'http://example.net/?mode=cat');
-                    assert(sort === 1);
-                })
-            ]);
+            return p.then(([ url, { sort } ]) => {
+                assert(url === 'http://example.net/?mode=cat');
+                assert(sort === 1);
+
+                let { ui } = store.getState();
+                let got = ui.preferences.catalog;
+                let exp = {
+                    colnum: 15, rownum: 10,
+                    title: { length: 5, position: 1 },
+                    thumb: { size: 2 }
+                };
+                assert.deepStrictEqual(got, exp);
+            });
         });
 
         it('should commit procedure if click sort', done => {

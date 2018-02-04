@@ -8,7 +8,6 @@ import { initializeBodyStyle, removeChildNodes } from './util';
 import Main from '../views/catalog/index.jsx';
 import { nav, footer } from '../views/commons';
 import { parseAll } from '../parser/catalog';
-import * as prefs from '../model/preferences';
 import { createElement, $ } from '../util/dom';
 import { cleanCatalogUrl } from '../util/url';
 import EventEmitter from '~/common/event-emitter';
@@ -69,7 +68,7 @@ export default class App {
         let contents = { url, catalog };
         commit('catalog/load', contents);
 
-        commit('preferences/set', prefs.load());
+        commit('preferences/load');
 
         performance.start('first render');
 

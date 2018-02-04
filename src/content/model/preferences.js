@@ -21,14 +21,10 @@ export function load() {
     return create({ catalog, video });
 }
 
-export function store(prefs, type) {
-    switch (type) {
-    case 'video':
-        Video.store(prefs.video);
-        break;
-    default:
-        throw new Error(`unknown type: ${type}`);
-    }
+export function store(prefs) {
+    let { catalog, video } = prefs;
+    Catalog.store(catalog);
+    Video.store(video);
 }
 
 const Catalog = {
@@ -59,6 +55,12 @@ const Catalog = {
             title: { length: titleLength, position: titlePosition },
             thumb: { size: thumbSize }
         });
+    },
+
+    store(prefs) {
+        let { colnum, rownum, title, thumb } = prefs;
+        let cxyl = [ colnum, rownum, title.length, title.position, thumb.size ].join('x');
+        jsCookie.set('cxyl', cxyl);
     }
 };
 

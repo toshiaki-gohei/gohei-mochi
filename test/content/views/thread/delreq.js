@@ -189,8 +189,7 @@ $`.replace(/\n/g, ''));
                 'thread/clearDelreqTargets': () => done()
             });
 
-            let { app, ui: { thread: { panel } } } = store.getState();
-            let $el = render(<Delreq {...{ commit: mock, panel, app }} />);
+            let $el = render(<Delreq {...{ commit: mock, ...props }} />);
 
             let $btn = $el.querySelector('.gohei-clear-btn');
             simulate.click($btn);

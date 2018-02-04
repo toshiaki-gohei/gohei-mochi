@@ -38,6 +38,12 @@ export function teardown() {
     delete global.document;
 }
 
+export function disposePreferences() {
+    const cookie = require('js-cookie');
+    cookie.remove('cxyl');
+    window.localStorage.clear();
+}
+
 // the order of element attributes is different for each browser
 export function tidy(htmlString) {
     if (htmlString == null) return htmlString;

@@ -1,7 +1,7 @@
 'use strict';
 import assert from 'assert';
 import * as preferences from '~/content/model/preferences';
-import { setup, teardown } from '@/support/dom';
+import { setup, teardown, disposePreferences } from '@/support/dom';
 import cookie from 'js-cookie';
 
 const { Catalog, Video } = preferences.internal;
@@ -10,7 +10,7 @@ describe(__filename, () => {
     before(() => setup());
     after(() => teardown());
 
-    afterEach(() => dispose());
+    afterEach(() => disposePreferences());
 
     describe('create()', () => {
         const { create } = preferences;
@@ -48,7 +48,7 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should load preferences if storage is empty', () => {
+        it('should load preferences if there is not futaba preferences', () => {
             let got = load();
             let exp = {
                 catalog: {
@@ -63,36 +63,36 @@ describe(__filename, () => {
     });
 
     describe('store()', () => {
-        const { store, load } = preferences;
+        const { store } = preferences;
 
-        const prefs = load();
+        it('should store preferences', () => {
+            let prefs = {
+                catalog: {
+                    colnum: 15, rownum: 10,
+                    title: { length: 5, position: 1 },
+                    thumb: { size: 2 }
+                },
+                video: { loop: false, muted: true, volume: 0.8 }
+            };
 
-        it('should store video preferences', () => {
-            store(prefs, 'video');
+            store(prefs);
 
-            let got = window.localStorage.getItem('futabavideo');
-            let exp = '0.5,false,true';
+            let got = cookie.get('cxyl');
+            let exp = '15x10x5x1x2';
             assert(got === exp);
-        });
 
-        it('should throw exception if unknown type', () => {
-            let got;
-            try { store(null, 'unknown type'); } catch (e) { got = e.message; }
-            assert(got === 'unknown type: unknown type');
+            got = window.localStorage.getItem('futabavideo');
+            exp = '0.8,true,false';
+            assert(got === exp);
         });
     });
 });
-
-function dispose() {
-    cookie.remove('cxyl');
-    window.localStorage.clear();
-}
 
 describe(`${__filename}: Catalog`, () => {
     before(() => setup());
     after(() => teardown());
 
-    afterEach(() => dispose());
+    afterEach(() => disposePreferences());
 
     describe('create()', () => {
         it('should create preferences', () => {
@@ -152,13 +152,24 @@ describe(`${__filename}: Catalog`, () => {
             assert.deepStrictEqual(got, exp);
         });
     });
+
+    describe('store()', () => {
+        it('should store preferences in cookie', () => {
+            let prefs = Catalog.load();
+            Catalog.store(prefs);
+
+            let got = cookie.get('cxyl');
+            let exp = '14x6x4x0x0';
+            assert(got === exp);
+        });
+    });
 });
 
 describe(`${__filename}: Video`, () => {
     before(() => setup());
     after(() => teardown());
 
-    afterEach(() => dispose());
+    afterEach(() => disposePreferences());
 
     describe('create()', () => {
         it('should create preferences', () => {

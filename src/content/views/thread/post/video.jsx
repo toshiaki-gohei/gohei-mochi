@@ -1,6 +1,5 @@
 'use strict';
 import React, { Component } from 'react';
-import * as preferences from '../../../model/preferences';
 
 export default class Video extends Component {
     constructor(props) {
@@ -105,9 +104,7 @@ function handleSetVideoPrefs() {
     let video = { loop, muted, volume };
 
     let prefs = commit('sync/preferences');
-    prefs = preferences.create({ ...prefs, video });
+    prefs = { ...prefs, video };
 
-    commit('preferences/set', prefs);
-
-    preferences.store(prefs, 'video');
+    commit('preferences/save', prefs);
 }

@@ -19,15 +19,15 @@ describe(__filename, () => {
 
     describe('run()', () => {
         it('should commit correctly', () => {
-            let load, set, setPanel;
+            let load, pload, setPanel;
             let p1 = new Promise(resolve => load = resolve);
-            let p2 = new Promise(resolve => set = resolve);
+            let p2 = new Promise(resolve => pload = resolve);
             let p3 = new Promise(resolve => setPanel = resolve);
 
             let store = createStore();
             let mock = procedures(store, {
                 'thread/load': load,
-                'preferences/set': set,
+                'preferences/load': pload,
                 'thread/setPanel': setPanel,
                 'sync/threadPosts': () => []
             });
@@ -57,15 +57,7 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
 
             return Promise.all([
-                p1,
-                p2.then(preferences => {
-                    let got = preferences;
-                    let exp = {
-                        ...preferences,
-                        video: { loop: false, muted: true, volume: 0.8 }
-                    };
-                    assert.deepStrictEqual(got, exp);
-                }),
+                p1, p2,
                 p3.then(panel => {
                     let got = panel;
                     let exp = { isOpen: false, type: 'FORM_POST' };

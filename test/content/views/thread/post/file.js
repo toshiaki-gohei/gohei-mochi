@@ -3,9 +3,10 @@ import assert from 'assert';
 import File, { marginLeftForThumb } from '~/content/views/thread/post/file.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown, tidy } from '@/support/dom';
+import { setup, teardown, disposePreferences, tidy } from '@/support/dom';
+import createStore from '~/content/reducers';
 import procedures from '~/content/procedures';
-import { Post, preferences } from '~/content/model';
+import { Post } from '~/content/model';
 import { sleep } from '~/content/util';
 
 describe(__filename, () => {
@@ -20,10 +21,8 @@ describe(__filename, () => {
         };
     });
 
-    const mock = procedures(null, {
-        'sync/preferences': () => preferences.load(),
-        'preferences/set': () => {}
-    });
+    const store = createStore();
+    const commit = procedures(store);
 
     describe('render()', () => {
         it('should render file', () => {
@@ -87,7 +86,7 @@ describe(__filename, () => {
         it('should render video if video is visible', done => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
-            let $el = render(<File {...{ commit: mock, post }} />);
+            let $el = render(<File {...{ commit, post }} />);
 
             $el.setState({ isVisibleVideo: true }, () => {
                 let got = $el.outerHTML;
@@ -155,12 +154,12 @@ describe(__filename, () => {
     });
 
     describe('event', () => {
-        after(() => window.localStorage.clear());
+        after(() => disposePreferences());
 
         it('should show video if click thumb image', done => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
-            let $el = render(<File {...{ commit: mock, post }} />);
+            let $el = render(<File {...{ commit, post }} />);
 
             let got = $el.querySelector('.gohei-video-container');
             assert(got === null);
@@ -178,7 +177,7 @@ describe(__filename, () => {
         it('should hide video if click close button', async () => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
-            let $el = render(<File {...{ commit: mock, post }} />);
+            let $el = render(<File {...{ commit, post }} />);
 
             $el.setState({ isVisibleVideo: true }, () => {
                 let got = $el.querySelector('.gohei-video-container');

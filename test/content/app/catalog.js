@@ -20,14 +20,14 @@ describe(__filename, () => {
 
     describe('run()', () => {
         it('should commit correctly', () => {
-            let load, set;
+            let load, pload;
             let p1 = new Promise(resolve => load = resolve);
-            let p2 = new Promise(resolve => set = resolve);
+            let p2 = new Promise(resolve => pload = resolve);
 
             let store = createStore();
             let mock = procedures(store, {
                 'catalog/load': load,
-                'preferences/set': set
+                'preferences/load': pload
             });
 
             let app = new App();
@@ -54,21 +54,7 @@ describe(__filename, () => {
             exp = [ { url } ];
             assert.deepStrictEqual(got, exp);
 
-            return Promise.all([
-                p1,
-                p2.then(preferences => {
-                    let got = preferences;
-                    let exp = {
-                        ...preferences,
-                        catalog: {
-                            colnum: 14, rownum: 6,
-                            title: { length: 4, position: 0 },
-                            thumb: { size: 0 }
-                        }
-                    };
-                    assert.deepStrictEqual(got, exp);
-                })
-            ]);
+            return Promise.all([ p1, p2 ]);
         });
     });
 

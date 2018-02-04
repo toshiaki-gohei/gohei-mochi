@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { CATALOG_SORT } from '~/content/constants';
 import { catalogUrl } from '~/content/util/url';
-import * as prefs from '~/content/model/preferences';
 
 const { BUMP_ORDER, NEWEST, OLDEST, POSTNUM_DESC, POSTNUM_ASC, HISTORY } = CATALOG_SORT;
 
@@ -10,7 +9,10 @@ export default class Nav extends Component {
     constructor(props) {
         super(props);
 
-        this._handleUpdate = handleUpdate.bind(this);
+        this._handlers = {
+            update: handleUpdate.bind(this)
+        };
+
         this._sortBy = {
             [BUMP_ORDER]: handleSort.bind(this, BUMP_ORDER),
             [NEWEST]: handleSort.bind(this, NEWEST),
@@ -25,6 +27,8 @@ export default class Nav extends Component {
         let { catalog, app } = this.props;
         if (catalog == null || app == null) return null;
 
+        let handlers = this._handlers;
+
         let propsSet = Object.values(CATALOG_SORT).reduce((set, sort) => {
             let props = { catalog, sort, handler: this._sortBy[sort] };
             set[sort] = props;
@@ -35,7 +39,7 @@ export default class Nav extends Component {
 <nav className="gohei-nav">
   <ul className="gohei-catalog-menu">
     <li className="gohei-menu-group gohei-left-menu">
-      <UpdateBtn {...{ app, handler: this._handleUpdate }} />
+      <UpdateBtn {...{ app, handlers }} />
       <span className="gohei-font-smaller">{statusMessage(app)}</span>
     </li>
     <li className="gohei-menu-group gohei-right-menu">
@@ -56,14 +60,15 @@ export default class Nav extends Component {
     }
 }
 
-function UpdateBtn({ app, handler }) {
+function UpdateBtn({ app, handlers }) {
     let { isUpdating } = app;
+    let { update } = handlers;
 
     let label = isUpdating ? '更新中…' : '最新に更新';
     let isDisabled = isUpdating ? true : false;
 
     return <button className="gohei-link-btn gohei-update-btn gohei-menu-item" type="button"
-                   disabled={isDisabled} onClick={handler}>{label}</button>;
+                   disabled={isDisabled} onClick={update}>{label}</button>;
 }
 
 function SortLink({ catalog, sort, handler, children }) {
@@ -92,10 +97,10 @@ function catsetUrl(catalog) {
     return `${pathname}?mode=catset`;
 }
 
-function handleUpdate() {
+async function handleUpdate() {
     let { commit, catalog } = this.props;
 
-    commit('preferences/set', prefs.load());
+    await commit('preferences/load');
 
     commit('catalog/update', catalog.url, { sort: catalog.sort });
 }
