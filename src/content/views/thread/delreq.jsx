@@ -102,7 +102,11 @@ function TargetList({ commit, app, handlers }) {
 
     if ($rows.length == 0) $rows = <EmptyList />;
 
-    return <table className="gohei-list"><tbody>{$rows}</tbody></table>;
+    return (
+<table className="gohei-list gohei-selectable-list">
+  <tbody>{$rows}</tbody>
+</table>
+    );
 }
 
 function isTarget(delreq) {
@@ -117,11 +121,11 @@ function Target({ checked, post, handlers }) {
 
     return (
 <tr className="gohei-tr" data-post-id={id} onClick={clickTarget}>
-  <td className="gohei-td gohei-text-center gohei-selectable">
+  <td className="gohei-td gohei-text-center">
     <input type="checkbox" checked={checked} onChange={noop} />
   </td>
-  <td className="gohei-td gohei-selectable">{index}</td>
-  <td className="gohei-td gohei-selectable">No.{no}</td>
+  <td className="gohei-td">{index}</td>
+  <td className="gohei-td">No.{no}</td>
 </tr>
     );
 }

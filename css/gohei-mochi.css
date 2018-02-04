@@ -446,10 +446,8 @@ input[type="file"] {
     max-height: 250px;
 }
 
-.gohei-delform > .gohei-left-pane,
-.gohei-delform > .gohei-right-pane,
-.gohei-delreq > .gohei-left-pane,
-.gohei-delreq > .gohei-right-pane {
+.gohei-app-thread .gohei-panel-content .gohei-left-pane,
+.gohei-app-thread .gohei-panel-content .gohei-right-pane {
     display: inline-block;
     box-sizing: border-box;
     padding: 0 4px;
@@ -457,8 +455,7 @@ input[type="file"] {
     vertical-align: top;
 }
 
-.gohei-delform .gohei-row,
-.gohei-delreq .gohei-row {
+.gohei-app-thread .gohei-panel-content .gohei-row {
     margin: 4px 0;
 }
 
@@ -472,30 +469,25 @@ input[type="file"] {
     overflow-y: auto;
 }
 
-.gohei-delform .gohei-list,
-.gohei-delreq .gohei-list {
+.gohei-app-thread .gohei-panel-content .gohei-list {
     border-collapse: collapse;
 }
 
-.gohei-delform .gohei-list .gohei-tr,
-.gohei-delreq .gohei-list .gohei-tr {
+.gohei-app-thread .gohei-panel-content .gohei-list .gohei-tr {
     vertical-align: middle;
 }
 
-.gohei-delform .gohei-list .gohei-tr > .gohei-td,
-.gohei-delreq .gohei-list .gohei-tr > .gohei-td {
+.gohei-app-thread .gohei-panel-content .gohei-list .gohei-tr > .gohei-td {
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     padding: 0 0.3em;
 }
 
-.gohei-delform .gohei-list .gohei-tr > .gohei-selectable,
-.gohei-delreq .gohei-list .gohei-tr > .gohei-selectable {
+.gohei-app-thread .gohei-panel-content .gohei-selectable-list .gohei-tr > .gohei-td {
     cursor: pointer;
 }
 
-.gohei-delform .gohei-list .gohei-tr:hover > .gohei-selectable,
-.gohei-delreq .gohei-list .gohei-tr:hover > .gohei-selectable {
+.gohei-app-thread .gohei-panel-content .gohei-selectable-list .gohei-tr:hover > .gohei-td {
     border-bottom: 1px solid #800000;
 }
 
