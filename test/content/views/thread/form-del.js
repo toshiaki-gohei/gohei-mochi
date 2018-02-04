@@ -3,7 +3,7 @@ import assert from 'assert';
 import Delform from '~/content/views/thread/form-del.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown, tidy } from '@/support/dom';
+import { setup, teardown, disposePreferences, tidy } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setDomainPosts, setAppThreads } from '~/content/reducers/actions';
 import procedures, { defaultMap } from '~/content/procedures';
@@ -26,7 +26,7 @@ describe(__filename, () => {
         let { app, ui: { thread: { panel } } } = store.getState();
         props = { panel, app };
     });
-    beforeEach(() => dispose());
+    beforeEach(() => disposePreferences());
 
     const URL = 'http://example.net/thread01';
 
@@ -230,7 +230,3 @@ $`.replace(/\n/g, ''));
         });
     });
 });
-
-function dispose() {
-    cookie.remove('pwdc');
-}

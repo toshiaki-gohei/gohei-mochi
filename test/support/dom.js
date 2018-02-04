@@ -40,6 +40,8 @@ export function teardown() {
 
 export function disposePreferences() {
     const cookie = require('js-cookie');
+    cookie.remove('namec');
+    cookie.remove('pwdc');
     cookie.remove('cxyl');
     window.localStorage.clear();
 }

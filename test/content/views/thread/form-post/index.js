@@ -3,7 +3,7 @@ import assert from 'assert';
 import Postform from '~/content/views/thread/form-post/index.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown } from '@/support/dom';
+import { setup, teardown, disposePreferences } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setAppThreads, setUiThread } from '~/content/reducers/actions';
 import procedures from '~/content/procedures';
@@ -25,7 +25,7 @@ describe(__filename, () => {
         let { panel } = ui.thread;
         props = { postform, panel };
     });
-    beforeEach(() => dispose());
+    beforeEach(() => disposePreferences());
 
     const URL = 'http://example.net/thread01';
 
@@ -346,8 +346,3 @@ $`.replace(/\n/g, ''));
         });
     });
 });
-
-function dispose() {
-    cookie.remove('namec');
-    cookie.remove('pwdc');
-}
