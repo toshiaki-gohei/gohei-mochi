@@ -1,3 +1,8 @@
+## 0.3.1 (2018-02-05)
+
+* modify to merge a delete message when a post file is deleted
+* fix to work that worker run correctly
+
 ## 0.3.0 (2018-02-04)
 
 * add a feature to delete posts 
