@@ -60,10 +60,9 @@ describe(__filename, () => {
         afterEach(() => workers.delreq = backup);
 
         it('should run worker', async () => {
-            workers.delreq = arg => {
-                assert(arg === store);
-                let got = getWorkers().delreq.id;
-                assert(got !== null);
+            workers.delreq = (_store, opts) => {
+                assert(_store === store);
+                assert(opts.id !== null);
                 return Promise.resolve();
             };
 
@@ -77,18 +76,18 @@ describe(__filename, () => {
             workers.delreq = () => new Promise(resolve => {
                 setTimeout(resolve, 50);
             });
-            let p1 = run(store, 'delreq');
+            let parallel1 = run(store, 'delreq');
 
             let beforeId = getWorkers().delreq.id;
             assert(beforeId != null);
 
             workers.delreq = () => { throw new Error('not reach here'); };
-            let p2 = run(store, 'delreq');
+            let parallel2 = run(store, 'delreq');
 
             let afterId = getWorkers().delreq.id;
             assert(beforeId === afterId);
             
-            return Promise.all([ p1, p2 ]);
+            return Promise.all([ parallel1, parallel2 ]);
         });
 
         it('should throw exception if unknown worker', async () => {

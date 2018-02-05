@@ -12,7 +12,7 @@ export default async function run(store, opts) {
 }
 
 async function _run(store, opts) {
-    let { sleepTime = SLEEP_TIME } = opts || {};
+    let { id, sleepTime = SLEEP_TIME } = opts || {};
 
     let count = 0;
     for (let delreq of targets(store)) {
@@ -21,7 +21,7 @@ async function _run(store, opts) {
     }
 
     let tasks = remainders(store).map(({ post }) => post);
-    store.dispatch(setAppWorkers({ delreq: { tasks } }));
+    store.dispatch(setAppWorkers({ delreq: { id, tasks } }));
 }
 
 function delreqs(store) {

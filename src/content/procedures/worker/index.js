@@ -29,7 +29,8 @@ export async function run(store, name) {
 
     if (worker.id !== id) return;
 
-    await fn(store);
+    let opts = { id: worker.id };
+    await fn(store, opts);
 
     store.dispatch(clearAppWorkerId(name));
 }

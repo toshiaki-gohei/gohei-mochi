@@ -19,6 +19,8 @@ describe(__filename, () => {
         beforeEach(() => backup = fetch.post);
         afterEach(() => fetch.post = backup);
 
+        const workerId = 'worker01';
+
         it('should run delreqs', async () => {
             let delreqs = [
                 { post: 'may/b/123001', url: 'url-delreq01' },
@@ -29,7 +31,7 @@ describe(__filename, () => {
             ];
             store.dispatch(setAppTasksDelreqs(delreqs));
             let tasks = [ 'may/b/123001', 'may/b/123002', 'may/b/123003', 'may/b/123004' ];
-            store.dispatch(setAppWorkers({ delreq: { tasks } }));
+            store.dispatch(setAppWorkers({ delreq: { id: workerId, tasks } }));
 
             let got = [];
             fetch.post = (url) => {
@@ -38,7 +40,7 @@ describe(__filename, () => {
                 case 'url-delreq02':
                     return { ok: true, text: '<b>同じIPアドレスからの削除依頼があります<br>' };
                 case 'url-delreq03':
-                    return { ok: true, text: 'faild to submit' };
+                    return { ok: true, text: 'failed to submit' };
                 case 'url-delreq04':
                     return { ok: false, status: 599, statusText: 'request timeout' };
                 default:
@@ -46,7 +48,7 @@ describe(__filename, () => {
                 }
             };
 
-            await run(store, { sleepTime: 10 });
+            await run(store, { id: workerId, sleepTime: 10 });
 
             let exp = [ 'url-delreq01', 'url-delreq02', 'url-delreq03', 'url-delreq04' ];
             assert.deepStrictEqual(got, exp);
@@ -84,7 +86,7 @@ describe(__filename, () => {
             ];
             store.dispatch(setAppTasksDelreqs(delreqs));
             let tasks = delreqs.map(({ post }) => post);
-            store.dispatch(setAppWorkers({ delreq: { tasks } }));
+            store.dispatch(setAppWorkers({ delreq: { id: workerId, tasks } }));
 
             let got = [];
             fetch.post = (url) => {
@@ -92,13 +94,18 @@ describe(__filename, () => {
                 return { ok: true, text: '<body>登録しました</body>' };
             };
 
-            await run(store, { sleepTime: 10 });
+            await run(store, { id: workerId, sleepTime: 10 });
 
             let exp = [
                 'url-delreq01',
                 'url-delreq02',
                 'url-delreq03'
             ];
+            assert.deepStrictEqual(got, exp);
+
+            let { app } = store.getState();
+            got = app.workers.delreq.tasks;
+            exp = [ 'may/b/123005', 'may/b/123006' ];
             assert.deepStrictEqual(got, exp);
         });
     });
