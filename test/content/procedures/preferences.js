@@ -70,6 +70,50 @@ describe(__filename, () => {
             assert(got === '0.8,true,false');
         });
 
+        it('should save only catalog preferences', () => {
+            cookie.set('cxyl', '14x6x4x0x0');
+            window.localStorage.setItem('futabavideo', '0.5,false,true');
+
+            let { catalog } = prefs;
+            save(store, { catalog });
+
+            let got = getPreferences();
+            let exp = {
+                ...prefs,
+                video: { loop: true, muted: false, volume: 0.5 }
+            };
+            assert.deepStrictEqual(got, exp);
+
+            got = cookie.get('cxyl');
+            assert(got === '15x10x5x1x2');
+            got = window.localStorage.getItem('futabavideo');
+            assert(got === '0.5,false,true');
+        });
+
+        it('should save only video preferences', () => {
+            cookie.set('cxyl', '14x6x4x0x0');
+            window.localStorage.setItem('futabavideo', '0.5,false,true');
+
+            let { video } = prefs;
+            save(store, { video });
+
+            let got = getPreferences();
+            let exp = {
+                ...prefs,
+                catalog: {
+                    colnum: 14, rownum: 6,
+                    title: { length: 4, position: 0 },
+                    thumb: { size: 0 }
+                }
+            };
+            assert.deepStrictEqual(got, exp);
+
+            got = cookie.get('cxyl');
+            assert(got === '14x6x4x0x0');
+            got = window.localStorage.getItem('futabavideo');
+            assert(got === '0.8,true,false');
+        });
+
         it('should do nothing if pass null', () => {
             save(store, prefs);
             let prev = getPreferences();

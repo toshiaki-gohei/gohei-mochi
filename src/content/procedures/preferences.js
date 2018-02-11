@@ -12,5 +12,6 @@ export function load(store) {
 export function save(store, prefs) {
     if (prefs == null) return;
     preferences.store(prefs);
+    prefs = preferences.load();
     store.dispatch(setUiPreferences(prefs));
 }
