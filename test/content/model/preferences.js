@@ -4,7 +4,7 @@ import * as preferences from '~/content/model/preferences';
 import { setup, teardown, disposePreferences } from '@/support/dom';
 import cookie from 'js-cookie';
 
-const { Catalog, Video } = preferences.internal;
+const { Video } = preferences.internal;
 
 describe(__filename, () => {
     before(() => setup());
@@ -130,6 +130,8 @@ describe(`${__filename}: Catalog`, () => {
 
     afterEach(() => disposePreferences());
 
+    const { Catalog } = preferences;
+
     describe('create()', () => {
         it('should create preferences', () => {
             let got = Catalog.create();
@@ -195,6 +197,16 @@ describe(`${__filename}: Catalog`, () => {
             Catalog.store(prefs);
 
             let got = cookie.get('cxyl');
+            let exp = '14x6x4x0x0';
+            assert(got === exp);
+        });
+    });
+
+    describe('cookieValue()', () => {
+        it('should return cookie value', () => {
+            let prefs = Catalog.load();
+
+            let got = Catalog.cookieValue(prefs);
             let exp = '14x6x4x0x0';
             assert(got === exp);
         });

@@ -1,8 +1,10 @@
 'use strict';
 import { setDomainThreads, setDomainCatalogs, setAppCatalogs } from '../../reducers/actions';
-import { HttpRes } from '../../model';
+import { HttpRes, preferences } from '../../model';
 import fetch from '../../util/fetch';
 import { catalogUrl } from '../../util/url';
+import { deepCopy } from '~/common/util';
+import jsCookie from 'js-cookie';
 
 export default update;
 
@@ -18,9 +20,13 @@ export async function update(store, url, { sort = null } = {}) {
     let requrl = catalogUrl(url, sort);
     let opts = options(app.catalogs.get(url));
 
+    setPreferences(url);
+
     let updatedAt = new Date();
 
     let res = await fetch.getCatalog(requrl, opts);
+
+    deletePreferences(url);
 
     store.dispatch(setAppCatalogs({ url, isUpdating: false, updatedAt }));
 
@@ -32,6 +38,21 @@ function options(catalog) {
     if (res == null) return null;
     let headers = res.reqHeaders;
     return { headers };
+}
+
+function setPreferences(url) {
+    let { catalog } = deepCopy(preferences.load());
+    catalog.title.length = 20;
+    let value = preferences.Catalog.cookieValue(catalog);
+
+    // use long path to raise the priority of this "cxyl"
+    let { hostname: domain, pathname: path } = new window.URL(url);
+    jsCookie.set('cxyl', value, { domain, path });
+}
+
+function deletePreferences(url) {
+    let { hostname: domain, pathname: path } = new window.URL(url);
+    jsCookie.remove('cxyl', { domain, path });
 }
 
 function setResponse(store, { url, res }) {

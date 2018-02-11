@@ -3,16 +3,19 @@ import assert from 'assert';
 import update, { internal } from '~/content/procedures/catalog/update';
 import createStore from '~/content/reducers';
 import { setDomainCatalogs, setAppCatalogs } from '~/content/reducers/actions';
-import { HttpRes } from '~/content/model';
+import { HttpRes, preferences } from '~/content/model';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
 import { pick, pluckFromMap as pluck } from '@/support/util';
 import { F } from '~/common/util';
 import fetch from '~/content/util/fetch';
+import jsCookie from 'js-cookie';
 
 describe(__filename, () => {
-    before(() => setup());
+    before(() => setup({ url: URL }));
     after(() => teardown());
+
+    const URL = 'https://may.2chan.net/b/futaba.php?mode=cat';
 
     let store;
     beforeEach(() => store = createStore());
@@ -25,8 +28,6 @@ describe(__filename, () => {
         beforeEach(() => backup = fetch.getCatalog);
         afterEach(() => fetch.getCatalog = backup);
 
-        const url = 'url-catalog01';
-
         it('should update', async () => {
             let urls = [ 0, 1, 2, 3 ].map(i => `url-thread0${i}`);
             store = createStore({
@@ -37,11 +38,11 @@ describe(__filename, () => {
                         [ urls[2], { url: urls[2], postnum: 0 } ]
                     ]),
                     catalogs: new Map([
-                        [ url, { url, threads: [ urls[0], urls[1], urls[2] ] } ]
+                        [ URL, { url: URL, threads: [ urls[0], urls[1], urls[2] ] } ]
                     ])
                 }
             });
-            store.dispatch(setAppCatalogs({ url }));
+            store.dispatch(setAppCatalogs({ url: URL }));
 
             fetch.getCatalog = () => {
                 let threads = [
@@ -53,7 +54,7 @@ describe(__filename, () => {
                 return { ok: true, status: 200, contents };
             };
 
-            await update(store, url, { sort: 3 });
+            await update(store, URL, { sort: 3 });
 
             let { domain } = store.getState();
             let got = pluck(domain.threads, 'url', 'postnum', 'newPostnum');
@@ -65,18 +66,18 @@ describe(__filename, () => {
             ];
             assert.deepStrictEqual(got, exp);
 
-            got = pick(domain.catalogs.get(url), 'url', 'threads', 'sort');
-            exp = { url, threads: [ urls[1], urls[2], urls[3] ], sort: 3 };
+            got = pick(domain.catalogs.get(URL), 'url', 'threads', 'sort');
+            exp = { url: URL, threads: [ urls[1], urls[2], urls[3] ], sort: 3 };
             assert.deepStrictEqual(got, exp);
         });
 
         it('should update app', async () => {
-            store.dispatch(setAppCatalogs({ url }));
+            store.dispatch(setAppCatalogs({ url: URL }));
 
             fetch.getCatalog = () => {
-                let { sort } = getCatalog(url);
+                let { sort } = getCatalog(URL);
                 assert(sort === 3);
-                let { isUpdating } = getApp(url);
+                let { isUpdating } = getApp(URL);
                 assert(isUpdating === true);
 
                 let headers = {
@@ -89,12 +90,12 @@ describe(__filename, () => {
                 return { ok: true, status: 200, statusText: 'OK', headers, contents };
             };
 
-            await update(store, url, { sort: 3 });
+            await update(store, URL, { sort: 3 });
 
-            let { sort } = getCatalog(url);
+            let { sort } = getCatalog(URL);
             assert(sort === 3);
 
-            let { isUpdating, updatedAt, updateHttpRes } = getApp(url);
+            let { isUpdating, updatedAt, updateHttpRes } = getApp(URL);
             assert(isUpdating === false);
 
             let got = updateHttpRes;
@@ -113,54 +114,79 @@ describe(__filename, () => {
         it('should handle sort correctly', async () => {
             const getSort = url => getCatalog(url).sort;
 
-            store.dispatch(setAppCatalogs({ url }));
+            store.dispatch(setAppCatalogs({ url: URL }));
 
             fetch.getCatalog = () => {
                 let contents = { catalog: { threads: [] } };
                 return { ok: true, status: 200, statusText: 'OK', contents };
             };
 
-            store.dispatch(setDomainCatalogs({ url, sort: null }));
-            await update(store, url);
-            assert(getSort(url) === null);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: null }));
+            await update(store, URL);
+            assert(getSort(URL) === null);
 
-            store.dispatch(setDomainCatalogs({ url, sort: 3 }));
-            await update(store, url);
-            assert(getSort(url) === null);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: 3 }));
+            await update(store, URL);
+            assert(getSort(URL) === null);
 
-            store.dispatch(setDomainCatalogs({ url, sort: null }));
-            await update(store, url, { sort: null });
-            assert(getSort(url) === null);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: null }));
+            await update(store, URL, { sort: null });
+            assert(getSort(URL) === null);
 
-            store.dispatch(setDomainCatalogs({ url, sort: 3 }));
-            await update(store, url, { sort: null });
-            assert(getSort(url) === null);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: 3 }));
+            await update(store, URL, { sort: null });
+            assert(getSort(URL) === null);
 
-            store.dispatch(setDomainCatalogs({ url, sort: null }));
-            await update(store, url, { sort: 3 });
-            assert(getSort(url) === 3);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: null }));
+            await update(store, URL, { sort: 3 });
+            assert(getSort(URL) === 3);
 
-            store.dispatch(setDomainCatalogs({ url, sort: 1 }));
-            await update(store, url, { sort: 3 });
-            assert(getSort(url) === 3);
+            store.dispatch(setDomainCatalogs({ url: URL, sort: 1 }));
+            await update(store, URL, { sort: 3 });
+            assert(getSort(URL) === 3);
         });
 
         it('should update using current catalog url if not pass url', async () => {
-            let appCatalogs = new Map([ [ url, { url } ] ]);
             store = createStore({
-                app: { catalogs: appCatalogs, current: { catalog: url } }
+                app: { current: { catalog: URL } }
             });
+            store.dispatch(setAppCatalogs({ url: URL }));
 
             fetch.getCatalog = requrl => {
-                assert(requrl === url);
+                assert(requrl === URL);
                 let contents = { catalog: { threads: [] } };
                 return { ok: true, status: 200, statusText: 'OK', contents };
             };
 
             await update(store);
 
-            let { updateHttpRes: { status } } = getApp(url);
+            let { updateHttpRes: { status } } = getApp(URL);
             assert(status === 200);
+        });
+
+        (isBrowser ? it.skip : it)('should set and delete preferences', async () => {
+            store = createStore({
+                app: { current: { catalog: URL } },
+                ui: { preferences: preferences.load() }
+            });
+            store.dispatch(setAppCatalogs({ url: URL }));
+
+            let { hostname: domain, pathname: path } = new window.URL(URL);
+
+            fetch.getCatalog = () => {
+                let got = jsCookie.get('cxyl', { domain, path });
+                assert(got === '14x6x20x0x0');
+                let contents = { catalog: { threads: [] } };
+                return { ok: true, status: 200, statusText: 'OK', contents };
+            };
+
+            await update(store);
+
+            let { updateHttpRes: { status } } = getApp(URL);
+            assert(status === 200);
+
+            let got = jsCookie.get('cxyl', { domain, path });
+            assert(got === undefined);
         });
 
         it('should set state correctly if network error occurs', async () => {

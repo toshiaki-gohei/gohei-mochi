@@ -27,7 +27,7 @@ export function store(prefs) {
     if (video) Video.store(video);
 }
 
-const Catalog = {
+export const Catalog = {
     create(opts) {
         let {
             colnum = null,
@@ -58,9 +58,14 @@ const Catalog = {
     },
 
     store(prefs) {
+        let cxyl = this.cookieValue(prefs);
+        jsCookie.set('cxyl', cxyl);
+    },
+
+    cookieValue(prefs) {
         let { colnum, rownum, title, thumb } = prefs;
         let cxyl = [ colnum, rownum, title.length, title.position, thumb.size ].join('x');
-        jsCookie.set('cxyl', cxyl);
+        return cxyl;
     }
 };
 

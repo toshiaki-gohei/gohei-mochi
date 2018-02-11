@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import Catalog from '~/content/views/catalog/catalog.jsx';
+import Catalog, { internal } from '~/content/views/catalog/catalog.jsx';
 import React from 'react';
 import { render } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
@@ -61,10 +61,58 @@ $`.replace(/\n/g, ''));
             assert(exp.test(got));
         });
 
+        it('should render catalog title correctly', () => {
+            let catalog = { threads: urls };
+
+            let preferences = prefs.create({
+                catalog: { colnum: 1, rownum: 1, title: { length: 2 } }
+            });
+            let $el = render(<Catalog {...{ commit, catalog, preferences }} />);
+            let got = $el.querySelector('.gohei-thread-title').textContent;
+            assert(got === 'thre');
+
+            preferences = prefs.create({
+                catalog: { colnum: 1, rownum: 1, title: { length: 4 } }
+            });
+            $el = render(<Catalog {...{ commit, catalog, preferences }} />);
+            got = $el.querySelector('.gohei-thread-title').textContent;
+            assert(got === 'thread1');
+        });
+
         it('should not render catalog if no props', () => {
             let $el = render(<Catalog />);
             let got = $el.outerHTML;
             assert(got === null);
+        });
+    });
+
+    describe('substr()', () => {
+        const { substr } = internal;
+
+        it('should count correctly', () => {
+            assert(substr('abcd', 2) === 'abcd');
+            assert(substr('abcde', 2) === 'abcd');
+
+            assert(substr('あいう', 3) === 'あいう');
+            assert(substr('あいうe', 3) === 'あいう');
+            assert(substr('あいうえ', 3) === 'あいう');
+
+            assert(substr('abcd', 2) === 'abcd');
+            assert(substr('abcあ', 2) === 'abc');
+        });
+
+        it('should count correctly if contains surrogate pairs', () => {
+            assert(substr('abc𐐀', 2) === 'abc');
+            assert(substr('abc𐐀', 3) === 'abc𐐀');
+
+            assert(substr('ab𠮷', 2) === 'ab𠮷');
+            assert(substr('abc𠮷', 2) === 'abc');
+        });
+
+        it('should return str as it is if length is none', () => {
+            let str = 'abc';
+            let got = substr(str);
+            assert(got === str);
         });
     });
 });

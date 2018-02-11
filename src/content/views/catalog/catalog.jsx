@@ -19,10 +19,12 @@ export default function Catalog({ commit, catalog = {}, preferences = {} }) {
 
 function Item({ thread, preferences }) {
     let { url, title, postnum, newPostnum, thumb } = thread;
-    let { colnum } = preferences;
+    let { colnum, title: { length } } = preferences;
 
     let width = Math.floor(100 / colnum * 100) / 100 + '%';
     let newly = newPostnum == null ? 'new' : `+${newPostnum}`;
+
+    title = substr(title, length);
 
     return (
 <li className="gohei-catalog-item" style={{ width }} >
@@ -61,3 +63,28 @@ function Image({ thumb }) {
 const THUMB_SIZE = F({
     0: 50, 1: 75, 2: 100, 3: 125, 4: 150, 5: 175, 6: 250
 });
+
+function substr(str, length) {
+    if (length == null) return str;
+
+    let count = 0;
+    let ret = [];
+
+    for (let c of str) {
+        count += isHankaku(c) ? 0.5 : 1;
+        if (count > length) break;
+        ret.push(c);
+    }
+
+    return ret.join('');
+}
+
+function isHankaku(c) {
+    let charCode = c.charCodeAt();
+    if (0x20 <= charCode && charCode <= 0x7e) return true;
+    return false;
+}
+
+export const internal = {
+    substr
+};
