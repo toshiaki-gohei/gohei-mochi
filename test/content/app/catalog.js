@@ -4,7 +4,7 @@ import App, { internal } from '~/content/app/catalog';
 import { setup, teardown } from '@/support/dom';
 import createStore from '~/content/reducers';
 import procedures from '~/content/procedures';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
@@ -35,7 +35,7 @@ describe(__filename, () => {
             app._store = store;
             app._commit = mock;
 
-            cookie.set('cxyl', '14x6x4x0x0');
+            jsCookie.set('cxyl', '14x6x4x0x0');
 
             app.run();
 

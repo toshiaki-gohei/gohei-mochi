@@ -8,7 +8,7 @@ import createStore from '~/content/reducers';
 import { setDomainCatalogs, setAppCatalogs } from '~/content/reducers/actions';
 import procedures, { defaultMap } from '~/content/procedures';
 import { CATALOG_SORT } from '~/content/constants';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 
 describe(__filename, () => {
     before(() => setup());
@@ -149,7 +149,7 @@ $`.replace(/\n/g, ''));
             store.dispatch(setDomainCatalogs({ url: URL, sort: CATALOG_SORT.NEWEST }));
             let catalog = store.getState().domain.catalogs.get(URL);
 
-            cookie.set('cxyl', '15x10x5x1x2');
+            jsCookie.set('cxyl', '15x10x5x1x2');
 
             let $el = render(<Nav {...{ ...props, commit: mock, catalog }} />);
 

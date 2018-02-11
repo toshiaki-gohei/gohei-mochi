@@ -3,7 +3,7 @@ import assert from 'assert';
 import * as procedures from '~/content/procedures/preferences';
 import createStore from '~/content/reducers';
 import { setup, teardown, disposePreferences } from '@/support/dom';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 
 describe(__filename, () => {
     before(() => setup());
@@ -27,7 +27,7 @@ describe(__filename, () => {
         const { load } = procedures;
 
         it('should load preferences', () => {
-            cookie.set('cxyl', '15x10x5x1x2');
+            jsCookie.set('cxyl', '15x10x5x1x2');
             window.localStorage.setItem('futabavideo', '0.8,true,false');
 
             load(store);
@@ -64,14 +64,14 @@ describe(__filename, () => {
             let exp = prefs;
             assert.deepStrictEqual(got, exp);
 
-            got = cookie.get('cxyl');
+            got = jsCookie.get('cxyl');
             assert(got === '15x10x5x1x2');
             got = window.localStorage.getItem('futabavideo');
             assert(got === '0.8,true,false');
         });
 
         it('should save only catalog preferences', () => {
-            cookie.set('cxyl', '14x6x4x0x0');
+            jsCookie.set('cxyl', '14x6x4x0x0');
             window.localStorage.setItem('futabavideo', '0.5,false,true');
 
             let { catalog } = prefs;
@@ -84,14 +84,14 @@ describe(__filename, () => {
             };
             assert.deepStrictEqual(got, exp);
 
-            got = cookie.get('cxyl');
+            got = jsCookie.get('cxyl');
             assert(got === '15x10x5x1x2');
             got = window.localStorage.getItem('futabavideo');
             assert(got === '0.5,false,true');
         });
 
         it('should save only video preferences', () => {
-            cookie.set('cxyl', '14x6x4x0x0');
+            jsCookie.set('cxyl', '14x6x4x0x0');
             window.localStorage.setItem('futabavideo', '0.5,false,true');
 
             let { video } = prefs;
@@ -108,7 +108,7 @@ describe(__filename, () => {
             };
             assert.deepStrictEqual(got, exp);
 
-            got = cookie.get('cxyl');
+            got = jsCookie.get('cxyl');
             assert(got === '14x6x4x0x0');
             got = window.localStorage.getItem('futabavideo');
             assert(got === '0.8,true,false');

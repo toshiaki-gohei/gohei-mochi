@@ -2,7 +2,7 @@
 import assert from 'assert';
 import * as preferences from '~/content/model/preferences';
 import { setup, teardown, disposePreferences } from '@/support/dom';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 
 const { Video } = preferences.internal;
 
@@ -33,7 +33,7 @@ describe(__filename, () => {
         const { load } = preferences;
 
         it('should load preferences from storage', () => {
-            cookie.set('cxyl', '15x10x5x1x2');
+            jsCookie.set('cxyl', '15x10x5x1x2');
             window.localStorage.setItem('futabavideo', '0.8,true,false');
 
             let got = load();
@@ -77,7 +77,7 @@ describe(__filename, () => {
 
             store(prefs);
 
-            let got = cookie.get('cxyl');
+            let got = jsCookie.get('cxyl');
             let exp = '15x10x5x1x2';
             assert(got === exp);
 
@@ -97,7 +97,7 @@ describe(__filename, () => {
 
             store(prefs);
 
-            let got = cookie.get('cxyl');
+            let got = jsCookie.get('cxyl');
             let exp = '15x10x5x1x2';
             assert(got === exp);
 
@@ -113,7 +113,7 @@ describe(__filename, () => {
 
             store(prefs);
 
-            let got = cookie.get('cxyl');
+            let got = jsCookie.get('cxyl');
             let exp = undefined;
             assert(got === exp);
 
@@ -169,7 +169,7 @@ describe(`${__filename}: Catalog`, () => {
 
     describe('load()', () => {
         it('should load preferences from cookie', () => {
-            cookie.set('cxyl', '15x10x5x1x2');
+            jsCookie.set('cxyl', '15x10x5x1x2');
 
             let got = Catalog.load();
             let exp = {
@@ -196,7 +196,7 @@ describe(`${__filename}: Catalog`, () => {
             let prefs = Catalog.load();
             Catalog.store(prefs);
 
-            let got = cookie.get('cxyl');
+            let got = jsCookie.get('cxyl');
             let exp = '14x6x4x0x0';
             assert(got === exp);
         });
