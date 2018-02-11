@@ -3,16 +3,16 @@ import assert from 'assert';
 import Delform from '~/content/views/thread/form-del.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown, disposePreferences, tidy } from '@/support/dom';
+import { setup, teardown, disposePreferences, tidy, isBrowser } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setDomainPosts, setAppThreads } from '~/content/reducers/actions';
 import procedures, { defaultMap } from '~/content/procedures';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 import { pluckFromMap as pluck } from '@/support/util';
 import { sleep } from '~/content/util';
 
 describe(__filename, () => {
-    before(() => setup());
+    before(() => setup({ url: URL }));
     after(() => teardown());
 
     let store, props;
@@ -26,9 +26,10 @@ describe(__filename, () => {
         let { app, ui: { thread: { panel } } } = store.getState();
         props = { panel, app };
     });
-    beforeEach(() => disposePreferences());
 
-    const URL = 'http://example.net/thread01';
+    afterEach(() => disposePreferences());
+
+    const URL = 'https://may.2chan.net/b/res/123456789.htm';
 
     const createPosts = nolist => {
         return nolist.map((no, index) => ({ id: `may/b/${no}`, index, no }));
@@ -93,7 +94,7 @@ $`.replace(/\n/g, ''));
         });
 
         it('should render with cookie data', () => {
-            cookie.set('pwdc', 'cookie pwd');
+            jsCookie.set('pwdc', 'cookie pwd');
 
             let $el = render(<Delform {...props} />);
 
@@ -172,6 +173,9 @@ $`.replace(/\n/g, ''));
                 ])
             };
             store.dispatch(setAppThreads({ url: URL, delform }));
+
+            let { app, ui: { thread: { panel } } } = store.getState();
+            props = { panel, app };
         });
 
         it('should submit correctly', () => {
@@ -194,8 +198,7 @@ $`.replace(/\n/g, ''));
                 'thread/update': update
             });
 
-            let { app, ui: { thread: { panel } } } = store.getState();
-            $el = render(<Delform {...{ commit: mock, panel, app }} />);
+            $el = render(<Delform {...{ commit: mock, ...props }} />);
 
             $el.querySelector('.gohei-input-password').value = 'test pwd';
 
@@ -223,10 +226,32 @@ $`.replace(/\n/g, ''));
                 p3.then(() => {
                     let { isSubmitting } = $el.state;
                     assert(isSubmitting === false);
-                    let got = cookie.get('pwdc');
-                    assert(got === 'test pwd');
                 })
             ]);
+        });
+
+        (isBrowser ? it.skip : it)('should set cookie', () => {
+            let update;
+            let p = new Promise(resolve => update = resolve);
+
+            let mock = procedures(null, {
+                ...defaultMap(store),
+                'thread/submitDel': () => ({ ok: true }),
+                'thread/clearDelformTargets': () => {},
+                'thread/update': update
+            });
+
+            $el = render(<Delform {...{ commit: mock, ...props }} />);
+
+            $el.querySelector('.gohei-input-password').value = 'test pwd';
+
+            let $btn = $el.querySelector('.gohei-submit-btn');
+            simulate.click($btn);
+
+            return p.then(() => {
+                let got = jsCookie.get('pwdc');
+                assert(got === 'test pwd');
+            });
         });
     });
 });

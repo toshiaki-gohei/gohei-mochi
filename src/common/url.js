@@ -38,8 +38,8 @@ export function separate(url) {
         bkey = RegExp.$1;
         tkey = RegExp.$2;
         break;
-    // catalog
-    case /^\/([^/]+)\/futaba\.php\?(=?.*mode=cat(?:&|$))/.test(path):
+    // catalog, post url
+    case /^\/([^/]+)\/futaba\.php/.test(path):
         bkey = RegExp.$1;
         break;
     default:

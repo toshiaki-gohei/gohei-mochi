@@ -1,8 +1,8 @@
 'use strict';
 import React, { Component, Fragment } from 'react';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
-import { hasCheckedTarget } from './util';
-import cookie from 'js-cookie';
+import { hasCheckedTarget, setPwdc } from './util';
+import jsCookie from 'js-cookie';
 
 export default class Delform extends Component {
     constructor(props) {
@@ -26,8 +26,7 @@ export default class Delform extends Component {
     }
 
     _setCookie(form) {
-        let { pwd } = form;
-        cookie.set('pwdc', pwd);
+        setPwdc(form.pwd);
     }
 
     render() {
@@ -132,7 +131,7 @@ function EmptyList() {
 
 function DeleteKey({ handlers }) {
     let { setRefPassword } = handlers;
-    let pwdc = cookie.get('pwdc');
+    let pwdc = jsCookie.get('pwdc');
 
     return (
 <Fragment>

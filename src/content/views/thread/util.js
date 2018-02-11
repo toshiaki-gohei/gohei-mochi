@@ -1,4 +1,6 @@
 'use strict';
+import { separate } from '~/common/url';
+import jsCookie from 'js-cookie';
 
 export function isThreadLazyDisplay(appThread) {
     let { displayThreshold } = appThread || {};
@@ -14,4 +16,15 @@ export function hasCheckedTarget(app, name) {
         if (checked) return true;
     }
     return false;
+}
+
+export function setNamec(name, url) {
+    if (name == null) name = '';
+    let { boardKey } = separate(url);
+    jsCookie.set('namec', name, { path: `/${boardKey}/` });
+}
+
+export function setPwdc(password) {
+    if (password == null) password = '';
+    jsCookie.set('pwdc', password, { domain: '.2chan.net' });
 }

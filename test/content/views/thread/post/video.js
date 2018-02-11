@@ -97,8 +97,15 @@ $`.replace(/\n/g, ''));
             await sleep(1);
 
             let { ui } = store.getState();
-            let got = ui.preferences.video;
-            let exp = { loop: false, muted: true, volume: 0.8 };
+            let got = ui.preferences;
+            let exp = {
+                catalog: {
+                    colnum: 14, rownum: 6,
+                    title: { length: 4, position: 0 },
+                    thumb: { size: 0 }
+                },
+                video: { loop: false, muted: true, volume: 0.8 }
+            };
             assert.deepStrictEqual(got, exp);
         });
     });

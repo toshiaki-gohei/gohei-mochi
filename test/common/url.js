@@ -90,13 +90,17 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should separate catalog url', () => {
+        it('should separate /~/futaba.php url', () => {
             let got = separate('https://may.2chan.net/b/futaba.php?mode=cat&sort=3');
             let exp = {
                 server: 'may',
                 boardKey: 'b',
                 threadKey: null
             };
+            assert.deepStrictEqual(got, exp);
+
+            // url of thread form action
+            got = separate('https://may.2chan.net/b/futaba.php?guid=on');
             assert.deepStrictEqual(got, exp);
         });
 

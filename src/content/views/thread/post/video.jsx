@@ -102,9 +102,5 @@ function handleSetVideoPrefs() {
     let { loop, muted, volume } = this._$video;
 
     let video = { loop, muted, volume };
-
-    let prefs = commit('sync/preferences');
-    prefs = { ...prefs, video };
-
-    commit('preferences/save', prefs);
+    commit('preferences/save', { video });
 }

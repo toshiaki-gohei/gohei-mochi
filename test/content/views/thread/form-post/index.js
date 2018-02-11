@@ -3,15 +3,15 @@ import assert from 'assert';
 import Postform from '~/content/views/thread/form-post/index.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
-import { setup, teardown, disposePreferences } from '@/support/dom';
+import { setup, teardown, disposePreferences, isBrowser } from '@/support/dom';
 import createStore from '~/content/reducers';
 import { setAppThreads, setUiThread } from '~/content/reducers/actions';
 import procedures from '~/content/procedures';
-import cookie from 'js-cookie';
+import jsCookie from 'js-cookie';
 import { sleep } from '~/content/util';
 
 describe(__filename, () => {
-    before(() => setup());
+    before(() => setup({ url: URL }));
     after(() => teardown());
 
     let store, props;
@@ -25,9 +25,10 @@ describe(__filename, () => {
         let { panel } = ui.thread;
         props = { postform, panel };
     });
-    beforeEach(() => disposePreferences());
 
-    const URL = 'http://example.net/thread01';
+    afterEach(() => disposePreferences());
+
+    const URL = 'https://may.2chan.net/b/res/123456789.htm';
 
     describe('render()', () => {
         it('should render postform', () => {
@@ -67,8 +68,8 @@ $`.replace(/\n/g, ''));
             }));
             let { postform } = store.getState().app.threads.get(URL);
 
-            cookie.set('namec', 'cookie name');
-            cookie.set('pwdc', 'cookie pwd');
+            jsCookie.set('namec', 'cookie name');
+            jsCookie.set('pwdc', 'cookie pwd');
 
             let $el = render(<Postform {...{ ...props, postform }} />);
 
@@ -152,6 +153,8 @@ $`.replace(/\n/g, ''));
     describe('submit event', () => {
         let $el;
 
+        const action = 'https://may.2chan.net/b/futaba.php?guid=on';
+
         it('should commit procedures correctly', () => {
             let submit, setComment, setFile, update;
             let p1 = new Promise(resolve => {
@@ -175,10 +178,7 @@ $`.replace(/\n/g, ''));
 
             store.dispatch(setAppThreads({
                 url: URL,
-                postform: {
-                    action: 'http://example.net/submit-url',
-                    comment: 'test comment'
-                }
+                postform: { action, comment: 'test comment' }
             }));
             let { postform } = store.getState().app.threads.get(URL);
 
@@ -192,7 +192,7 @@ $`.replace(/\n/g, ''));
             return Promise.all([
                 p1.then(({ args, isSubmitting, errmsg }) => {
                     let { url, formdata } = args;
-                    assert(url === 'http://example.net/submit-url');
+                    assert(url === 'https://may.2chan.net/b/futaba.php?guid=on');
                     assert(formdata != null);
                     assert(isSubmitting === true);
                     assert(errmsg === null);
@@ -229,7 +229,7 @@ $`.replace(/\n/g, ''));
             store.dispatch(setAppThreads({
                 url: URL,
                 postform: {
-                    action: 'http://example.net/submit-url',
+                    action,
                     hiddens: [
                         { name: 'hidden1', value: 'test hidden1' },
                         { name: 'hidden2', value: 'test hidden2' }
@@ -251,7 +251,7 @@ $`.replace(/\n/g, ''));
             $form.dispatchEvent(new window.Event('submit'));
 
             return p.then(({ url, formdata }) => {
-                assert(url === 'http://example.net/submit-url');
+                assert(url === 'https://may.2chan.net/b/futaba.php?guid=on');
                 let got = formdata.entries();
                 let exp = [
                     [ 'hidden1', 'test hidden1' ],
@@ -268,7 +268,7 @@ $`.replace(/\n/g, ''));
             });
         });
 
-        it('should set cookie', () => {
+        (isBrowser ? it.skip : it)('should set cookie', () => {
             let update;
             let p = new Promise(resolve => update = resolve);
 
@@ -279,10 +279,7 @@ $`.replace(/\n/g, ''));
                 'thread/update': update
             });
 
-            store.dispatch(setAppThreads({
-                url: URL,
-                postform: { comment: 'test comment' }
-            }));
+            store.dispatch(setAppThreads({ url: URL, postform: { action } }));
             let { postform } = store.getState().app.threads.get(URL);
 
             $el = render(<Postform {...{ ...props, postform, commit: mock }} />);
@@ -290,14 +287,12 @@ $`.replace(/\n/g, ''));
             $el.querySelector('form input[name=name]').value = 'test name';
             $el.querySelector('form input[name=pwd]').value = 'test pwd';
 
-            $el.setState({ errmsg: 'test errmsg' }, () => {
-                let $form = $el.querySelector('form');
-                simulate.submit($form);
-            });
+            let $form = $el.querySelector('form');
+            simulate.submit($form);
 
             return p.then(() => {
-                let namec = cookie.get('namec');
-                let pwdc = cookie.get('pwdc');
+                let namec = jsCookie.get('namec');
+                let pwdc = jsCookie.get('pwdc');
                 assert(namec === 'test name');
                 assert(pwdc === 'test pwd');
             });
@@ -316,7 +311,7 @@ $`.replace(/\n/g, ''));
 
             store.dispatch(setAppThreads({
                 url: URL,
-                postform: { comment: 'test comment' }
+                postform: { action, comment: 'test comment' }
             }));
             let { postform } = store.getState().app.threads.get(URL);
 

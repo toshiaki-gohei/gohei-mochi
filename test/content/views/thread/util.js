@@ -3,6 +3,8 @@ import assert from 'assert';
 import * as util from '~/content/views/thread/util';
 import createStore from '~/content/reducers';
 import { setAppThreads } from '~/content/reducers/actions';
+import { setup, teardown, disposePreferences, isBrowser } from '@/support/dom';
+import jsCookie from 'js-cookie';
 
 describe(__filename, () => {
     describe('isThreadLazyDisplay()', () => {
@@ -75,6 +77,68 @@ describe(__filename, () => {
             let { app } = store.getState();
             let got = hasCheckedTarget(app, 'delreq');
             assert(got === false);
+        });
+    });
+
+    (isBrowser ? describe.skip : describe)('setNamec()', () => {
+        const { setNamec } = util;
+
+        before(() => setup({ url: URL }));
+        after(() => teardown());
+
+        afterEach(() => disposePreferences());
+
+        const URL = 'https://may.2chan.net/b/res/123456789.htm';
+
+        it('should set namec to cookie', () => {
+            let got = jsCookie.get('namec');
+            assert(got === undefined);
+
+            setNamec('test name', URL);
+
+            got = jsCookie.get('namec');
+            assert(got === 'test name');
+
+            jsCookie.remove('namec', { path: '/b/' });
+            got = jsCookie.get('namec');
+            assert(got === undefined);
+        });
+
+        it('should set empty string if pass null', () => {
+            setNamec(null, URL);
+            let got = jsCookie.get('namec');
+            assert(got === '');
+        });
+    });
+
+    (isBrowser ? describe.skip : describe)('setPwdc()', () => {
+        const { setPwdc } = util;
+
+        before(() => setup({ url: URL }));
+        after(() => teardown());
+
+        afterEach(() => disposePreferences());
+
+        const URL = 'https://may.2chan.net/b/res/123456789.htm';
+
+        it('should set pwdc to cookie', () => {
+            let got = jsCookie.get('pwdc');
+            assert(got === undefined);
+
+            setPwdc('test password', URL);
+
+            got = jsCookie.get('pwdc');
+            assert(got === 'test password');
+
+            jsCookie.remove('pwdc', { domain: '.2chan.net' });
+            got = jsCookie.get('pwdc');
+            assert(got === undefined);
+        });
+
+        it('should set empty string if pass null', () => {
+            setPwdc(null);
+            let got = jsCookie.get('pwdc');
+            assert(got === '');
         });
     });
 });

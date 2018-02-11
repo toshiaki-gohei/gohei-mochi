@@ -2,9 +2,10 @@
 import React, { Component, Fragment } from 'react';
 import File from './file.jsx';
 import DropBox from './drop-box.jsx';
-import cookie from 'js-cookie';
+import { setNamec, setPwdc } from '../util';
 import FormData from '~/content/util/form-data';
 import { THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
+import jsCookie from 'js-cookie';
 
 export default class Postform extends Component {
     constructor(props) {
@@ -62,10 +63,11 @@ export default class Postform extends Component {
     }
 
     _setCookie(formdata) {
+        let { postform: { action } } = this.props;
         let name = formdata.get('name');
         let pwd = formdata.get('pwd');
-        cookie.set('namec', name);
-        cookie.set('pwdc', pwd);
+        setNamec(name, action);
+        setPwdc(pwd);
     }
 
     render() {
@@ -74,8 +76,8 @@ export default class Postform extends Component {
 
         if (panel == null || postform == null) return null;
 
-        let namec = cookie.get('namec');
-        let pwdc = cookie.get('pwdc');
+        let namec = jsCookie.get('namec');
+        let pwdc = jsCookie.get('pwdc');
 
         let style = panel.type === P_TYPE.FORM_POST ? null : { display: 'none' };
 
