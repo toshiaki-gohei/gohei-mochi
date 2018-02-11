@@ -85,6 +85,42 @@ describe(__filename, () => {
             exp = '0.8,true,false';
             assert(got === exp);
         });
+
+        it('should store only catalog preferences', () => {
+            let prefs = {
+                catalog: {
+                    colnum: 15, rownum: 10,
+                    title: { length: 5, position: 1 },
+                    thumb: { size: 2 }
+                }
+            };
+
+            store(prefs);
+
+            let got = cookie.get('cxyl');
+            let exp = '15x10x5x1x2';
+            assert(got === exp);
+
+            got = window.localStorage.getItem('futabavideo');
+            exp = null;
+            assert(got === exp);
+        });
+
+        it('should store only video preferences', () => {
+            let prefs = {
+                video: { loop: false, muted: true, volume: 0.8 }
+            };
+
+            store(prefs);
+
+            let got = cookie.get('cxyl');
+            let exp = undefined;
+            assert(got === exp);
+
+            got = window.localStorage.getItem('futabavideo');
+            exp = '0.8,true,false';
+            assert(got === exp);
+        });
     });
 });
 

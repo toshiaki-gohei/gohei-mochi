@@ -23,8 +23,8 @@ export function load() {
 
 export function store(prefs) {
     let { catalog, video } = prefs;
-    Catalog.store(catalog);
-    Video.store(video);
+    if (catalog) Catalog.store(catalog);
+    if (video) Video.store(video);
 }
 
 const Catalog = {
