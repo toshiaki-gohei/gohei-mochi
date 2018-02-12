@@ -31,13 +31,13 @@ describe(__filename, () => {
             let got = reduce(state, action);
             let exp = new Map([
                 [ 'url-catalog01', {
-                    url: 'url-catalog01', isUpdating: false,
-                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    url: 'url-catalog01',
+                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ],
                 [ 'url-catalog04', {
-                    url: 'url-catalog04', isUpdating: false,
-                    updatedAt: null, updateHttpRes: null } ]
+                    url: 'url-catalog04',
+                    isUpdating: false, updatedAt: null, updateHttpRes: null } ]
             ]);
             assert.deepStrictEqual(got, exp);
         });
@@ -49,8 +49,8 @@ describe(__filename, () => {
             let got = reduce(state, action);
             let exp = new Map([
                 [ 'url-catalog01', {
-                    url: 'url-catalog01', isUpdating: false,
-                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    url: 'url-catalog01',
+                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);
@@ -64,8 +64,8 @@ describe(__filename, () => {
             let got = reduce(state, action);
             let exp = new Map([
                 [ 'url-catalog01', {
-                    url: 'url-catalog01', isUpdating: false,
-                    updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    url: 'url-catalog01',
+                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);

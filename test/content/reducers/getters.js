@@ -79,6 +79,48 @@ describe(__filename, () => {
         });
     });
 
+    describe('getCurrentCatalog()', () => {
+        const { getCurrentCatalog } = getter;
+
+        const catalogs = new Map([
+            [ 'url-catalog01', { url: 'url-catalog01' } ],
+            [ 'url-catalog02', { url: 'url-catalog02' } ],
+            [ 'url-catalog03', { url: 'url-catalog03' } ]
+        ]);
+
+        it('should return current catalog', () => {
+            let store = createStore({
+                domain: { catalogs },
+                app: { current: { catalog: 'url-catalog01' } }
+            });
+            let got = getCurrentCatalog(store);
+            let exp = { url: 'url-catalog01' };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should throw exception if there is no current catalog', () => {
+            let store = createStore({
+                domain: { catalogs },
+                app: { current: { catalog: null } }
+            });
+            let got;
+            try { getCurrentCatalog(store); } catch (e) { got = e.message; }
+
+            assert(got === 'no current catalog');
+        });
+
+        it('should throw exception if not find current catalog', () => {
+            let store = createStore({
+                domain: { catalogs },
+                app: { current: { catalog: 'url-catalog09' } }
+            });
+            let got;
+            try { getCurrentCatalog(store); } catch (e) { got = e.message; }
+
+            assert(got === 'current catalog not found: url-catalog09');
+        });
+    });
+
     describe('getCurrentAppThread()', () => {
         const { getCurrentAppThread } = getter;
 
@@ -115,6 +157,45 @@ describe(__filename, () => {
             try { getCurrentAppThread(store); } catch (e) { got = e.message; }
 
             assert(got === 'current app thread not found: url-thread09');
+        });
+    });
+
+    describe('getCurrentAppCatalog()', () => {
+        const { getCurrentAppCatalog } = getter;
+
+        const appCatalog = new Map([
+            [ 'url-catalog01', { query: 'dummy-query-catalog01' } ],
+            [ 'url-catalog02', { query: 'dummy-query-catalog02' } ],
+            [ 'url-catalog03', { query: 'dummy-query-catalog03' } ]
+        ]);
+
+        it('should return current app catalog', () => {
+            let store = createStore({
+                app: { catalogs: appCatalog, current: { catalog: 'url-catalog01' } }
+            });
+            let got = getCurrentAppCatalog(store);
+            let exp = { query: 'dummy-query-catalog01' };
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should throw exception if there is no current catalog', () => {
+            let store = createStore({
+                app: { catalogs: appCatalog, current: { catalog: null } }
+            });
+            let got;
+            try { getCurrentAppCatalog(store); } catch (e) { got = e.message; }
+
+            assert(got === 'no current catalog');
+        });
+
+        it('should throw exception if not find current app catalog', () => {
+            let store = createStore({
+                app: { catalogs: appCatalog, current: { catalog: 'url-catalog09' } }
+            });
+            let got;
+            try { getCurrentAppCatalog(store); } catch (e) { got = e.message; }
+
+            assert(got === 'current app catalog not found: url-catalog09');
         });
     });
 });

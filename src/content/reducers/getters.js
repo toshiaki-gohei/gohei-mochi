@@ -17,6 +17,15 @@ export function getCurrentThread(store) {
     return thread;
 }
 
+export function getCurrentCatalog(store) {
+    let { domain, app } = store.getState();
+    let url = app.current.catalog;
+    if (url == null) throw new Error('no current catalog');
+    let catalog = domain.catalogs.get(url);
+    if (catalog == null) throw new Error(`current catalog not found: ${url}`);
+    return catalog;
+}
+
 export function getCurrentAppThread(store) {
     let { app } = store.getState();
     let url = app.current.thread;
@@ -24,4 +33,13 @@ export function getCurrentAppThread(store) {
     let appThread = app.threads.get(url);
     if (appThread == null) throw new Error(`current app thread not found: ${url}`);
     return appThread;
+}
+
+export function getCurrentAppCatalog(store) {
+    let { app } = store.getState();
+    let url = app.current.catalog;
+    if (url == null) throw new Error('no current catalog');
+    let appCatalog = app.catalogs.get(url);
+    if (appCatalog == null) throw new Error(`current app catalog not found: ${url}`);
+    return appCatalog;
 }
