@@ -2,6 +2,7 @@
 import React, { Component, Fragment } from 'react';
 import Catalog from './catalog.jsx';
 import Nav from './nav.jsx';
+import SearchResults from './search-results.jsx';
 import performance from '~/common/performance';
 
 export default class Main extends Component {
@@ -45,10 +46,13 @@ export default class Main extends Component {
         let appCatalog = app.catalogs.get(url);
         let { preferences } = ui;
 
+        let { searchResults } = appCatalog;
+
         return (
 <Fragment>
   <Nav {...{ commit, catalog, app: appCatalog }} />
   <h2 className="gohei-mode-title">カタログモード</h2>
+  <SearchResults {...{ commit, searchResults, preferences }} />
   <Catalog {...{ commit, catalog, app: appCatalog, preferences }} />
 </Fragment>
         );

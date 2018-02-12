@@ -30,6 +30,7 @@ describe(__filename, () => {
 <main>
 <nav class="gohei-nav">.+?</nav>
 <h2 class="gohei-mode-title">カタログモード</h2>
+<ol class="gohei-catalog gohei-search-results"></ol>
 <ol class="gohei-catalog">.*?</ol>
 </main>
 $`.replace(/\n/g, ''));
