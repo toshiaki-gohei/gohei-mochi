@@ -1,17 +1,13 @@
 'use strict';
 import assert from 'assert';
-import * as models from '~/content/model';
+import * as modules from '~/content/model/catalog';
 
 describe(__filename, () => {
     describe('export', () => {
         it('should export modules', () => {
-            let got = Object.keys(models).sort();
+            let got = Object.keys(modules).sort();
             let exp = [
-                'catalog',
-                'HttpRes',
-                'Post', 'post',
-                'preferences',
-                'thread'
+                'Query'
             ].sort();
             assert.deepStrictEqual(got, exp);
         });
