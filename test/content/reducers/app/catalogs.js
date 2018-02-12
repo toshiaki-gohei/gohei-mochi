@@ -32,11 +32,13 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
+                    searchResults: [],
                     isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ],
                 [ 'url-catalog04', {
                     url: 'url-catalog04',
+                    searchResults: [],
                     isUpdating: false, updatedAt: null, updateHttpRes: null } ]
             ]);
             assert.deepStrictEqual(got, exp);
@@ -50,6 +52,7 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
+                    searchResults: [],
                     isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
@@ -65,6 +68,7 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
+                    searchResults: [],
                     isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]

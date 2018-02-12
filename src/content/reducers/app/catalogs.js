@@ -8,13 +8,18 @@ function create(opts) {
     let {
         url = null,
 
+        searchResults = [],
+
         isUpdating = false,
         updatedAt = null,
         updateHttpRes = null // model/http-res
     } = opts || {};
 
+    F(searchResults);
+
     return F({
         url,
+        searchResults,
         isUpdating, updatedAt, updateHttpRes
     });
 }
