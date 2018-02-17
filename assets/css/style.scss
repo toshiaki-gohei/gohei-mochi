@@ -3,6 +3,12 @@
 
 @import "{{ site.theme }}";
 
+header {
+    li {
+        width: 134px;
+    }
+}
+
 section {
     line-height: 1.3;
 
