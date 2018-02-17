@@ -1,3 +1,10 @@
+## 0.4.0 (2018-02-17)
+
+* change tab title on thread panel
+* change to handle preferences
+* tweak height of delreq reasons pane on thread panel
+* change build process on tasks to sign a Firefox addon
+
 ## 0.3.1 (2018-02-05)
 
 * modify to merge a delete message when a post file is deleted
