@@ -1,7 +1,8 @@
 'use strict';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { CATALOG_SORT } from '~/content/constants';
 import { catalogUrl } from '~/content/util/url';
+import { catalog } from '~/content/model';
 
 const { BUMP_ORDER, NEWEST, OLDEST, POSTNUM_DESC, POSTNUM_ASC, HISTORY } = CATALOG_SORT;
 
@@ -9,8 +10,13 @@ export default class Nav extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            query: new catalog.Query({ or: true })
+        };
+
         this._handlers = {
-            update: handleUpdate.bind(this)
+            update: handleUpdate.bind(this),
+            changeQuery: handleChangeQuery.bind(this)
         };
 
         this._sortBy = {
@@ -27,48 +33,79 @@ export default class Nav extends Component {
         let { catalog, app } = this.props;
         if (catalog == null || app == null) return null;
 
-        let handlers = this._handlers;
+        let { query } = this.state;
 
-        let propsSet = Object.values(CATALOG_SORT).reduce((set, sort) => {
-            let props = { catalog, sort, handler: this._sortBy[sort] };
-            set[sort] = props;
-            return set;
-        }, {});
+        let handlers = this._handlers;
 
         return (
 <nav className="gohei-nav">
   <ul className="gohei-catalog-menu">
     <li className="gohei-menu-group gohei-left-menu">
-      <UpdateBtn {...{ app, handlers }} />
-      <span className="gohei-font-smaller">{statusMessage(app)}</span>
+      <UpdateMenu {...{ app, handlers }} />
+      <SearchMenu {...{ query, handlers }} />
     </li>
     <li className="gohei-menu-group gohei-right-menu">
-      <SortLink {...propsSet[BUMP_ORDER]}>カタログ</SortLink>
-      <span className="gohei-spacer" />
-      <SortLink {...propsSet[NEWEST]}>新順</SortLink>
-      <SortLink {...propsSet[OLDEST]}>古順</SortLink>
-      <SortLink {...propsSet[POSTNUM_DESC]}>多順</SortLink>
-      <SortLink {...propsSet[POSTNUM_ASC]}>少順</SortLink>
-      <span className="gohei-spacer" />
-      <SortLink {...propsSet[HISTORY]}>履歴</SortLink>
-      <span className="gohei-spacer" />
-      <a href={catsetUrl(catalog)} className={menuLinkCss} target="_blank">設定</a>
+      <RightMenu {...{ catalog, handlers: this._sortBy }} />
     </li>
   </ul>
+  <div className="gohei-text-error gohei-font-smaller">{statusMessage(app)}</div>
 </nav>
         );
     }
 }
 
-function UpdateBtn({ app, handlers }) {
+function UpdateMenu({ app, handlers }) {
     let { isUpdating } = app;
     let { update } = handlers;
 
     let label = isUpdating ? '更新中…' : '最新に更新';
     let isDisabled = isUpdating ? true : false;
 
-    return <button className="gohei-link-btn gohei-update-btn gohei-menu-item" type="button"
-                   disabled={isDisabled} onClick={update}>{label}</button>;
+    return (
+<span className="gohei-menu-item gohei-update">
+  <button className="gohei-link-btn gohei-update-btn" type="button"
+          disabled={isDisabled} onClick={update}>{label}</button>
+</span>
+    );
+}
+
+function SearchMenu({ query, handlers }) {
+    let { changeQuery } = handlers;
+
+    let value = query.title || '';
+
+    return (
+<span className="gohei-menu-item gohei-search">
+  <input className="gohei-search-input" type="search" value={value}
+         onChange={changeQuery} placeholder="カタログを検索" autoComplete="off" />
+  {/*<button className="gohei-link-btn gohei-search-detail" type="button"
+          onClick={() => {}}>詳細</button>*/}
+</span>
+    );
+}
+
+function RightMenu({ catalog, handlers }) {
+    let propsSet = Object.values(CATALOG_SORT).reduce((set, sort) => {
+        let sortBy = handlers[sort];
+        let props = { catalog, sort, handler: sortBy };
+        set[sort] = props;
+        return set;
+    }, {});
+
+    return (
+<Fragment>
+  <SortLink {...propsSet[BUMP_ORDER]}>カタログ</SortLink>
+  <span className="gohei-spacer" />
+  <SortLink {...propsSet[NEWEST]}>新順</SortLink>
+  <SortLink {...propsSet[OLDEST]}>古順</SortLink>
+  <SortLink {...propsSet[POSTNUM_DESC]}>多順</SortLink>
+  <SortLink {...propsSet[POSTNUM_ASC]}>少順</SortLink>
+  <span className="gohei-spacer" />
+  <SortLink {...propsSet[HISTORY]}>履歴</SortLink>
+  <span className="gohei-spacer" />
+  <a href={catsetUrl(catalog)} className={menuLinkCss} target="_blank">設定</a>
+</Fragment>
+    );
 }
 
 function SortLink({ catalog, sort, handler, children }) {
@@ -110,4 +147,17 @@ function handleSort(sort, event) {
     commit('catalog/update', catalog.url, { sort });
 
     event.preventDefault();
+}
+
+async function handleChangeQuery(event) {
+    let { commit } = this.props;
+    let { query } = this.state;
+
+    let q = query.object();
+    q.title = event.target.value;
+
+    query = new catalog.Query(q);
+    this.setState({ query });
+
+    await commit('catalog/search', query);
 }

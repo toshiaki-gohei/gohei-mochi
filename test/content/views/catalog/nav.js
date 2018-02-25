@@ -39,6 +39,7 @@ describe(__filename, () => {
 <li class="gohei-menu-group gohei-left-menu">.+</li>
 <li class="gohei-menu-group gohei-right-menu">.+</li>
 </ul>
+<div class="gohei-text-error gohei-font-smaller"></div>
 </nav>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
@@ -51,8 +52,10 @@ $`.replace(/\n/g, ''));
             let exp = new RegExp(`
 <ul class="gohei-catalog-menu">
 <li class="gohei-menu-group gohei-left-menu">
-<button class="[^"]+" type="button">最新に更新</button>
-<span class="gohei-font-smaller">.*</span>
+<span class="gohei-menu-item gohei-update">
+<button class="gohei-link-btn gohei-update-btn" type="button">最新に更新</button>
+</span>
+<span class="gohei-menu-item gohei-search"><input .+?></span>
 </li>
 <li class="gohei-menu-group gohei-right-menu">
 <a .+>カタログ</a>
@@ -120,7 +123,7 @@ $`.replace(/\n/g, ''));
 
             let got = $el.querySelector('.gohei-update-btn').outerHTML;
             let exp = `
-<button class="gohei-link-btn gohei-update-btn gohei-menu-item" type="button" disabled="">
+<button class="gohei-link-btn gohei-update-btn" type="button" disabled="">
 更新中…
 </button>
 `.replace(/\n/g, '');
@@ -134,7 +137,7 @@ $`.replace(/\n/g, ''));
         });
     });
 
-    describe('event', () => {
+    describe('update event', () => {
         after(() => disposePreferences());
 
         it('should commit procedure if click update', () => {
@@ -170,7 +173,34 @@ $`.replace(/\n/g, ''));
                 assert.deepStrictEqual(got, exp);
             });
         });
+    });
 
+    describe('search event', () => {
+        it('should search if change query', () => {
+            let search;
+            let p = new Promise(resolve => search = resolve);
+
+            let mock = procedures(null, {
+                'catalog/search': search
+            });
+
+            let $el = render(<Nav {...{ ...props, commit: mock }} />);
+
+            let $input = $el.querySelector('.gohei-search-input');
+            $input.value = 'foo bar';
+            simulate.change($input);
+
+            return p.then(query => {
+                assert(query.title === 'foo bar');
+
+                let got = $el.state.query.object();
+                let exp = { title: 'foo bar', and: false, or: true };
+                assert.deepStrictEqual(got, exp);
+            });
+        });
+    });
+
+    describe('sort event', () => {
         it('should commit procedure if click sort', done => {
             let mock = procedures(null, {
                 'catalog/update': (url, { sort }) => {
