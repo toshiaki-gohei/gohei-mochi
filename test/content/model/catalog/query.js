@@ -42,4 +42,21 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
     });
+
+    describe('isEmpty()', () => {
+        it('should return true if query is empty', () => {
+            let q = new Query({ title: null, or: true });
+            assert(q.isEmpty() === true);
+
+            q = new Query({ title: '', or: true });
+            assert(q.isEmpty() === true);
+            q = new Query({ title: ' ', or: true });
+            assert(q.isEmpty() === true);
+
+            q = new Query({ title: 'foo', or: true });
+            assert(q.isEmpty() === false);
+            q = new Query({ title: 'foo bar', or: true });
+            assert(q.isEmpty() === false);
+        });
+    });
 });

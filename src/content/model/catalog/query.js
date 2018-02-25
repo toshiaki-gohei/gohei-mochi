@@ -21,4 +21,12 @@ export default class Query {
         for (let prop in primitives) obj[prop] = primitives[prop];
         return obj;
     }
+
+    isEmpty() {
+        let { title } = this;
+        if (title == null) return true;
+        if (title === '') return true;
+        if (/^\s+$/.test(title)) return true;
+        return false;
+    }
 }

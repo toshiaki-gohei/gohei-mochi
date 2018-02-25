@@ -17,6 +17,7 @@ export function search(store, query) {
 }
 
 function _search(query, threads) {
+    if (query.isEmpty()) return [];
     if (query.and) return searchAnd(query, threads);
     if (query.or) return searchOr(query, threads);
     return [];

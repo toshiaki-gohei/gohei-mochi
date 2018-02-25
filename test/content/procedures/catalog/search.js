@@ -113,5 +113,11 @@ describe(__filename, () => {
             got = _search(query, [ thread ]);
             assert.deepStrictEqual(got, [ thread ]);
         });
+
+        it('should not search if query is empty', () => {
+            let query = new catalog.Query({ title: ' ', and: true });
+            let got = _search(query, threads);
+            assert.deepStrictEqual(got, []);
+        });
     });
 });
