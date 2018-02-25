@@ -1,3 +1,10 @@
+## 1.0.0 (2018-02-25)
+
+* publish gohei-mochi on AMO
+* add a feature to search catalog
+* fix to set domain and path of cookie (namec and pwdc) correctly
+* modify to display expire in thread console
+
 ## 0.4.0 (2018-02-17)
 
 * change tab title on thread panel
