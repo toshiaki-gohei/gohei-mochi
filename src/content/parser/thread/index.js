@@ -55,7 +55,7 @@ export function parse($body) {
     };
 }
 
-function parseExpire($body) {
+function parseExpire($body, now) {
     // could not get $small by #contdisp for document.write('...<span id="contdisp">...');
     // let $small = doc.getElementById('contdisp');
     let $smalls = $body.querySelectorAll('.thre > small');
@@ -70,7 +70,7 @@ function parseExpire($body) {
 
     if (msg == null) return null;
 
-    return { message: msg, date: parseExpireDate(msg) };
+    return { message: msg, date: parseExpireDate(msg, now) };
 }
 
 function parseExpireDate(message, now = new Date()) {

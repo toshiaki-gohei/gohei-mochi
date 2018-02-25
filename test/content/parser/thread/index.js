@@ -97,9 +97,10 @@ describe(__filename, () => {
 
     describe('parseExpire()', () => {
         const { parseExpire } = internal;
-        const { year, month, date } = now();
 
         it('should parse expire', () => {
+            let now = new Date('2018-01-23T01:23:00+09:00');
+
             let html = `
 <div class="thre">
 画像ファイル名：<a href="/b/src/9876543210.jpg" target="_blank">9876543210.jpg</a>-(888 B)
@@ -111,28 +112,32 @@ Name <font color="#117743"><b>としあき </b></font> 17/01/01(日)01:23:45 No.
 </div>`;
             let $doc = parseFromString(html, 'text/html');
 
-            let got = parseExpire($doc.body);
+            let got = parseExpire($doc.body, now);
             assert(got.message === '12:34頃消えます');
-            assert(got.date.toISOString() === `${year}-${month}-${date}T03:34:00.000Z`);
+            assert(got.date.toISOString() === '2018-01-23T03:34:00.000Z');
         });
 
         it('should parse expire (date and time)', () => {
+            let now = new Date('2018-01-23T01:23:00+09:00');
+
             let html = '<div class="thre"><small>23日12:34頃消えます</small></div>';
             let $doc = parseFromString(html, 'text/html');
 
-            let got = parseExpire($doc.body);
+            let got = parseExpire($doc.body, now);
             assert(got.message === '23日12:34頃消えます');
-            assert(got.date.toISOString() === `${year}-${month}-23T03:34:00.000Z`);
+            assert(got.date.toISOString() === '2018-01-23T03:34:00.000Z');
         });
 
         it('sould parse expire (year and month)', () => {
-            let msg = `${year % 100 + 1}年1月頃消えます`;
+            let now = new Date('2017-01-23T01:23:00+09:00');
+
+            let msg = '18年1月頃消えます';
             let html = `<div class="thre"><small>${msg}</small></div>`;
             let $doc = parseFromString(html, 'text/html');
 
-            let got = parseExpire($doc.body);
+            let got = parseExpire($doc.body, now);
             assert(got.message === msg);
-            assert(got.date.toISOString() === `${year}-12-31T15:00:00.000Z`);
+            assert(got.date.toISOString() === '2017-12-31T15:00:00.000Z');
         });
 
         it('sould return null if cannot parse', () => {
@@ -236,11 +241,3 @@ Name <font color="#117743"><b>としあき </b></font> 17/01/01(日)01:23:45 No.
         });
     });
 });
-
-function now() {
-    let now = new Date();
-    let year = now.getFullYear(), month = now.getMonth() + 1, date = now.getDate();
-    month = month < 10 ? `0${month}` : month;
-    date = date < 10 ? `0${date}` : date;
-    return { year, month, date };
-}
