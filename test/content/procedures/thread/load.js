@@ -37,7 +37,7 @@ describe(__filename, () => {
                 title: 'thread-title',
                 posts: [ 'may/b/100', 'may/b/101', 'may/b/102' ],
                 expire: { message: '12:34頃消えます', date: 'date' },
-                replynum: null,
+                replynum: 2,
                 newReplynum: null,
                 thumb: null,
                 createdAt: null,

@@ -32,7 +32,10 @@ describe(__filename, () => {
         it('should update', async () => {
             let posts = [ '100', '101', '102' ]
                 .map((no, index) => new Post({ id: `may/b/${no}`, index, no }));
-            let thread = { url, posts: [ 'may/b/101', 'may/b/102', 'may/b/103' ] };
+            let thread = {
+                url, posts: [ 'may/b/100', 'may/b/101', 'may/b/102' ],
+                replynum: 2, newReplynum: 2
+            };
             store.dispatch(setDomainPosts(posts));
             store.dispatch(setDomainThreads(thread));
             store.dispatch(setAppThreads({ url }));
@@ -65,9 +68,10 @@ describe(__filename, () => {
             ];
             assert.deepStrictEqual(got, exp);
 
-            got = pick(getThread(url), 'url', 'posts', 'updatedAt');
+            got = pick(getThread(url), 'url', 'replynum', 'newReplynum', 'posts', 'updatedAt');
             exp = {
                 url,
+                replynum: 3, newReplynum: 1,
                 posts: [ 'may/b/100', 'may/b/101', 'may/b/102', 'may/b/103' ],
                 updatedAt: new Date('2017-01-01T10:23:45+09:00')
             };
@@ -98,7 +102,7 @@ describe(__filename, () => {
             await update(store, url);
 
             let { changeset, idipIndex, isUpdating, updatedAt, httpRes } = getApp(url);
-            assert(changeset);
+            assert(changeset.newPostsCount === 0);
             assert(idipIndex);
             assert(isUpdating === false);
 
@@ -118,9 +122,7 @@ describe(__filename, () => {
         it('should update using current thread url if not pass url', async () => {
             store = createStore({ app: { current: { thread: url } } });
             store.dispatch(setDomainThreads({ url }));
-            store.dispatch(setAppThreads({
-                url, changeset: new Changeset({ newPostsCount: 1 })
-            }));
+            store.dispatch(setAppThreads({ url }));
 
             fetch.getThread = requrl => {
                 assert(requrl === url);
@@ -136,9 +138,12 @@ describe(__filename, () => {
 
         it('should set state correctly if a response is 404', async () => {
             store.dispatch(setDomainThreads({
-                url, updatedAt: new Date('2017-01-01T10:23:00+09:00')
+                url, newReplynum: 1,
+                updatedAt: new Date('2017-01-01T10:23:00+09:00')
             }));
-            store.dispatch(setAppThreads({ url }));
+            store.dispatch(setAppThreads({
+                url, changeset: new Changeset({ newPostsCount: 1 })
+            }));
 
             fetch.getThread = () => {
                 let headers = {
@@ -151,26 +156,32 @@ describe(__filename, () => {
 
             await update(store, url);
 
-            let { isActive, updatedAt } = getThread(url);
-            assert(isActive === false);
+            let { newReplynum, updatedAt, isActive } = getThread(url);
+            assert(newReplynum === 0);
             assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:00+09:00'));
+            assert(isActive === false);
 
-            let { httpRes: { status } } = getApp(url);
+            let { changeset, httpRes: { status } } = getApp(url);
+            assert(changeset === null);
             assert(status === 404);
         });
 
         it('should set state correctly if network error occurs', async () => {
             let url = 'about:config';
             store.dispatch(setDomainThreads({
-                url, updatedAt: new Date('2017-01-01T10:23:00+09:00')
+                url, newReplynum: 1,
+                updatedAt: new Date('2017-01-01T10:23:00+09:00')
             }));
-            store.dispatch(setAppThreads({ url, changeset: 'dummy data' }));
+            store.dispatch(setAppThreads({
+                url, changeset: new Changeset({ newPostsCount: 1 })
+            }));
 
             await update(store, url);
 
-            let { isActive, updatedAt } = getThread(url);
-            assert(isActive === true);
+            let { newReplynum, updatedAt, isActive } = getThread(url);
+            assert(newReplynum === 0);
             assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:00+09:00'));
+            assert(isActive === true);
 
             let { changeset, isUpdating, httpRes: { status, statusText } } = getApp(url);
             assert(changeset == null);
@@ -210,10 +221,10 @@ describe(__filename, () => {
 
             await update(store, url);
 
-            let { title, isActive, updatedAt } = getThread(url);
+            let { title, updatedAt, isActive } = getThread(url);
             assert(title === 'test-title');
-            assert(isActive === true);
             assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:45+09:00'));
+            assert(isActive === true);
 
             let got = getApp(url).httpRes;
             let exp = {
@@ -237,10 +248,12 @@ describe(__filename, () => {
 
             let url = getUrl();
             store.dispatch(setDomainThreads({
-                url, updatedAt: new Date('2017-01-01T10:23:00+09:00'), isActive: true
+                url, newReplynum: 1,
+                updatedAt: new Date('2017-01-01T10:23:00+09:00'), isActive: true
             }));
             store.dispatch(setAppThreads({
                 url,
+                changeset: new Changeset({ newPostsCount: 1 }),
                 httpRes: new HttpRes({
                     lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
                     etag: '"123000"'
@@ -254,11 +267,14 @@ describe(__filename, () => {
             let prev = initialState.domain.threads.get(url);
             let next = getThread(url);
             assert(prev !== next);
-            [ 'posts', 'isActive', 'updatedAt' ].forEach(prop => {
+            [ 'posts', 'updatedAt', 'isActive' ].forEach(prop => {
                 assert(prev[prop] === next[prop]);
             });
+            assert(next.newReplynum === 0);
 
-            let got = getApp(url).httpRes;
+            let { changeset, httpRes } = getApp(url);
+            assert(changeset === null);
+            let got = httpRes;
             let exp = {
                 status: 304, statusText: 'Not Modified',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',

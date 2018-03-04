@@ -1,6 +1,7 @@
 'use strict';
 import { setDomainPosts, setDomainThreads, setAppThreads } from '../../reducers/actions';
 import * as model from '../../model';
+import getReplynum from './util/replynum';
 
 const { HttpRes, thread: { IdipIndex, createPosts } } = model;
 
@@ -10,8 +11,11 @@ export function load(store, contents) {
 
     posts = createPosts(posts, url);
 
+    let { replynum, newReplynum } = getReplynum(store, { url, posts });
+
     let thread = {
         url, title, expire,
+        replynum, newReplynum,
         posts: posts.map(post => post.id),
         updatedAt: new Date(lastModified),
         isActive: true

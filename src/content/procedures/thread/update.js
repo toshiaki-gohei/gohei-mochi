@@ -1,6 +1,7 @@
 'use strict';
 import { setDomainPosts, setDomainThreads, setAppThreads } from '../../reducers/actions';
 import * as model from '../../model';
+import getReplynum from './util/replynum';
 import fetch from '../../util/fetch';
 
 const { Post, thread: { Changeset, IdipIndex, createPosts } } = model;
@@ -43,7 +44,7 @@ function setResponse(store, { url, res }) {
     let updatedAt = getThreadUpdatedAt(store, { url, httpRes });
 
     if (!res.ok) {
-        store.dispatch(setDomainThreads({ url, isActive, updatedAt }));
+        store.dispatch(setDomainThreads({ url, newReplynum: 0, isActive, updatedAt }));
         store.dispatch(setAppThreads({ url, httpRes }));
         return;
     }
@@ -54,8 +55,11 @@ function setResponse(store, { url, res }) {
     newPosts = createPosts(newPosts, url);
     let { posts, changeset } = merge(domain.posts, newPosts);
 
+    let { replynum, newReplynum } = getReplynum(store, { url, posts });
+
     let thread = {
         url, title, expire,
+        replynum, newReplynum,
         posts: posts.map(post => post.id),
         updatedAt, isActive
     };

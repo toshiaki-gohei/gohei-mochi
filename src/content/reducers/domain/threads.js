@@ -12,7 +12,7 @@ function create(opts) {
         expire = createExpire(),
 
         replynum = null,
-        newReplynum = null,
+        newReplynum = null, // null: newly
         thumb = createThumb(),
 
         createdAt = null,
