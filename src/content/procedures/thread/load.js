@@ -5,18 +5,23 @@ import * as model from '../../model';
 const { HttpRes, thread: { IdipIndex, createPosts } } = model;
 
 export function load(store, contents) {
-    let { url, thread, messages, postform, delform, lastModified } = contents;
+    let { url, thread: { title, posts, expire },
+          messages, postform, delform, lastModified } = contents;
 
-    let posts = createPosts(thread.posts, url);
+    posts = createPosts(posts, url);
 
-    thread.url = url;
-    thread.posts = posts.map(post => post.id);
+    let thread = {
+        url, title, expire,
+        posts: posts.map(post => post.id),
+        updatedAt: new Date(lastModified),
+        isActive: true
+    };
 
     let appThread = {
         url,
         messages, postform, delform,
         idipIndex: new IdipIndex(posts),
-        updateHttpRes: new HttpRes({ lastModified })
+        httpRes: new HttpRes({ status: 200, lastModified })
     };
 
     store.dispatch(setDomainPosts(posts));

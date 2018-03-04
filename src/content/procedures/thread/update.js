@@ -3,7 +3,7 @@ import { setDomainPosts, setDomainThreads, setAppThreads } from '../../reducers/
 import * as model from '../../model';
 import fetch from '../../util/fetch';
 
-const { Post, HttpRes, thread: { Changeset, IdipIndex, createPosts } } = model;
+const { Post, thread: { Changeset, IdipIndex, createPosts } } = model;
 
 export default update;
 
@@ -15,7 +15,7 @@ export async function update(store, url) {
 
     store.dispatch(setAppThreads({ url, changeset: null, isUpdating: true }));
 
-    let opts = options(app.threads.get(url));
+    let opts = options(store, { url });
 
     let updatedAt = new Date();
 
@@ -26,43 +26,64 @@ export async function update(store, url) {
     setResponse(store, { url, res });
 }
 
-function options(thread) {
-    let { updateHttpRes: res } = thread;
-    if (res == null) return null;
-    let headers = res.reqHeaders;
+function options(store, { url }) {
+    let { app } = store.getState();
+    let { httpRes } = app.threads.get(url);
+    let headers = httpRes.reqHeaders;
     return { headers };
 }
 
 function setResponse(store, { url, res }) {
     let { domain, app } = store.getState();
 
-    let { updateHttpRes } = app.threads.get(url);
-    updateHttpRes = updateHttpRes ? updateHttpRes.unify(res) : new HttpRes(res);
+    let { httpRes } = app.threads.get(url);
+    httpRes = httpRes.clone(res);
+
+    let isActive = httpRes.status === 404 ? false : true;
+    let updatedAt = getThreadUpdatedAt(store, { url, httpRes });
 
     if (!res.ok) {
-        store.dispatch(setAppThreads({ url, updateHttpRes }));
+        store.dispatch(setDomainThreads({ url, isActive, updatedAt }));
+        store.dispatch(setAppThreads({ url, httpRes }));
         return;
     }
 
-    let { thread, messages, postform, delform } = res.contents;
+    let { thread: { title, posts: newPosts, expire },
+          messages, postform, delform } = res.contents;
 
-    let newPosts = createPosts(thread.posts, url);
+    newPosts = createPosts(newPosts, url);
     let { posts, changeset } = merge(domain.posts, newPosts);
 
-    thread.url = url;
-    thread.posts = newPosts.map(post => post.id);
+    let thread = {
+        url, title, expire,
+        posts: posts.map(post => post.id),
+        updatedAt, isActive
+    };
 
     let appThread = {
         url,
         messages, postform, delform,
         changeset,
         idipIndex: new IdipIndex(posts),
-        updateHttpRes
+        httpRes
     };
 
     store.dispatch(setDomainPosts(posts));
     store.dispatch(setDomainThreads(thread));
     store.dispatch(setAppThreads(appThread));
+}
+
+function getThreadUpdatedAt(store, { url, httpRes }) {
+    let { domain } = store.getState();
+    let { updatedAt } = domain.threads.get(url);
+
+    switch (httpRes.status) {
+    case 200:
+        return new Date(httpRes.lastModified);
+    case 304:
+    default:
+        return updatedAt;
+    }
 }
 
 function merge(storePosts, newPosts) {

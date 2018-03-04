@@ -1,6 +1,6 @@
 'use strict';
 import { setDomainThreads, setDomainCatalogs, setAppCatalogs } from '../../reducers/actions';
-import { HttpRes, preferences } from '../../model';
+import { preferences } from '../../model';
 import fetch from '../../util/fetch';
 import { catalogUrl } from '../../util/url';
 import { deepCopy } from '~/common/util';
@@ -18,10 +18,9 @@ export async function update(store, url, { sort = null } = {}) {
     store.dispatch(setAppCatalogs({ url, isUpdating: true }));
 
     let requrl = catalogUrl(url, sort);
-    let opts = options(app.catalogs.get(url));
+    let opts = options(store, { url });
 
     setPreferences(url);
-
     let updatedAt = new Date();
 
     let res = await fetch.getCatalog(requrl, opts);
@@ -33,10 +32,10 @@ export async function update(store, url, { sort = null } = {}) {
     setResponse(store, { url, res });
 }
 
-function options(catalog) {
-    let { updateHttpRes: res } = catalog;
-    if (res == null) return null;
-    let headers = res.reqHeaders;
+function options(store, { url }) {
+    let { app } = store.getState();
+    let { httpRes } = app.catalogs.get(url);
+    let headers = httpRes.reqHeaders;
     return { headers };
 }
 
@@ -58,22 +57,24 @@ function deletePreferences(url) {
 function setResponse(store, { url, res }) {
     let { domain, app } = store.getState();
 
-    let { updateHttpRes } = app.catalogs.get(url);
-    updateHttpRes = updateHttpRes ? updateHttpRes.unify(res) : new HttpRes(res);
+    let { httpRes } = app.catalogs.get(url);
+    httpRes = httpRes.clone(res);
 
     if (!res.ok) {
-        store.dispatch(setAppCatalogs({ url, updateHttpRes }));
+        store.dispatch(setAppCatalogs({ url, httpRes }));
         return;
     }
 
-    let { catalog } = res.contents;
+    let { catalog: { title, threads } } = res.contents;
 
-    let threads = merge(domain.threads, catalog.threads);
+    threads = merge(domain.threads, threads);
 
-    catalog.url = url;
-    catalog.threads = catalog.threads.map(thread => thread.url);
+    let catalog = {
+        url, title,
+        threads: threads.map(thread => thread.url)
+    };
 
-    let appCatalog = { url, updateHttpRes };
+    let appCatalog = { url, httpRes };
 
     store.dispatch(setDomainThreads(threads));
     store.dispatch(setDomainCatalogs(catalog));

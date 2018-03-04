@@ -71,8 +71,8 @@ describe(__filename, () => {
         });
     });
 
-    describe('unify()', () => {
-        it('should unify', () => {
+    describe('clone()', () => {
+        it('should clone', () => {
             let res = new HttpRes({
                 status: 200, statusText: 'OK',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
@@ -80,7 +80,7 @@ describe(__filename, () => {
             });
 
             let opts = { status: 304, statusText: 'Not Modified' };
-            let got = res.unify(opts);
+            let got = res.clone(opts);
             let exp = {
                 status: 304, statusText: 'Not Modified',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
@@ -89,7 +89,7 @@ describe(__filename, () => {
             assert.deepEqual(got, exp);
         });
 
-        it('should unify if opts is like fetch() response', () => {
+        it('should clone if opts is like fetch() response', () => {
             let res = new HttpRes();
 
             let opts = {
@@ -100,7 +100,7 @@ describe(__filename, () => {
                     get(name) { return this[name]; }
                 }
             };
-            let got = res.unify(opts);
+            let got = res.clone(opts);
             let exp = {
                 status: 200, statusText: 'OK',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
@@ -109,14 +109,14 @@ describe(__filename, () => {
             assert.deepEqual(got, exp);
         });
 
-        it('should unify if no args', () => {
+        it('should clone if no args', () => {
             let res = new HttpRes({
                 status: 200, statusText: 'OK',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
                 etag: '"123000"'
             });
 
-            let got = res.unify();
+            let got = res.clone();
             let exp = {
                 status: 200,
                 statusText: 'OK',

@@ -35,7 +35,7 @@ export default class HttpRes {
         this.etag = etag;
     }
 
-    unify(opts = {}) {
+    clone(opts = {}) {
         let res = new HttpRes(opts);
         let obj = Object.keys(res).reduce((obj, prop) => {
             if (res[prop] != null) obj[prop] = res[prop];

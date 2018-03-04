@@ -19,6 +19,7 @@ describe(__filename, () => {
     let store;
     beforeEach(() => store = createStore());
 
+    const getThread = url => store.getState().domain.threads.get(url);
     const getApp = url => store.getState().app.threads.get(url);
 
     describe('update()', () => {
@@ -43,8 +44,13 @@ describe(__filename, () => {
                     { no: '102', sod: 1, raw: { header: 'changed' } },
                     { no: '103' }
                 ];
+                let headers = {
+                    'last-modified': 'Sun, 01 Jan 2017 01:23:45 GMT',
+                    get(name) { return this[name]; }
+                };
                 let contents = { thread: { posts } };
-                return { ok: true, status: 200, contents };
+
+                return { ok: true, status: 200, headers, contents };
             };
 
             await update(store, url);
@@ -59,8 +65,12 @@ describe(__filename, () => {
             ];
             assert.deepStrictEqual(got, exp);
 
-            got = pick(domain.threads.get(url), 'url', 'posts');
-            exp = { url, posts: [ 'may/b/100', 'may/b/101', 'may/b/102', 'may/b/103' ] };
+            got = pick(getThread(url), 'url', 'posts', 'updatedAt');
+            exp = {
+                url,
+                posts: [ 'may/b/100', 'may/b/101', 'may/b/102', 'may/b/103' ],
+                updatedAt: new Date('2017-01-01T10:23:45+09:00')
+            };
             assert.deepStrictEqual(got, exp);
         });
 
@@ -87,26 +97,22 @@ describe(__filename, () => {
 
             await update(store, url);
 
-            let {
-                changeset, idipIndex,
-                isUpdating, updatedAt, updateHttpRes
-            } = getApp(url);
-
+            let { changeset, idipIndex, isUpdating, updatedAt, httpRes } = getApp(url);
             assert(changeset);
             assert(idipIndex);
             assert(isUpdating === false);
 
-            let got = updateHttpRes;
-            let exp = {
+            let got = Math.ceil(updatedAt / (1000 * 10));
+            let exp = Math.ceil(Date.now() / (1000 * 10));
+            assert(got === exp);
+
+            got = httpRes;
+            exp = new HttpRes({
                 status: 200, statusText: 'OK',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
                 etag: '"123000"'
-            };
+            });
             assert.deepEqual(got, exp);
-
-            got = Math.ceil(updatedAt / (1000 * 10));
-            exp = Math.ceil(Date.now() / (1000 * 10));
-            assert(got === exp);
         });
 
         it('should update using current thread url if not pass url', async () => {
@@ -124,24 +130,53 @@ describe(__filename, () => {
 
             await update(store);
 
-            let { updateHttpRes: { status } } = getApp(url);
+            let { httpRes: { status } } = getApp(url);
             assert(status === 200);
+        });
+
+        it('should set state correctly if a response is 404', async () => {
+            store.dispatch(setDomainThreads({
+                url, updatedAt: new Date('2017-01-01T10:23:00+09:00')
+            }));
+            store.dispatch(setAppThreads({ url }));
+
+            fetch.getThread = () => {
+                let headers = {
+                    'last-modified': 'Sun, 01 Jan 2017 01:23:45 GMT',
+                    get(name) { return this[name]; }
+                };
+                let contents = { thread: { posts: [] } };
+                return { ok: false, status: 404, statusText: 'not found', headers, contents };
+            };
+
+            await update(store, url);
+
+            let { isActive, updatedAt } = getThread(url);
+            assert(isActive === false);
+            assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:00+09:00'));
+
+            let { httpRes: { status } } = getApp(url);
+            assert(status === 404);
         });
 
         it('should set state correctly if network error occurs', async () => {
             let url = 'about:config';
+            store.dispatch(setDomainThreads({
+                url, updatedAt: new Date('2017-01-01T10:23:00+09:00')
+            }));
             store.dispatch(setAppThreads({ url, changeset: 'dummy data' }));
 
             await update(store, url);
 
-            let app = getApp(url);
-            let { status, statusText } = app.updateHttpRes;
-            assert(status === 499);
-            assert(/^fetch error: .+/.test(statusText));
+            let { isActive, updatedAt } = getThread(url);
+            assert(isActive === true);
+            assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:00+09:00'));
 
-            let { changeset, isUpdating } = app;
+            let { changeset, isUpdating, httpRes: { status, statusText } } = getApp(url);
             assert(changeset == null);
             assert(isUpdating === false);
+            assert(status === 499);
+            assert(/^fetch error: .+/.test(statusText));
         });
 
         it('should throw exception if no request url', async () => {
@@ -175,12 +210,12 @@ describe(__filename, () => {
 
             await update(store, url);
 
-            let { domain } = store.getState();
-
-            let { title } = domain.threads.get(url);
+            let { title, isActive, updatedAt } = getThread(url);
             assert(title === 'test-title');
+            assert(isActive === true);
+            assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:45+09:00'));
 
-            let got = getApp(url).updateHttpRes;
+            let got = getApp(url).httpRes;
             let exp = {
                 status: 200, statusText: 'OK',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
@@ -201,10 +236,12 @@ describe(__filename, () => {
             });
 
             let url = getUrl();
-            store.dispatch(setDomainThreads({ url }));
+            store.dispatch(setDomainThreads({
+                url, updatedAt: new Date('2017-01-01T10:23:00+09:00'), isActive: true
+            }));
             store.dispatch(setAppThreads({
                 url,
-                updateHttpRes: new HttpRes({
+                httpRes: new HttpRes({
                     lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
                     etag: '"123000"'
                 })
@@ -214,10 +251,14 @@ describe(__filename, () => {
 
             await update(store, url);
 
-            let { domain } = store.getState();
-            assert(domain === initialState.domain);
+            let prev = initialState.domain.threads.get(url);
+            let next = getThread(url);
+            assert(prev !== next);
+            [ 'posts', 'isActive', 'updatedAt' ].forEach(prop => {
+                assert(prev[prop] === next[prop]);
+            });
 
-            let got = getApp(url).updateHttpRes;
+            let got = getApp(url).httpRes;
             let exp = {
                 status: 304, statusText: 'Not Modified',
                 lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',

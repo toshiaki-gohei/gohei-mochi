@@ -53,7 +53,7 @@ describe(__filename, () => {
             store.dispatch(setAppThreads({
                 url: URL,
                 updatedAt: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
-                updateHttpRes: { status: 304 }
+                httpRes: { status: 304 }
             }));
             let app = store.getState().app.threads.get(URL);
 
@@ -96,7 +96,7 @@ describe(__filename, () => {
                     deletedPosts: [ { index: 3, no: '12303' } ]
                 }),
                 updatedAt: new Date('Sun, 01 Jan 2017 01:23:45 GMT'),
-                updateHttpRes: { status: 200 }
+                httpRes: { status: 200 }
             }));
             let app = store.getState().app.threads.get(URL);
 

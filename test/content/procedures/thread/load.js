@@ -2,7 +2,8 @@
 import assert from 'assert';
 import * as procedures from '~/content/procedures/thread';
 import createStore from '~/content/reducers';
-import { pick, pluckFromMap as pluck } from '@/support/util';
+import { HttpRes, thread } from '~/content/model';
+import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
     let store;
@@ -17,6 +18,7 @@ describe(__filename, () => {
             let contents = {
                 url,
                 thread: {
+                    title: 'thread-title',
                     posts: [ { no: '100' }, { no: '101' }, { no: '102' } ],
                     expire: { message: '12:34頃消えます', date: 'date' }
                 },
@@ -32,12 +34,15 @@ describe(__filename, () => {
             let got = domain.threads.get(url);
             let exp = {
                 url,
-                title: null,
+                title: 'thread-title',
                 posts: [ 'may/b/100', 'may/b/101', 'may/b/102' ],
                 expire: { message: '12:34頃消えます', date: 'date' },
                 postnum: null,
                 newPostnum: null,
-                thumb: null
+                thumb: null,
+                createdAt: null,
+                updatedAt: new Date('2017-01-01T10:23:45+09:00'),
+                isActive: true
             };
             assert.deepStrictEqual(got, exp);
 
@@ -49,8 +54,10 @@ describe(__filename, () => {
             ];
             assert.deepStrictEqual(got, exp);
 
-            got = pick(app.threads.get(url), 'messages', 'postform', 'updateHttpRes');
+            got = app.threads.get(url);
             exp = {
+                url,
+                displayThreshold: null,
                 messages: {
                     viewer: '1234人くらい',
                     notice: null, warning: null, deletedPostCount: null
@@ -59,10 +66,16 @@ describe(__filename, () => {
                     action: 'http://example.net/post',
                     hiddens: [], comment: null, file: null
                 },
-                updateHttpRes: {
-                    status: null, statusText: null,
+                delform: { action: null, targets: new Map() },
+                delreq: { targets: new Map() },
+                changeset: null,
+                idipIndex: new thread.IdipIndex(),
+                isUpdating: false,
+                updatedAt: null,
+                httpRes: new HttpRes({
+                    status: 200, statusText: null,
                     lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT', etag: null
-                }
+                })
             };
             assert.deepEqual(got, exp);
         });

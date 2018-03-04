@@ -1,5 +1,6 @@
 'use strict';
 import { createReducer } from '../util';
+import { HttpRes } from '~/content/model';
 import { F } from '~/common/util';
 
 const STATE = F(new Map());
@@ -19,8 +20,8 @@ function create(opts) {
         idipIndex = null, // model/thread/idip-index
 
         isUpdating = false,
-        updatedAt = null,
-        updateHttpRes = null // model/http-res
+        updatedAt = null, // updated date time by user
+        httpRes = new HttpRes()
     } = opts || {};
 
     F(messages);
@@ -33,7 +34,7 @@ function create(opts) {
         displayThreshold, messages,
         postform, delform, delreq,
         changeset, idipIndex,
-        isUpdating, updatedAt, updateHttpRes
+        isUpdating, updatedAt, httpRes
     });
 }
 

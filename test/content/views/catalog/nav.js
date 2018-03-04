@@ -39,7 +39,7 @@ describe(__filename, () => {
 <li class="gohei-menu-group gohei-left-menu">.+</li>
 <li class="gohei-menu-group gohei-right-menu">.+</li>
 </ul>
-<div class="gohei-text-error gohei-font-smaller"></div>
+<div class="gohei-status-msg"><span class="gohei-text-error gohei-font-smaller"></span></div>
 </nav>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));

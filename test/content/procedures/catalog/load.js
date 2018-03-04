@@ -2,6 +2,7 @@
 import assert from 'assert';
 import * as procedures from '~/content/procedures/catalog';
 import createStore from '~/content/reducers';
+import { HttpRes } from '~/content/model';
 import { pluckFromMap as pluck } from '@/support/util';
 
 describe(__filename, () => {
@@ -14,21 +15,26 @@ describe(__filename, () => {
         it('should load', () => {
             let url = 'url-catalog01';
 
-            let threads = [
-                { url: 'url-thread01', title: 'title-thread1' },
-                { url: 'url-thread02', title: 'title-thread2' },
-                { url: 'url-thread03', title: 'title-thread3' }
-            ];
-            let contents = { url, catalog: { threads } };
+            let contents = {
+                url,
+                catalog: {
+                    title: 'catalog-title',
+                    threads: [
+                        { url: 'url-thread01', title: 'title-thread1' },
+                        { url: 'url-thread02', title: 'title-thread2' },
+                        { url: 'url-thread03', title: 'title-thread3' }
+                    ]
+                }
+            };
 
             load(store, contents);
 
-            let { domain } = store.getState();
+            let { domain, app } = store.getState();
 
             let got = domain.catalogs.get(url);
             let exp = {
                 url: 'url-catalog01',
-                title: null,
+                title: 'catalog-title',
                 threads: [ 'url-thread01', 'url-thread02', 'url-thread03' ],
                 sort: null
             };
@@ -40,6 +46,19 @@ describe(__filename, () => {
                 { url: 'url-thread02', title: 'title-thread2' },
                 { url: 'url-thread03', title: 'title-thread3' }
             ];
+            assert.deepStrictEqual(got, exp);
+
+            got = app.catalogs.get(url);
+            exp = {
+                url,
+                searchResults: [],
+                isUpdating: false,
+                updatedAt: null,
+                httpRes: new HttpRes({
+                    status: 200, statusText: null,
+                    lastModified: null, etag: null
+                })
+            };
             assert.deepStrictEqual(got, exp);
         });
     });

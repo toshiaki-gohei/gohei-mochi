@@ -77,8 +77,8 @@ function hms(date) {
     return [ hour, min, sec ].join(':');
 }
 
-function StatusMessage({ updateHttpRes, changeset }) {
-    let { status, statusText } = updateHttpRes || {};
+function StatusMessage({ httpRes, changeset }) {
+    let { status, statusText } = httpRes || {};
     let { newPostsCount } = changeset || {};
     let msg = statusMessage({ status, statusText, newPostsCount });
     return <span className="gohei-status-msg">{msg}</span>;

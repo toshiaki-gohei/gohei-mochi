@@ -13,7 +13,11 @@ function create(opts) {
 
         postnum = null,
         newPostnum = null,
-        thumb = createThumb()
+        thumb = createThumb(),
+
+        createdAt = null,
+        updatedAt = null,
+        isActive = false
     } = opts || {};
 
     F(posts);
@@ -22,7 +26,8 @@ function create(opts) {
 
     return F({
         url, title, posts, expire,
-        postnum, newPostnum, thumb
+        postnum, newPostnum, thumb,
+        createdAt, updatedAt, isActive
     });
 }
 const POSTS = F([]);

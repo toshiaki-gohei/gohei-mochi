@@ -48,7 +48,7 @@ export default class Nav extends Component {
       <RightMenu {...{ catalog, handlers: this._sortBy }} />
     </li>
   </ul>
-  <div className="gohei-text-error gohei-font-smaller">{statusMessage(app)}</div>
+  <StatusMessage {...app} />
 </nav>
         );
     }
@@ -119,14 +119,23 @@ function SortLink({ catalog, sort, handler, children }) {
 
 const menuLinkCss = 'gohei-menu-link gohei-menu-item';
 
-function statusMessage(app) {
-    let { updateHttpRes: res } = app;
-    if (res == null) return null;
+function StatusMessage({ httpRes }) {
+    let msg = statusMessage(httpRes);
+    return (
+<div className="gohei-status-msg">
+  <span className="gohei-text-error gohei-font-smaller">{msg}</span>
+</div>
+    );
+}
 
-    let { status, statusText } = res;
-    if (status === 200) return null;
-
-    return `(${status} ${statusText})`;
+function statusMessage({ status, statusText }) {
+    switch (status) {
+    case null:
+    case 200:
+        return null;
+    default:
+        return `(${status} ${statusText})`;
+    }
 }
 
 function catsetUrl(catalog) {

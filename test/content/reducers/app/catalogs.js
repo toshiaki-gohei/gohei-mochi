@@ -1,6 +1,7 @@
 'use strict';
 import assert from 'assert';
 import reducer, { internal } from '~/content/reducers/app/catalogs';
+import { HttpRes } from '~/content/model';
 import { F } from '~/common/util';
 
 describe(__filename, () => {
@@ -23,7 +24,9 @@ describe(__filename, () => {
 
         it('should reduce state', () => {
             let apps = [
-                { url: 'url-catalog01', updateHttpRes: 'http-res' },
+                { url: 'url-catalog01',
+                  searchResults: [ 'result01', 'result02' ],
+                  httpRes: new HttpRes({ status: 200 }) },
                 { url: 'url-catalog04' }
             ];
             let action = { apps };
@@ -32,20 +35,22 @@ describe(__filename, () => {
             let exp = new Map([
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
-                    searchResults: [],
-                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    searchResults: [ 'result01', 'result02' ],
+                    isUpdating: false,
+                    updatedAt: 'date',
+                    httpRes: new HttpRes({ status: 200 }) } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ],
                 [ 'url-catalog04', {
                     url: 'url-catalog04',
                     searchResults: [],
-                    isUpdating: false, updatedAt: null, updateHttpRes: null } ]
+                    isUpdating: false, updatedAt: null, httpRes: new HttpRes() } ]
             ]);
             assert.deepStrictEqual(got, exp);
         });
 
         it('should reduce state if pass a app', () => {
-            let app = { url: 'url-catalog01', updateHttpRes: 'http-res' };
+            let app = { url: 'url-catalog01', httpRes: new HttpRes() };
             let action = { app };
 
             let got = reduce(state, action);
@@ -53,7 +58,7 @@ describe(__filename, () => {
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
                     searchResults: [],
-                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    isUpdating: false, updatedAt: 'date', httpRes: new HttpRes() } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);
@@ -61,7 +66,7 @@ describe(__filename, () => {
         });
 
         it('should ignore unknown properties', () => {
-            let app = { url: 'url-catalog01', updateHttpRes: 'http-res', hoge: 'hogehoge' };
+            let app = { url: 'url-catalog01', httpRes: new HttpRes(), hoge: 'hogehoge' };
             let action = { app };
 
             let got = reduce(state, action);
@@ -69,7 +74,7 @@ describe(__filename, () => {
                 [ 'url-catalog01', {
                     url: 'url-catalog01',
                     searchResults: [],
-                    isUpdating: false, updatedAt: 'date', updateHttpRes: 'http-res' } ],
+                    isUpdating: false, updatedAt: 'date', httpRes: new HttpRes() } ],
                 [ 'url-catalog02', { url: 'url-catalog02' } ],
                 [ 'url-catalog03', { url: 'url-catalog03' } ]
             ]);
