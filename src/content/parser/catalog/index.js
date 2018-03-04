@@ -98,9 +98,9 @@ function parseThread($td) {
     let url = $a.href;
     let title = $small ? $small.textContent : null;
     let thumb = parseThumb($a);
-    let postnum = +$font.textContent;
+    let replynum = +$font.textContent;
 
-    return { url, title, postnum, thumb };
+    return { url, title, replynum, thumb };
 }
 
 function parseThumb($anchor) {

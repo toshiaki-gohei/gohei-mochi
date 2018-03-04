@@ -89,7 +89,7 @@ function merge(storeThreads, newThreads) {
         if (a == null) return b;
 
         let thread = { ...a, ...b };
-        thread.newPostnum = b.postnum - a.postnum;
+        thread.newReplynum = b.replynum - a.replynum;
 
         return thread;
     });

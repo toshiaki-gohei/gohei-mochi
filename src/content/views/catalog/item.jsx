@@ -3,11 +3,11 @@ import React from 'react';
 import { F } from '~/common/util';
 
 export default function Item({ thread, preferences }) {
-    let { url, title, postnum, newPostnum, thumb } = thread;
+    let { url, title, replynum, newReplynum, thumb } = thread;
     let { colnum, title: { length } } = preferences.catalog;
 
     let width = Math.floor(100 / colnum * 100) / 100 + '%';
-    let newly = newPostnum == null ? 'new' : `+${newPostnum}`;
+    let newly = newReplynum == null ? 'new' : `+${newReplynum}`;
 
     title = substr(title, length);
 
@@ -17,8 +17,8 @@ export default function Item({ thread, preferences }) {
     <Thumb {...{ url, thumb, preferences }} />
     <div className="gohei-thread-title">{title}</div>
     <div className="gohei-font-smaller">
-      <span className="gohei-thread-postnum">{postnum}</span>
-      <span className="gohei-thread-newpostnum">{newly}</span>
+      <span className="gohei-thread-replynum">{replynum}</span>
+      <span className="gohei-thread-newreplynum">{newly}</span>
     </div>
   </div>
 </li>

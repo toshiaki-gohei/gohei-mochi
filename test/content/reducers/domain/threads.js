@@ -33,14 +33,14 @@ describe(__filename, () => {
                 [ 'url-thread01', {
                     url: 'url-thread01', title: 'title-thread01',
                     posts: [ 'may/b/123000' ], expire: null,
-                    postnum: null, newPostnum: null, thumb: null,
+                    replynum: null, newReplynum: null, thumb: null,
                     createdAt: null, updatedAt: null, isActive: false } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ],
                 [ 'url-thread04', {
                     url: 'url-thread04', title: null,
                     posts: [], expire: null,
-                    postnum: null, newPostnum: null, thumb: null,
+                    replynum: null, newReplynum: null, thumb: null,
                     createdAt: null, updatedAt: null, isActive: false } ]
             ]);
             assert.deepStrictEqual(got, exp);
@@ -61,7 +61,7 @@ describe(__filename, () => {
                     url: 'url-thread01', title: 'title-thread01',
                     posts: [ 'may/b/123000', 'may/b/123001' ],
                     expire: { message: '12:34頃消えます', date: null },
-                    postnum: null, newPostnum: null,
+                    replynum: null, newReplynum: null,
                     thumb: { url: 'thumb01', width: null, height: null },
                     createdAt: null, updatedAt: null, isActive: false } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
@@ -105,7 +105,7 @@ describe(__filename, () => {
                     url: 'url-thread01', title: 'title-thread01',
                     posts: [],
                     expire: { message: '12:34頃消えます', date: null },
-                    postnum: null, newPostnum: null, thumb: null,
+                    replynum: null, newReplynum: null, thumb: null,
                     createdAt: null, updatedAt: null, isActive: false } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ]

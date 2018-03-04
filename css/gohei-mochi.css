@@ -278,11 +278,11 @@ textarea {
     font-size: smaller;
 }
 
-.gohei-catalog-item .gohei-thread-postnum {
+.gohei-catalog-item .gohei-thread-replynum {
     margin-right: 2px;
 }
 
-.gohei-catalog-item .gohei-thread-newpostnum {
+.gohei-catalog-item .gohei-thread-newreplynum {
     font-size: smaller;
     color: #d84442;
 }

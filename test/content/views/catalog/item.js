@@ -13,13 +13,13 @@ describe(__filename, () => {
     describe('render()', () => {
         let thread;
         beforeEach(() => {
-            thread = { url: 'url-thread01', title: 'thread01', postnum: 10 };
+            thread = { url: 'url-thread01', title: 'thread01', replynum: 10 };
         });
 
         let preferences = prefs.load();
 
         it('should render item', () => {
-            thread = { ...thread, newPostnum: 5 };
+            thread = { ...thread, newReplynum: 5 };
             let $el = render(<Item {...{ thread, preferences }} />);
 
             let got = $el.outerHTML;
@@ -29,7 +29,7 @@ describe(__filename, () => {
 <a href="url-thread01" target="_blank" class="gohei-thread-thumb" style="width: 50px; height: 50px;"></a>
 <div class="gohei-thread-title">thread01</div>
 <div class="gohei-font-smaller">
-<span class="gohei-thread-postnum">10</span><span class="gohei-thread-newpostnum">+5</span>
+<span class="gohei-thread-replynum">10</span><span class="gohei-thread-newreplynum">+5</span>
 </div>
 </div>
 </li>
@@ -38,7 +38,7 @@ describe(__filename, () => {
         });
 
         it('should render item as new', () => {
-            thread = { ...thread, newPostnum: null };
+            thread = { ...thread, newReplynum: null };
             let $el = render(<Item {...{ thread, preferences }} />);
 
             let got = $el.outerHTML;
@@ -48,7 +48,7 @@ describe(__filename, () => {
 <a href="url-thread01" target="_blank" class="gohei-thread-thumb" style="width: 50px; height: 50px;"></a>
 <div class="gohei-thread-title">thread01</div>
 <div class="gohei-font-smaller">
-<span class="gohei-thread-postnum">10</span><span class="gohei-thread-newpostnum">new</span>
+<span class="gohei-thread-replynum">10</span><span class="gohei-thread-newreplynum">new</span>
 </div>
 </div>
 </li>

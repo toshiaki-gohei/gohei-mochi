@@ -11,8 +11,8 @@ function create(opts) {
         posts = POSTS,
         expire = createExpire(),
 
-        postnum = null,
-        newPostnum = null,
+        replynum = null,
+        newReplynum = null,
         thumb = createThumb(),
 
         createdAt = null,
@@ -26,7 +26,7 @@ function create(opts) {
 
     return F({
         url, title, posts, expire,
-        postnum, newPostnum, thumb,
+        replynum, newReplynum, thumb,
         createdAt, updatedAt, isActive
     });
 }

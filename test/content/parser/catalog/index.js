@@ -100,7 +100,7 @@ describe(__filename, () => {
             let exp = {
                 url: href('res/123456000.htm'),
                 title: 'thread1',
-                postnum: 1234,
+                replynum: 1234,
                 thumb: { url: href('/b/cat/9876543210000s.jpg'), width: 50, height: 49 }
             };
             assert.deepStrictEqual(got, exp);
@@ -123,7 +123,7 @@ describe(__filename, () => {
             let exp = {
                 url: href('res/123456000.htm'),
                 title: 'thread1',
-                postnum: 1234,
+                replynum: 1234,
                 thumb: null
             };
             assert.deepStrictEqual(got, exp);
@@ -146,7 +146,7 @@ describe(__filename, () => {
             let exp = {
                 url: href('res/123456000.htm'),
                 title: null,
-                postnum: 1234,
+                replynum: 1234,
                 thumb: { url: href('/b/cat/9876543210000s.jpg'), width: 50, height: 49 }
             };
             assert.deepStrictEqual(got, exp);
@@ -206,11 +206,11 @@ describe(__filename, () => {
 
             let got = parseThreads($doc.body);
             let exp = [
-                { url: href('res/123456000.htm'), title: 'thread1', postnum: 1234,
+                { url: href('res/123456000.htm'), title: 'thread1', replynum: 1234,
                   thumb: { url: href('/b/cat/9876543210000s.jpg'), width: 50, height: 49 } },
-                { url: href('res/123456001.htm'), title: 'thread2', postnum: 100,
+                { url: href('res/123456001.htm'), title: 'thread2', replynum: 100,
                   thumb: { url: href('/b/cat/9876543210001s.jpg'), width: 50, height: 49 } },
-                { url: href('res/123456002.htm'), title: 'thread3', postnum: 0,
+                { url: href('res/123456002.htm'), title: 'thread3', replynum: 0,
                   thumb: { url: href('/b/cat/9876543210002s.jpg'), width: 50, height: 49 } }
             ];
             assert.deepStrictEqual(got, exp);

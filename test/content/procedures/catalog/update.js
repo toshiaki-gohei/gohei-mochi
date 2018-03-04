@@ -35,9 +35,9 @@ describe(__filename, () => {
         it('should update', async () => {
             let urls = [ 0, 1, 2, 3 ].map(i => `url-thread0${i}`);
             let threads = [
-                { url: urls[0], postnum: 100 },
-                { url: urls[1], postnum: 50 },
-                { url: urls[2], postnum: 0 }
+                { url: urls[0], replynum: 100 },
+                { url: urls[1], replynum: 50 },
+                { url: urls[2], replynum: 0 }
             ];
             let catalog = { url, threads: [ urls[0], urls[1], urls[2] ] };
             store.dispatch(setDomainThreads(threads));
@@ -46,10 +46,10 @@ describe(__filename, () => {
 
             fetch.getCatalog = () => {
                 let threads = [
-                    // { url: urls[0], postnum: 100 }, // thread is not active already
-                    { url: urls[1], postnum: 50 },
-                    { url: urls[2], postnum: 10 },
-                    { url: urls[3], postnum: 5 }
+                    // { url: urls[0], replynum: 100 }, // thread is not active already
+                    { url: urls[1], replynum: 50 },
+                    { url: urls[2], replynum: 10 },
+                    { url: urls[3], replynum: 5 }
                 ];
                 let contents = { catalog: { threads } };
 
@@ -59,12 +59,12 @@ describe(__filename, () => {
             await update(store, url, { sort: 3 });
 
             let { domain } = store.getState();
-            let got = pluck(domain.threads, 'url', 'postnum', 'newPostnum');
+            let got = pluck(domain.threads, 'url', 'replynum', 'newReplynum');
             let exp = [
-                { url: urls[0], postnum: 100, newPostnum: null },
-                { url: urls[1], postnum: 50, newPostnum: 0 },
-                { url: urls[2], postnum: 10, newPostnum: 10 },
-                { url: urls[3], postnum: 5, newPostnum: null }
+                { url: urls[0], replynum: 100, newReplynum: null },
+                { url: urls[1], replynum: 50, newReplynum: 0 },
+                { url: urls[2], replynum: 10, newReplynum: 10 },
+                { url: urls[3], replynum: 5, newReplynum: null }
             ];
             assert.deepStrictEqual(got, exp);
 
@@ -306,19 +306,19 @@ describe(__filename, () => {
 
         it('should merge', () => {
             let storeThreads = F(new Map([
-                [ urls[0], F({ url: urls[0], postnum: 100 }) ],
-                [ urls[1], F({ url: urls[1], postnum: 50 }) ],
-                [ urls[2], F({ url: urls[2], postnum: 0 }) ]
+                [ urls[0], F({ url: urls[0], replynum: 100 }) ],
+                [ urls[1], F({ url: urls[1], replynum: 50 }) ],
+                [ urls[2], F({ url: urls[2], replynum: 0 }) ]
             ]));
             let newThreads = [
-                { url: urls[1], postnum: 50 + 10 },
-                { url: urls[3], postnum: 5 }
+                { url: urls[1], replynum: 50 + 10 },
+                { url: urls[3], replynum: 5 }
             ];
 
             let got = merge(storeThreads, newThreads);
             let exp = [
-                { url: urls[1], postnum: 60, newPostnum: 10 },
-                { url: urls[3], postnum: 5 }
+                { url: urls[1], replynum: 60, newReplynum: 10 },
+                { url: urls[3], replynum: 5 }
             ];
             assert.deepStrictEqual(got, exp);
         });
