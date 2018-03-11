@@ -3,8 +3,9 @@ import parseFromString from '../dom-parser';
 import parsePosts from './post';
 import parseStaticContents from './static-contents';
 import parseAds from './ads';
-import { parseTitle } from '../util';
 import { parsePostform, parseDelform } from './form';
+import { BR_TAG } from '../../model/post';
+import { textify } from '../../util/html';
 
 export default {
     parseAll,
@@ -28,8 +29,8 @@ export function parse($body) {
         $body = $doc.body;
     }
 
-    let title = parseTitle($body);
     let posts = parsePosts($body);
+    let title = parseTitle(posts[0]);
     let expire = parseExpire($body);
 
     let viewer = parseViewer($body);
@@ -54,6 +55,15 @@ export function parse($body) {
         delform
     };
 }
+
+function parseTitle(post) {
+    if (post == null) return null;
+    let bq = post.raw.blockquote || '';
+    let html = bq.replace(BR_TAG_REGEX, ' ');
+    return textify(html);
+}
+
+const BR_TAG_REGEX = new RegExp(BR_TAG, 'g');
 
 function parseExpire($body, now) {
     // could not get $small by #contdisp for document.write('...<span id="contdisp">...');
@@ -123,6 +133,7 @@ function parseDeletedPostCount($body) {
 }
 
 export const internal = {
+    parseTitle,
     parseExpire,
     parseExpireDate,
     parseViewer,

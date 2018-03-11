@@ -149,13 +149,21 @@ describe(__filename, () => {
         it('should get thread', async () => {
             server.on('request', (req, res) => {
                 res.writeHead(200, { 'Content-type': 'text/plain' });
-                res.end('<html><body><span id="tit">test-title</span></body></html>');
+                res.end(`
+<html><body>
+<span id="tit">タイトル</span>
+<div class="thre"><input type="checkbox"><font color="#cc1105"><b>無念</b></font>
+Name <font color="#117743"><b>スレあき </b></font> 17/01/01(日)01:23:45 No.123000000 <a class="del">del</a><a class="sod">+</a>
+<blockquote>本文</blockquote>
+<table border="0"></table>
+</div>
+</body></html>`);
             });
 
             let res = await fetch.getThread(url());
             assert(res.status === 200);
             let got = res.contents.thread.title;
-            assert(got === 'test-title');
+            assert(got === '本文');
         });
     });
 

@@ -62,6 +62,22 @@ describe(__filename, () => {
         });
     });
 
+    describe('parseTitle()', () => {
+        const { parseTitle } = internal;
+
+        it('should return a title', () => {
+            let post = { raw: { blockquote: 'thread content' } };
+            let got = parseTitle(post);
+            assert(got === 'thread content');
+        });
+
+        it('should return a title removed tags', () => {
+            let post = { raw: { blockquote: 'thread <a>content<br />within tags</a>' } };
+            let got = parseTitle(post);
+            assert(got === 'thread content within tags');
+        });
+    });
+
     describe('parseExpireDate()', () => {
         const { parseExpireDate } = internal;
 

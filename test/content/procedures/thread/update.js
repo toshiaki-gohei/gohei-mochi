@@ -7,6 +7,7 @@ import * as model from '~/content/model';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
 import { pick, pluckFromMap as pluck } from '@/support/util';
+import * as utilurl from '~/common/url';
 import fetch from '~/content/util/fetch';
 
 const { setDomainPosts, setDomainThreads, setAppThreads } = actions;
@@ -203,6 +204,10 @@ describe(__filename, () => {
         beforeEach(async () => server = await createServer());
         afterEach(() => server.close());
 
+        let backup;
+        beforeEach(() => backup = utilurl.separate);
+        afterEach(() => utilurl.separate = backup);
+
         const getUrl = () => `http://localhost:${server.address().port}`;
 
         it('should update', async () => {
@@ -212,17 +217,27 @@ describe(__filename, () => {
                     'Last-Modified': new Date('2017-01-01T10:23:45+09:00').toUTCString(),
                     'ETag': '"123000"'
                 });
-                res.end('<html><body><span id="tit">test-title</span></body></html>');
+                res.end(`
+<html><body>
+<span id="tit">タイトル</span>
+<div class="thre"><input type="checkbox"><font color="#cc1105"><b>無念</b></font>
+Name <font color="#117743"><b>スレあき </b></font> 17/01/01(日)01:23:45 No.123000000 <a class="del">del</a><a class="sod">+</a>
+<blockquote>本文</blockquote>
+<table border="0"></table>
+</div>
+</body></html>`);
             });
 
             let url = getUrl();
             store.dispatch(setDomainThreads({ url }));
             store.dispatch(setAppThreads({ url }));
 
+            utilurl.separate = () => ({ server: 'may', bkey: 'b', threadKey: '123456789' });
+
             await update(store, url);
 
             let { title, updatedAt, isActive } = getThread(url);
-            assert(title === 'test-title');
+            assert(title === '本文');
             assert.deepStrictEqual(updatedAt, new Date('2017-01-01T10:23:45+09:00'));
             assert(isActive === true);
 
