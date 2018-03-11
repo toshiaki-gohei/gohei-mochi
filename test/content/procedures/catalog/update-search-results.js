@@ -39,28 +39,27 @@ describe(__filename, () => {
             let thread01 = {
                 url: 'https://may.2chan.net/b/res/123001.htm',
                 posts: posts01.map(post => post.id),
-                replynum: 2, newReplynum: null
+                replynum: 2, newReplynum: null, isActive: true
             };
             let thread02 = {
                 url: 'https://may.2chan.net/b/res/123002.htm',
                 posts: posts02.map(post => post.id),
-                replynum: 0, newReplynum: null
+                replynum: 0, newReplynum: null, isActive: true
             };
             let thread03 = {
                 url: 'https://may.2chan.net/b/res/123003.htm',
                 posts: posts03.map(post => post.id),
-                replynum: 0, newReplynum: null
+                replynum: 0, newReplynum: null, isActive: true
             };
             let thread10 = {
                 url: 'https://may.2chan.net/b/res/123010.htm',
                 posts: posts10.map(post => post.id),
-                replynum: 0, newReplynum: null
+                replynum: 0, newReplynum: null, isActive: true
             };
             store.dispatch(setDomainThreads([ thread01, thread02, thread03, thread10 ]));
 
             let threads = [
                 'https://may.2chan.net/b/res/123001.htm',
-                'https://may.2chan.net/b/res/123002.htm',
                 'https://may.2chan.net/b/res/123003.htm'
             ];
             let searchResults = [
@@ -72,41 +71,51 @@ describe(__filename, () => {
             store.dispatch(setAppCatalogs({ url, searchResults }));
 
             fetch.getThread = requrl => {
-                let posts = [];
-                switch (requrl) {
-                case 'https://may.2chan.net/b/res/123010.htm':
-                    posts = [ { no: '10001' }, { no: '10002' }, { no: '10003' } ];
-                    break;
-                case 'https://may.2chan.net/b/res/123001.htm':
-                case 'https://may.2chan.net/b/res/123002.htm':
-                case 'https://may.2chan.net/b/res/123003.htm':
-                default:
-                    throw new Error('not reach here');
-                }
-
                 let headers = {
                     'last-modified': 'Sun, 01 Jan 2017 01:23:45 GMT',
                     get(name) { return this[name]; }
                 };
-                let contents = { thread: { posts } };
+                let posts, contents;
 
-                return { ok: true, status: 200, headers, contents };
+                switch (requrl) {
+                case 'https://may.2chan.net/b/res/123002.htm':
+                    posts = [ { no: '02001' }, { no: '02002' }, { no: '02003' } ];
+                    contents = { thread: { posts } };
+                    return { ok: true, status: 200, headers, contents };
+                case 'https://may.2chan.net/b/res/123010.htm':
+                    return { ok: false, status: 404 };
+                case 'https://may.2chan.net/b/res/123001.htm':
+                case 'https://may.2chan.net/b/res/123003.htm':
+                default:
+                    throw new Error('not reach here');
+                }
             };
 
             await updateSearchResults(store, { sleepTime: 1 });
 
-            let { domain } = store.getState();
+            let { domain, app } = store.getState();
 
             let got = [];
             for (let thread of domain.threads.values()) {
-                let { url, replynum, newReplynum } = thread;
-                got.push({ url, replynum, newReplynum });
+                let { url, replynum, newReplynum, isActive } = thread;
+                got.push({ url, replynum, newReplynum, isActive });
             }
             let exp = [
-                { url: 'https://may.2chan.net/b/res/123001.htm', replynum: 2, newReplynum: null },
-                { url: 'https://may.2chan.net/b/res/123002.htm', replynum: 0, newReplynum: null },
-                { url: 'https://may.2chan.net/b/res/123003.htm', replynum: 0, newReplynum: null },
-                { url: 'https://may.2chan.net/b/res/123010.htm', replynum: 2, newReplynum: 2 }
+                { url: 'https://may.2chan.net/b/res/123001.htm',
+                  replynum: 2, newReplynum: null, isActive: true },
+                { url: 'https://may.2chan.net/b/res/123002.htm',
+                  replynum: 2, newReplynum: 2, isActive: true },
+                { url: 'https://may.2chan.net/b/res/123003.htm',
+                  replynum: 0, newReplynum: null, isActive: true },
+                { url: 'https://may.2chan.net/b/res/123010.htm',
+                  replynum: 0, newReplynum: 0, isActive: false }
+            ];
+            assert.deepStrictEqual(got, exp);
+
+            got = app.catalogs.get(url).searchResults;
+            exp = [
+                'https://may.2chan.net/b/res/123001.htm',
+                'https://may.2chan.net/b/res/123002.htm'
             ];
             assert.deepStrictEqual(got, exp);
         });

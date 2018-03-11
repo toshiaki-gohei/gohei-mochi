@@ -1,4 +1,5 @@
 'use strict';
+import { setAppCatalogs } from '../../reducers/actions';
 import { getCurrentCatalog, getCurrentAppCatalog } from '../../reducers/getters';
 import update from '../thread/update';
 import { sleep } from '~/content/util';
@@ -18,6 +19,16 @@ export async function updateSearchResults(store, opts) {
         if (i !== 0) await sleep(sleepTime);
         await update(store, url);
     }
+
+    let { domain } = store.getState();
+    let { url, searchResults } = getCurrentAppCatalog(store);
+
+    searchResults = searchResults.filter(url => {
+        let thread = domain.threads.get(url);
+        return thread.isActive;
+    });
+
+    store.dispatch(setAppCatalogs({ url, searchResults }));
 }
 
 function getUpdateTargets(store) {
