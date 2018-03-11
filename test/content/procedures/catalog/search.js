@@ -1,6 +1,6 @@
 'use strict';
 import assert from 'assert';
-import * as procedures from '~/content/procedures/catalog/search';
+import search, { internal } from '~/content/procedures/catalog/search';
 import createStore from '~/content/reducers';
 import { setDomainThreads, setDomainCatalogs, setAppCatalogs } from '~/content/reducers/actions';
 import { catalog } from '~/content/model';
@@ -9,8 +9,6 @@ describe(__filename, () => {
     const URL = 'http://example.net/catalog01';
 
     describe('search()', () => {
-        const { search } = procedures;
-
         let store;
         beforeEach(() => {
             let threads = [
@@ -64,7 +62,7 @@ describe(__filename, () => {
     });
 
     describe('_search()', () => {
-        const { _search } = procedures.internal;
+        const { _search } = internal;
 
         let threads = [
             { url: 'url-thread01', title: 'foo' },

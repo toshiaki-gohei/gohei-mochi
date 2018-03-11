@@ -2,6 +2,8 @@
 import { setAppCatalogs } from '../../reducers/actions';
 import { getCurrentCatalog, getCurrentAppCatalog } from '../../reducers/getters';
 
+export default search;
+
 export function search(store, query) {
     let { domain } = store.getState();
 
