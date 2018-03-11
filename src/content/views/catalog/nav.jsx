@@ -148,7 +148,9 @@ async function handleUpdate() {
 
     await commit('preferences/load');
 
-    commit('catalog/update', catalog.url, { sort: catalog.sort });
+    await commit('catalog/update', catalog.url, { sort: catalog.sort });
+
+    await commit('catalog/updateSearchResults');
 }
 
 function handleSort(sort, event) {

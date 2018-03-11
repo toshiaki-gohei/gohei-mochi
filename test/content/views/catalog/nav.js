@@ -141,12 +141,14 @@ $`.replace(/\n/g, ''));
         after(() => disposePreferences());
 
         it('should commit procedure if click update', () => {
-            let update;
-            let p = new Promise(resolve => update = resolve);
+            let update, updateSearchResults;
+            let p1 = new Promise(resolve => update = resolve);
+            let p2 = new Promise(resolve => updateSearchResults = resolve);
 
             let mock = procedures(store, {
                 ...defaultMap(store),
-                'catalog/update': (...args) => update(args)
+                'catalog/update': (...args) => update(args),
+                'catalog/updateSearchResults': () => updateSearchResults()
             });
 
             store.dispatch(setDomainCatalogs({ url: URL, sort: CATALOG_SORT.NEWEST }));
@@ -159,19 +161,22 @@ $`.replace(/\n/g, ''));
             let $btn = $el.querySelector('.gohei-update-btn');
             simulate.click($btn);
 
-            return p.then(([ url, { sort } ]) => {
-                assert(url === 'http://example.net/?mode=cat');
-                assert(sort === 1);
+            return Promise.all([
+                p1.then(([ url, { sort } ]) => {
+                    assert(url === 'http://example.net/?mode=cat');
+                    assert(sort === 1);
 
-                let { ui } = store.getState();
-                let got = ui.preferences.catalog;
-                let exp = {
-                    colnum: 15, rownum: 10,
-                    title: { length: 5, position: 1 },
-                    thumb: { size: 2 }
-                };
-                assert.deepStrictEqual(got, exp);
-            });
+                    let { ui } = store.getState();
+                    let got = ui.preferences.catalog;
+                    let exp = {
+                        colnum: 15, rownum: 10,
+                        title: { length: 5, position: 1 },
+                        thumb: { size: 2 }
+                    };
+                    assert.deepStrictEqual(got, exp);
+                }),
+                p2
+            ]);
         });
     });
 
