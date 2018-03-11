@@ -29,7 +29,7 @@ describe(__filename, () => {
 
             let $el = render(<Preview {...{ file }} />);
 
-            await sleep(2);
+            await sleep(5);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
@@ -47,7 +47,7 @@ $`.replace(/\n/g, ''));
 
             let $el = render(<Preview {...{ file }} />);
 
-            await sleep(2);
+            await sleep(5);
 
             let got = $el.outerHTML;
             let exp = new RegExp(`^
