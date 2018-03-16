@@ -1,3 +1,10 @@
+## 1.0.1 (2018-03-17)
+
+* improve catalog search
+* fix to ignore blank query in catalog search
+* change properties of state
+* update dependent modules
+
 ## 1.0.0 (2018-02-25)
 
 * publish gohei-mochi on AMO
