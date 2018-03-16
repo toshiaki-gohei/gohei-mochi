@@ -118,4 +118,22 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, []);
         });
     });
+
+    describe('_words()', () => {
+        const { _words } = internal;
+
+        it('should return words', () => {
+            let query = new catalog.Query({ title: 'foo bar', or: true });
+            let got = _words(query);
+            let exp = [ 'foo', 'bar' ];
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return words without blank', () => {
+            let query = new catalog.Query({ title: 'foo ', or: true });
+            let got = _words(query);
+            let exp = [ 'foo' ];
+            assert.deepStrictEqual(got, exp);
+        });
+    });
 });

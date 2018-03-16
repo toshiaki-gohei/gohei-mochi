@@ -34,10 +34,7 @@ function _equals(results1, results2) {
 }
 
 function searchAnd(query, threads) {
-    let { title } = query;
-
-    let words = title.split(' ');
-    for (let word of words) {
+    for (let word of _words(query)) {
         let { hits } = _divide(word, threads);
         threads = hits;
     }
@@ -46,17 +43,24 @@ function searchAnd(query, threads) {
 }
 
 function searchOr(query, threads) {
-    let { title } = query;
-
     let ret = [];
-    let words = title.split(' ');
-    for (let word of words) {
+
+    for (let word of _words(query)) {
         let { hits, notHits } = _divide(word, threads);
         threads = notHits;
         ret = ret.concat(hits);
     }
 
     return ret;
+}
+
+function _words(query) {
+    let { title } = query;
+    let words = title.split(' ');
+    return words.filter(word => {
+        if (word === '') return false;
+        return true;
+    });
 }
 
 function _divide(word, threads) {
@@ -77,5 +81,6 @@ function _divide(word, threads) {
 }
 
 export const internal = {
-    _search
+    _search,
+    _words
 };
