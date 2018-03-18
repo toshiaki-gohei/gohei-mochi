@@ -139,6 +139,32 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
+        it('should not merge ID if there is no exposed ID', () => {
+            let a = new Post({
+                index: 1, no: '12301', userId: 'exposed'
+            });
+            let b = new Post({
+                index: 1, no: '12301', userId: null
+            });
+
+            let { post, change } = merge(a, b);
+            assert(change === null);
+            assert.deepStrictEqual(post, a);
+        });
+
+        it('should not merge IP if there is no exposed IP', () => {
+            let a = new Post({
+                index: 1, no: '12301', userIp: 'exposed'
+            });
+            let b = new Post({
+                index: 1, no: '12301', userIp: null
+            });
+
+            let { post, change } = merge(a, b);
+            assert(change === null);
+            assert.deepStrictEqual(post, a);
+        });
+
         it('should merge correctly if there is no difference', () => {
             let a = new Post({ index: 1, no: '12301' });
             let { post, change } = merge(a, a);

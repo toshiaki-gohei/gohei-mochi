@@ -24,11 +24,11 @@ function mergeHeader(merged = {}, a, b) {
     let isChanged = false;
     if (a.raw.header === b.raw.header) return isChanged;
 
-    if (a.userId !== b.userId) {
+    if (a.userId !== b.userId && b.userId != null) {
         merged.userId = b.userId;
         isChanged = true;
     }
-    if (a.userIp !== b.userIp) {
+    if (a.userIp !== b.userIp && b.userIp != null) {
         merged.userIp = b.userIp;
         isChanged = true;
     }
