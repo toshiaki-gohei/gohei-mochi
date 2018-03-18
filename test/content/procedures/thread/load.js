@@ -68,6 +68,7 @@ describe(__filename, () => {
                 },
                 delform: { action: null, targets: new Map() },
                 delreq: { targets: new Map() },
+                filters: { isHiddenDeletedPosts: false },
                 changeset: null,
                 idipIndex: new thread.IdipIndex(),
                 isUpdating: false,

@@ -29,7 +29,8 @@ describe(__filename, () => {
                   messages: { viewer: '1234人くらい' },
                   postform: { action: 'post' },
                   delform: { action: 'del' },
-                  delreq: { targets: new Map([ [ 'delreq01', null ] ]) } },
+                  delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
+                  filters: { isHiddenDeletedPosts: true } },
                 { url: 'url-thread04' }
             ];
             let action = { apps };
@@ -46,6 +47,7 @@ describe(__filename, () => {
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
                     delform: { action: 'del', targets: new Map() },
                     delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
+                    filters: { isHiddenDeletedPosts: true },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ],
@@ -60,7 +62,8 @@ describe(__filename, () => {
                 messages: { viewer: '1234人くらい' },
                 postform: { action: 'post' },
                 delform: { action: 'del' },
-                delreq: { targets: new Map([ [ 'delreq01', null ] ]) }
+                delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
+                filters: { isHiddenDeletedPosts: true }
             };
             let action = { app };
 
@@ -76,6 +79,7 @@ describe(__filename, () => {
                     postform: { action: 'post', hiddens: [], comment: null, file: null },
                     delform: { action: 'del', targets: new Map() },
                     delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
+                    filters: { isHiddenDeletedPosts: true },
                     idipIndex: 'idip-index' } ],
                 [ 'url-thread02', { url: 'url-thread02' } ],
                 [ 'url-thread03', { url: 'url-thread03' } ]
@@ -90,7 +94,8 @@ describe(__filename, () => {
                 messages: { viewer: '1234人くらい' },
                 postform: { action: 'post' },
                 delform: { action: 'del' },
-                delreq: { targets: new Map([ [ 'delreq01', null ] ]) }
+                delreq: { targets: new Map([ [ 'delreq01', null ] ]) },
+                filters: { isHiddenDeletedPosts: true }
             };
             let action = { app };
             let prev = reduce(state, action);
@@ -99,17 +104,17 @@ describe(__filename, () => {
             action = { app };
             let next = reduce(prev, action);
 
-            let got = [ 'messages', 'postform', 'delform', 'delreq' ].every(prop => {
+            let got = [ 'messages', 'postform', 'delform', 'delreq', 'filters' ].every(prop => {
                 return prev.get(url)[prop] === next.get(url)[prop];
             });
             assert(got);
 
-            let { messages, postform, delform, delreq } = prev.get(url);
-            app = { url, messages, postform, delform, delreq };
+            let { messages, postform, delform, delreq, filters } = prev.get(url);
+            app = { url, messages, postform, delform, delreq, filters };
             action = { app };
             next = reduce(prev, action);
 
-            got = [ 'messages', 'postform', 'delform', 'delreq' ].every(prop => {
+            got = [ 'messages', 'postform', 'delform', 'delreq', 'filters' ].every(prop => {
                 return prev.get(url)[prop] === next.get(url)[prop];
             });
             assert(got);

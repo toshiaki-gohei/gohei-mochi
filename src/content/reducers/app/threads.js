@@ -15,6 +15,7 @@ function create(opts) {
         postform = createPostform(),
         delform = createDelform(),
         delreq = createDelreq(),
+        filters = createFilters(),
 
         changeset = null, // model/thread/changeset
         idipIndex = null, // model/thread/idip-index
@@ -28,11 +29,12 @@ function create(opts) {
     F(postform);
     F(delform);
     F(delreq);
+    F(filters);
 
     return F({
         url,
         displayThreshold, messages,
-        postform, delform, delreq,
+        postform, delform, delreq, filters,
         changeset, idipIndex,
         isUpdating, updatedAt, httpRes
     });
@@ -60,6 +62,11 @@ function createDelreq(opts) {
     let { targets = new Map() } = opts || {};
     F(targets);
     return F({ targets });
+}
+
+function createFilters(opts) {
+    let { isHiddenDeletedPosts = false } = opts || {};
+    return F({ isHiddenDeletedPosts });
 }
 
 export function createCheckTarget(opts) {
@@ -100,8 +107,9 @@ function reduceApp(prev = APP, next) {
     let postform = reducePostform(prev.postform, next.postform);
     let delform = reduceDelform(prev.delform, next.delform);
     let delreq = reduceDelreq(prev.delreq, next.delreq);
+    let filters = reduceFilters(prev.filters, next.filters);
 
-    let newState = { ...prev, ...next, messages, postform, delform, delreq };
+    let newState = { ...prev, ...next, messages, postform, delform, delreq, filters };
 
     return create(newState);
 }
@@ -124,6 +132,11 @@ function reduceDelform(prev, next) {
 function reduceDelreq(prev, next) {
     if (next == null || next === prev) return prev;
     return createDelreq({ ...prev, ...next });
+}
+
+function reduceFilters(prev, next) {
+    if (next == null || next === prev) return prev;
+    return createFilters({ ...prev, ...next });
 }
 
 export const internal = {
