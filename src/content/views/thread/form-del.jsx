@@ -144,7 +144,6 @@ function DeleteKey({ handlers }) {
 
 function OnlyImgDel({ handlers }) {
     let { setRefOnlyImgDel } = handlers;
-    // eslint-disable-next-line jsx-a11y/label-has-for
     return <label><input type="checkbox" ref={setRefOnlyImgDel} />画像だけ消す</label>;
 }
 

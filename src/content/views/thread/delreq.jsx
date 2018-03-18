@@ -253,11 +253,9 @@ function Reasons({ state, changeReason }) {
 }
 
 function Radio({ reason, value, changeReason }) {
-    let id = `gohei-radio-reason-${value}`;
-
     return (
-<label className="gohei-radio" htmlFor={id}>
-  <input id={id} type="radio" value={value} name="reason"
+<label className="gohei-radio">
+  <input type="radio" value={value} name="reason"
          className="gohei-radio-btn" checked={value === reason} onChange={changeReason} />
   {REASON_TEXT[value]}
 </label>
