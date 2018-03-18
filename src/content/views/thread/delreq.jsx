@@ -49,7 +49,7 @@ function LeftPane({ commit, state, app, handlers }) {
     let { errmsg, reason } = state;
 
     return (
-<div className="gohei-left-pane">
+<div className="gohei-pane gohei-left-pane">
   <div className="gohei-top-pane">
     <div className="gohei-row">送信前の削除依頼<ClearTargetsBtn {...{ handlers }} /></div>
     <div className="gohei-row gohei-scroll">
@@ -73,7 +73,7 @@ function RightPane({ commit, state, app, changeReason }) {
     let style = isVisibleReasons ? { display: 'none' } : null;
 
     return (
-<div className="gohei-right-pane">
+<div className="gohei-pane gohei-right-pane">
   <div className="gohei-top-pane" style={style}>
     <div className="gohei-row">送信中の削除依頼</div>
     <div className="gohei-row gohei-scroll">

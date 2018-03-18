@@ -50,8 +50,8 @@ describe(__filename, () => {
             let exp = new RegExp(`^
 <div class="gohei-delreq">
 <div>削除依頼</div>
-<div class="gohei-left-pane">.+</div>
-<div class="gohei-right-pane">.+</div>
+<div class="gohei-pane gohei-left-pane">.+</div>
+<div class="gohei-pane gohei-right-pane">.+</div>
 </div>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));

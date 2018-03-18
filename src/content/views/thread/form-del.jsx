@@ -51,7 +51,7 @@ export default class Delform extends Component {
 
 function LeftPane({ commit, app, handlers }) {
     return (
-<div className="gohei-left-pane">
+<div className="gohei-pane gohei-left-pane">
   <div className="gohei-top-pane">
     <div className="gohei-row">削除するレス<ClearTargetsBtn {...{ handlers }} /></div>
     <div className="gohei-row gohei-scroll">
@@ -67,7 +67,7 @@ function RightPane({ state, app, handlers }) {
     let { isSubmitting, errmsg } = state;
 
     return (
-<div className="gohei-right-pane">
+<div className="gohei-pane gohei-right-pane">
   <div className="gohei-top-pane">
     <div className="gohei-row"><DeleteKey {...{ handlers }} /></div>
     <div className="gohei-row"><OnlyImgDel {...{ handlers }} /></div>

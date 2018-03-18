@@ -471,13 +471,16 @@ textarea {
     max-height: 250px;
 }
 
-.gohei-app-thread .gohei-panel-content .gohei-left-pane,
-.gohei-app-thread .gohei-panel-content .gohei-right-pane {
+.gohei-app-thread .gohei-panel-content .gohei-pane {
     display: inline-block;
     box-sizing: border-box;
     padding: 0 4px;
-    width: 50%;
     vertical-align: top;
+}
+
+.gohei-app-thread .gohei-panel-content .gohei-pane.gohei-left-pane,
+.gohei-app-thread .gohei-panel-content .gohei-pane.gohei-right-pane {
+    width: 50%;
 }
 
 .gohei-app-thread .gohei-panel-content .gohei-row {
