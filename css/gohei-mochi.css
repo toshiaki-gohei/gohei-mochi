@@ -519,6 +519,10 @@ textarea {
     border-bottom: 1px solid #800000;
 }
 
+.gohei-app-thread .gohei-panel-content .gohei-label > .gohei-checkbox {
+    margin-right: 0.2em;
+}
+
 .gohei-delreq .gohei-select-reason {
     margin-left: 4.5em;
 }

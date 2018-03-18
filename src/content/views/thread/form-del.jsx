@@ -144,7 +144,11 @@ function DeleteKey({ handlers }) {
 
 function OnlyImgDel({ handlers }) {
     let { setRefOnlyImgDel } = handlers;
-    return <label><input type="checkbox" ref={setRefOnlyImgDel} />画像だけ消す</label>;
+    return (
+<label className="gohei-label">
+  <input type="checkbox" className="gohei-checkbox" ref={setRefOnlyImgDel} />画像だけ消す
+</label>
+    );
 }
 
 function SubmitBtn({ isSubmitting, app, handlers }) {
