@@ -36,4 +36,28 @@ describe(__filename, () => {
             assert(got === 200);
         });
     });
+
+    describe('setFilters()', () => {
+        const { setFilters } = procedures;
+
+        const url = 'http://example.net/thread01';
+        const getFilters = () => store.getState().app.threads.get(url).filters;
+
+        beforeEach(() => {
+            store = createStore({ app: { current: { thread: url } } });
+            store.dispatch(setAppThreads({ url }));
+        });
+
+        it('should set filters', () => {
+            let got = getFilters();
+            let exp = { isHiddenDeletedPosts: false };
+            assert.deepStrictEqual(got, exp);
+
+            setFilters(store, { isHiddenDeletedPosts: true });
+
+            got = getFilters();
+            exp = { isHiddenDeletedPosts: true };
+            assert.deepStrictEqual(got, exp);
+        });
+    });
 });

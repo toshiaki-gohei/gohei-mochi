@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Postform from './form-post/index.jsx';
 import Delform from './form-del.jsx';
 import Delreq from './delreq.jsx';
+import Filters from './filters.jsx';
 import { CLASS_NAME as CN, THREAD_PANEL_TYPE as P_TYPE } from '~/content/constants';
 
 export default class Panel extends Component {
@@ -18,7 +19,8 @@ export default class Panel extends Component {
 
             showPostform: handleTab.bind(this, P_TYPE.FORM_POST),
             showDelform: handleTab.bind(this, P_TYPE.FORM_DEL),
-            showDelreq: handleTab.bind(this, P_TYPE.DELREQ)
+            showDelreq: handleTab.bind(this, P_TYPE.DELREQ),
+            showFilters: handleTab.bind(this, P_TYPE.FILTERS)
         };
         this._handleClickBody = handleClickBody.bind(this);
     }
@@ -77,13 +79,14 @@ function Content({ commit, panel, app, handlers }) {
 
 function TabsBar({ panel, handlers }) {
     let css = tabCss(panel);
-    let { showPostform, showDelform, showDelreq } = handlers;
+    let { showPostform, showDelform, showDelreq, showFilters } = handlers;
 
     return (
 <ul className="gohei-tabsbar">
   <li className={css.postform} onClick={showPostform} onKeyPress={showPostform} role="tab">レス</li>
   <li className={css.delform} onClick={showDelform} onKeyPress={showDelform} role="tab">レス削除</li>
   <li className={css.delreq} onClick={showDelreq} onKeyPress={showDelreq} role="tab">DEL</li>
+  <li className={css.filters} onClick={showFilters} onKeyPress={showFilters} role="tab">フィルタ</li>
 </ul>
     );
 }
@@ -97,13 +100,14 @@ function TabContent({ commit, panel, app }) {
   <Postform {...{ commit, panel, postform }} />
   <Delform {...{ commit, panel, app }} />
   <Delreq {...{ commit, panel, app }} />
+  <Filters {...{ commit, panel, app }} />
 </div>
     );
 }
 
 function tabCss(panel) {
-    let postform, delform, delreq;
-    postform = delform = delreq = 'gohei-tab';
+    let postform, delform, delreq, filters;
+    postform = delform = delreq = filters = 'gohei-tab';
 
     let active = ' gohei-active';
 
@@ -117,9 +121,12 @@ function tabCss(panel) {
     case P_TYPE.DELREQ:
         delreq += active;
         break;
+    case P_TYPE.FILTERS:
+        filters += active;
+        break;
     }
 
-    return { postform, delform, delreq };
+    return { postform, delform, delreq, filters };
 }
 
 function isOnPanel($el) {

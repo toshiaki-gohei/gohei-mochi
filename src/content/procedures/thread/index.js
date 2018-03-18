@@ -23,3 +23,8 @@ export function setDisplayThreshold(store, displayThreshold) {
     let { url } = getCurrentAppThread(store);
     store.dispatch(setAppThreads({ url, displayThreshold }));
 }
+
+export function setFilters(store, filters) {
+    let { url } = getCurrentAppThread(store);
+    store.dispatch(setAppThreads({ url, filters }));
+}

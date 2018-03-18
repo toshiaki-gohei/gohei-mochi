@@ -497,6 +497,10 @@ textarea {
     overflow-y: auto;
 }
 
+.gohei-filters {
+    height: 15em;
+}
+
 .gohei-app-thread .gohei-panel-content .gohei-list {
     border-collapse: collapse;
 }
