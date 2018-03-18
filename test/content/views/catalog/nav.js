@@ -130,6 +130,24 @@ $`.replace(/\n/g, ''));
             assert(got === exp);
         });
 
+        it('should not render search menu if catalog is img.2chan.net', () => {
+            let url = 'https://img.2chan.net/b/futaba.php?mode=cat';
+
+            store.dispatch(setDomainCatalogs({ url }));
+            store.dispatch(setAppCatalogs({ url }));
+
+            let { domain, app } = store.getState();
+            props = {
+                catalog: domain.catalogs.get(url),
+                app: app.catalogs.get(url)
+            };
+
+            let $el = render(<Nav {...props} />);
+
+            let got = $el.querySelector('.gohei-search');
+            assert(got === null);
+        });
+
         it('should not render nav if no props', () => {
             let $el = render(<Nav />);
             let got = $el.outerHTML;

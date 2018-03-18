@@ -99,5 +99,10 @@ describe(__filename, () => {
             let got = substr(str);
             assert(got === str);
         });
+
+        it('should return null if pass null', () => {
+            let got = substr(null);
+            assert(got === null);
+        });
     });
 });

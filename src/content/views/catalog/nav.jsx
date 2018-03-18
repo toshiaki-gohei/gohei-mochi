@@ -35,6 +35,7 @@ export default class Nav extends Component {
 
         let { query } = this.state;
 
+        let { url } = catalog;
         let handlers = this._handlers;
 
         return (
@@ -42,7 +43,7 @@ export default class Nav extends Component {
   <ul className="gohei-catalog-menu">
     <li className="gohei-menu-group gohei-left-menu">
       <UpdateMenu {...{ app, handlers }} />
-      <SearchMenu {...{ query, handlers }} />
+      <SearchMenu {...{ url, query, handlers }} />
     </li>
     <li className="gohei-menu-group gohei-right-menu">
       <RightMenu {...{ catalog, handlers: this._sortBy }} />
@@ -69,9 +70,10 @@ function UpdateMenu({ app, handlers }) {
     );
 }
 
-function SearchMenu({ query, handlers }) {
-    let { changeQuery } = handlers;
+function SearchMenu({ url, query, handlers }) {
+    if (!isAvailableSearch(url)) return null;
 
+    let { changeQuery } = handlers;
     let value = query.title || '';
 
     return (
@@ -82,6 +84,19 @@ function SearchMenu({ query, handlers }) {
           onClick={() => {}}>詳細</button>*/}
 </span>
     );
+}
+
+function isAvailableSearch(url) {
+    if (url == null) return true;
+
+    let { hostname } = new window.URL(url);
+
+    switch (hostname) {
+    case 'img.2chan.net':
+        return false;
+    default:
+        return true;
+    }
 }
 
 function RightMenu({ catalog, handlers }) {

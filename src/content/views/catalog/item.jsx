@@ -50,6 +50,7 @@ const THUMB_SIZE = F({
 });
 
 function substr(str, length) {
+    if (str == null) return str;
     if (length == null) return str;
 
     let count = 0;
