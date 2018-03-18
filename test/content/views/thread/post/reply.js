@@ -41,6 +41,15 @@ $`.replace(/\n/g, ''));
             assert(got);
         });
 
+        it('should render invisible reply if post is hidden', () => {
+            let $el = render(<Reply {...{ post, isHidden: true }} />);
+            let got = $el.outerHTML;
+            let exp = new RegExp(`^
+<div class="gohei-post gohei-reply" style="display: none;">.+</div>
+$`.replace(/\n/g, ''));
+            assert(exp.test(got));
+        });
+
         it('should not render reply if no props', () => {
             let $el = render(<Reply />);
             let got = $el.outerHTML;

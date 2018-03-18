@@ -1,6 +1,9 @@
 'use strict';
 import { separate } from '~/common/url';
+import { post } from '~/content/model';
 import jsCookie from 'js-cookie';
+
+const { STATE } = post;
 
 export function isThreadLazyDisplay(appThread) {
     let { displayThreshold } = appThread || {};
@@ -15,6 +18,21 @@ export function hasCheckedTarget(app, name) {
     for (let [ , { checked } ] of container.targets) {
         if (checked) return true;
     }
+    return false;
+}
+
+export function isHiddenPost({ post, filters }) {
+    let { isHiddenDeletedPosts } = filters;
+
+    if (!isHiddenDeletedPosts) return false;
+
+    switch (post.state) {
+    case STATE.DELETE_BY_DELETER:
+    case STATE.DELETE_BY_THREAKI:
+    case STATE.DELETE_BY_WRITER:
+        return true;
+    }
+
     return false;
 }
 

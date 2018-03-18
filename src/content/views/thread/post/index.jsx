@@ -22,7 +22,7 @@ export default class Post extends Component {
     }
 
     render() {
-        let { commit, post, app, thread } = this.props;
+        let { commit, post, app, thread, isHidden = false } = this.props;
         let { isActive } = this.state;
 
         if (post == null) return null;
@@ -35,7 +35,7 @@ export default class Post extends Component {
 
         let props = { commit, post, handlers, isChecked, isActive };
 
-        if (post.index !== 0) return <Reply {...{ ...props, idipIndex }} />;
+        if (post.index !== 0) return <Reply {...{ ...props, idipIndex, isHidden }} />;
         return <OriginalPost {...{ ...props, expire, app }} />;
     }
 }

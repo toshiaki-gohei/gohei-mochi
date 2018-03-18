@@ -80,6 +80,30 @@ describe(__filename, () => {
         });
     });
 
+    describe('isHiddenPost()', () => {
+        const { isHiddenPost } = util;
+
+        it('should return true if filter is active and post is deleted', () => {
+            let post = { state: 1 };
+            let filters = { isHiddenDeletedPosts: true };
+            let got = isHiddenPost({ post, filters });
+            assert(got === true);
+        });
+
+        it('should return false if filter is active and post is not deleted', () => {
+            let post = { state: null };
+            let filters = { isHiddenDeletedPosts: true };
+            let got = isHiddenPost({ post, filters });
+            assert(got === false);
+        });
+
+        it('should return false if filter is inactive', () => {
+            let filters = { isHiddenDeletedPosts: false };
+            let got = isHiddenPost({ filters });
+            assert(got === false);
+        });
+    });
+
     (isBrowser ? describe.skip : describe)('setNamec()', () => {
         const { setNamec } = util;
 

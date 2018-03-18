@@ -1,7 +1,7 @@
 'use strict';
 import React, { Component, Fragment } from 'react';
 import Post from './post/index.jsx';
-import { isThreadLazyDisplay } from './util';
+import { isThreadLazyDisplay, isHiddenPost } from './util';
 import { DISPLAY_THRESHOLD } from '../../constants';
 
 export default class Thread extends Component {
@@ -44,7 +44,6 @@ export default class Thread extends Component {
     render() {
         let { commit, thread, app } = this.props;
         if (commit == null || thread == null) return null;
-        app = app || {};
 
         let props = { commit, thread, app };
 
@@ -95,9 +94,14 @@ function ThreadLazyDisplay({ commit, thread, app, handlers, intersection }) {
 }
 
 function Posts({ commit, posts, thread, app }) {
+    let { filters } = app;
+
     let $posts = posts.map(postId => {
         let post = commit('sync/post', postId);
-        let props = { commit, post, thread, app };
+        let isHidden = isHiddenPost({ post, filters });
+
+        let props = { commit, post, thread, app, isHidden };
+
         if (post.index === 0) return <Post {...props} key={post.index} />;
         return <PostWithLeftMark {...props} key={post.index} />;
     });
@@ -105,8 +109,10 @@ function Posts({ commit, posts, thread, app }) {
 }
 
 function PostWithLeftMark(props) {
+    let { isHidden } = props;
+    let style = isHidden ? { display: 'none' } : null;
     return (
-<div className="gohei-reply-container">
+<div className="gohei-reply-container" style={style}>
   <div className="gohei-reply-left-mark">...</div>
   <Post {...props} />
 </div>
