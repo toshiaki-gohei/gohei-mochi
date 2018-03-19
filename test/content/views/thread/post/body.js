@@ -95,6 +95,70 @@ describe(__filename, () => {
         });
     });
 
+    describe('replaceLink()', () => {
+        it('should replace a string like URL with link', () => {
+            let blockquote = 'https://may.2chan.net/b/res/546730074.htm<br />通常文';
+            let post = new Post({ raw: { blockquote } });
+            let $el = render(<Body {...{ post }} />);
+
+            let got = $el.outerHTML;
+            let exp = `
+<blockquote class="gohei-post-body">
+<a href="https://may.2chan.net/b/res/546730074.htm" rel="noreferrer">https://may.2chan.net/b/res/546730074.htm</a><br>
+通常文
+</blockquote>
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
+        it('should replace strings like URL with link', () => {
+            let blockquote = `
+<span class="gohei-quote">
+&gt;引用文 https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/
+</span><br />
+通常文 https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/<br />
+<span class="gohei-quote">
+&gt;ttp://example.net/foo/bar ttps://example.net/hoge/fuga
+</span><br />
+ttp://example.net/foo/bar ttps://example.net/hoge/fuga
+`.replace(/\n/g, '');
+            let post = new Post({ raw: { blockquote } });
+            let $el = render(<Body {...{ post }} />);
+
+            let got = $el.outerHTML;
+            let exp = `
+<blockquote class="gohei-post-body">
+<span class="gohei-quote">
+&gt;引用文 <a href="https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/" rel="noreferrer">https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/</a>
+</span><br>
+通常文 <a href="https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/" rel="noreferrer">https://addons.mozilla.org/ja/firefox/addon/gohei-mochi/</a><br>
+<span class="gohei-quote">
+&gt;<a href="http://example.net/foo/bar" rel="noreferrer">ttp://example.net/foo/bar</a> <a href="https://example.net/hoge/fuga" rel="noreferrer">ttps://example.net/hoge/fuga</a></span><br>
+<a href="http://example.net/foo/bar" rel="noreferrer">ttp://example.net/foo/bar</a> <a href="https://example.net/hoge/fuga" rel="noreferrer">ttps://example.net/hoge/fuga</a>
+</blockquote>
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
+        it('should replace protocol correctly', () => {
+            let blockquote = `
+http://example.net/url1 ttp://example.net/url2 tp://example.net/url3<br />
+https://example.net/url1 ttps://example.net/url2 tps://example.net/url3
+`.replace(/\n/g, '');
+            let post = new Post({ raw: { blockquote } });
+            let $el = render(<Body {...{ post }} />);
+
+            let got = $el.outerHTML;
+            let exp = `
+<blockquote class="gohei-post-body">
+<a href="http://example.net/url1" rel="noreferrer">http://example.net/url1</a> <a href="http://example.net/url2" rel="noreferrer">ttp://example.net/url2</a> <a href="http://example.net/url3" rel="noreferrer">tp://example.net/url3</a><br>
+<a href="https://example.net/url1" rel="noreferrer">https://example.net/url1</a> <a href="https://example.net/url2" rel="noreferrer">ttps://example.net/url2</a> <a href="https://example.net/url3" rel="noreferrer">tps://example.net/url3</a>
+</blockquote>
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+    });
+
     describe('event', () => {
         let handlers;
         beforeEach(() => handlers = {});
