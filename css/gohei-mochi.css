@@ -723,6 +723,10 @@ textarea {
     color: #789922;
 }
 
+.gohei-post-body .gohei-quote > a {
+    color: #409999;
+}
+
 .gohei-post-body .gohei-delete {
     color: #ff0000;
 }
