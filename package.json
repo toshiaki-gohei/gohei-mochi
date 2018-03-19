@@ -1,6 +1,6 @@
 {
   "name": "gohei-mochi",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "WebExtension to make futaba(2chan.net) life so-so good",
   "main": "index.js",
   "scripts": {

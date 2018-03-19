@@ -1,3 +1,10 @@
+## 1.1.0 (2018-03-19)
+
+* add a feature to link strings like URL in posts
+* add a feature to filter posts in a thread
+* change not to merge ID/IP of a post when there was no exposed ID/IP
+* fix an issue where could not display a catalog of img.2chan.net
+
 ## 1.0.1 (2018-03-17)
 
 * improve catalog search
