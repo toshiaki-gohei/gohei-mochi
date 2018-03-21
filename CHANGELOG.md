@@ -1,3 +1,9 @@
+## 1.2.0 (2018-03-21)
+
+* add a feature to link strings like siokarabin URL in posts
+* modify not to replace too short No with No quote
+* modify color of anchor in quoted post
+
 ## 1.1.0 (2018-03-19)
 
 * add a feature to link strings like URL in posts
