@@ -2,15 +2,19 @@
 import { CLASS_NAME as CN } from '~/content/constants';
 import { BR_TAG } from '~/content/model/post';
 
+const NO = 'No\\.\\d{5,}';
+const NO_CHECK = new RegExp(NO);
+const NO_REGEXP = new RegExp(NO, 'g');
+
 export function replaceNoWithNoQuote(bq) {
     if (bq == null) return bq;
-    if (!/No\.\d+/.test(bq)) return bq;
+    if (!NO_CHECK.test(bq)) return bq;
 
     let lines = bq.split(BR_TAG);
     for (let i = 0, len = lines.length; i < len; ++i) {
         let line = lines[i];
         if (/^<span class="gohei-/.test(line)) continue;
-        lines[i] = line.replace(/No\.\d+/g, toQuoteNo);
+        lines[i] = line.replace(NO_REGEXP, toQuoteNo);
     }
 
     return lines.join(BR_TAG);

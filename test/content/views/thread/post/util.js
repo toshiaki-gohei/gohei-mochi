@@ -10,30 +10,39 @@ describe(__filename, () => {
         const { replaceNoWithNoQuote } = util;
 
         it('should replace No with No quote', () => {
-            let bq = `No.123${BR}通常文`;
+            let bq = `No.12345${BR}通常文`;
             let got = replaceNoWithNoQuote(bq);
             let exp = `
-<span class="gohei-quote">No.123</span>${BR}通常文
+<span class="gohei-quote">No.12345</span>${BR}通常文
 `.replace(/\n/g, '');
             assert(got === exp);
         });
 
         it('should replace No with No quote globally', () => {
-            let bq = `No.100${BR}No.101,No.102`;
+            let bq = `No.00100${BR}No.00101,No.00102`;
             let got = replaceNoWithNoQuote(bq);
             let exp = `
-<span class="gohei-quote">No.100</span>${BR}
-<span class="gohei-quote">No.101</span>,<span class="gohei-quote">No.102</span>
+<span class="gohei-quote">No.00100</span>${BR}
+<span class="gohei-quote">No.00101</span>,<span class="gohei-quote">No.00102</span>
 `.replace(/\n/g, '');
             assert(got === exp);
         });
 
         it('should not replace No inside quote', () => {
-            let bq = `<span class="gohei-quote">&gt;引用文No.100</span>${BR}通常文No.101`;
+            let bq = `<span class="gohei-quote">&gt;引用文No.00100</span>${BR}通常文No.00101`;
             let got = replaceNoWithNoQuote(bq);
             let exp = `
-<span class="gohei-quote">&gt;引用文No.100</span>${BR}
-通常文<span class="gohei-quote">No.101</span>
+<span class="gohei-quote">&gt;引用文No.00100</span>${BR}
+通常文<span class="gohei-quote">No.00101</span>
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
+        it('should not replace too short No', () => {
+            let bq = `No.123${BR}通常文`;
+            let got = replaceNoWithNoQuote(bq);
+            let exp = `
+No.123${BR}通常文
 `.replace(/\n/g, '');
             assert(got === exp);
         });
