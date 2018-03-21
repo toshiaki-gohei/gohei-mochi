@@ -24,6 +24,7 @@ export default class Body extends Component {
         let { blockquote: bq } = raw || {};
         bq = util.replaceNoWithNoQuote(bq);
         bq = util.replaceLink(bq);
+        bq = util.replaceSiokaraLink(bq);
 
         let __html = bq;
         let style = bqStyle(post);

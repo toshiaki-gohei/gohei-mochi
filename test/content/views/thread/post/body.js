@@ -4,7 +4,9 @@ import Body from '~/content/views/thread/post/body.jsx';
 import React from 'react';
 import { render, simulate } from '@/support/react';
 import { setup, teardown } from '@/support/dom';
-import { Post } from '~/content/model';
+import { Post, post } from '~/content/model';
+
+const BR = post.BR_TAG;
 
 describe(__filename, () => {
     before(() => setup());
@@ -12,7 +14,7 @@ describe(__filename, () => {
 
     describe('render()', () => {
         it('should render body', () => {
-            let blockquote = '<span class="gohei-quote">&gt;引用文</span><br />通常文';
+            let blockquote = `<span class="gohei-quote">&gt;引用文</span>${BR}通常文`;
             let post = new Post({ raw: { blockquote } });
             let $el = render(<Body {...{ post }} />);
 
@@ -42,8 +44,9 @@ describe(__filename, () => {
 
         it('should replace targets', () => {
             let blockquote = `
-No.123<br />通常文
-https://may.2chan.net/b/res/546730074.htm<br />通常文
+No.12345${BR}
+https://may.2chan.net/b/res/546730074.htm${BR}
+su1230001.jpg${BR}
 `.replace(/\n/g, '');
 
             let post = new Post({ raw: { blockquote } });
@@ -52,18 +55,18 @@ https://may.2chan.net/b/res/546730074.htm<br />通常文
             let got = $el.outerHTML;
             let exp = `
 <blockquote class="gohei-post-body">
-<span class="gohei-quote">No.123</span><br>通常文
-<a href="https://may.2chan.net/b/res/546730074.htm" rel="noreferrer">https://may.2chan.net/b/res/546730074.htm</a><br>通常文
+<span class="gohei-quote">No.12345</span><br>
+<a href="https://may.2chan.net/b/res/546730074.htm" rel="noreferrer">https://may.2chan.net/b/res/546730074.htm</a><br>
+<a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">su1230001.jpg</a><br>
 </blockquote>
 `.replace(/\n/g, '');
             assert(got === exp);
         });
 
         it('should render body if no props', () => {
-            let exp = '<blockquote class="gohei-post-body"></blockquote>';
-
             let $el = render(<Body />);
             let got = $el.outerHTML;
+            let exp = '<blockquote class="gohei-post-body"></blockquote>';
             assert(got === exp);
         });
     });
@@ -73,7 +76,7 @@ https://may.2chan.net/b/res/546730074.htm<br />通常文
         beforeEach(() => handlers = {});
 
         it('should handle to popup quote', done => {
-            let blockquote = '<span class="gohei-quote">&gt;引用文</span><br />通常文';
+            let blockquote = `<span class="gohei-quote">&gt;引用文</span>${BR}通常文`;
             let post = new Post({ raw: { blockquote } });
 
             handlers.popupQuote = event => {

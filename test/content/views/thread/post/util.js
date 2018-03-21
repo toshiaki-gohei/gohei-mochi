@@ -1,7 +1,9 @@
 'use strict';
 import assert from 'assert';
 import * as util from '~/content/views/thread/post/util';
-import { BR_TAG as BR } from '~/content/model/post';
+import { post } from '~/content/model';
+
+const BR = post.BR_TAG;
 
 describe(__filename, () => {
     describe('replaceNoWithNoQuote()', () => {
@@ -86,5 +88,56 @@ https://example.net/url1 ttps://example.net/url2 tps://example.net/url3
 `.replace(/\n/g, '');
             assert(got === exp);
         });
+    });
+
+    describe('replaceSiokaraLink()', () => {
+        const { replaceSiokaraLink } = util;
+
+        it('should replace a string like siokarabin URL with link', () => {
+            let bq = `su1230001.jpg${BR}通常文`;
+            let got = replaceSiokaraLink(bq);
+            let exp = `
+<a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">su1230001.jpg</a>${BR}
+通常文
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
+        it('should replace strings like siokarabin URL with link', () => {
+            let bq = `
+<span class="gohei-quote">
+&gt;引用文 su1230001.jpg
+</span>${BR}
+通常文 su1230001.jpg${BR}
+linked already: <a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg</a>
+`.replace(/\n/g, '');
+            let got = replaceSiokaraLink(bq);
+            let exp = `
+<span class="gohei-quote">
+&gt;引用文 <a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">su1230001.jpg</a>
+</span>${BR}
+通常文 <a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">su1230001.jpg</a>${BR}
+linked already: <a href="http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg" rel="noreferrer">http://www.nijibox5.com/futabafiles/tubu/src/su1230001.jpg</a>
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
+        it('should replace strings like various siokarabin URL with link', () => {
+            let bq = `
+ss1230001.jpg${BR}
+sa1230001.jpg${BR}
+sp1230001.jpg${BR}
+sq1230001.jpg${BR}
+`.replace(/\n/g, '');
+            let got = replaceSiokaraLink(bq);
+            let exp = `
+<a href="http://www.nijibox5.com/futabafiles/kobin/src/ss1230001.jpg" rel="noreferrer">ss1230001.jpg</a>${BR}
+<a href="http://www.nijibox6.com/futabafiles/001/src/sa1230001.jpg" rel="noreferrer">sa1230001.jpg</a>${BR}
+<a href="http://www.nijibox2.com/futabafiles/003/src/sp1230001.jpg" rel="noreferrer">sp1230001.jpg</a>${BR}
+<a href="http://www.nijibox6.com/futabafiles/mid/src/sq1230001.jpg" rel="noreferrer">sq1230001.jpg</a>${BR}
+`.replace(/\n/g, '');
+            assert(got === exp);
+        });
+
     });
 });
