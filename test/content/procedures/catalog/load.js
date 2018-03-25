@@ -40,11 +40,11 @@ describe(__filename, () => {
             };
             assert.deepStrictEqual(got, exp);
 
-            got = pluck(domain.threads, 'url', 'title');
+            got = pluck(domain.threads, 'url', 'title', 'isActive');
             exp = [
-                { url: 'url-thread01', title: 'title-thread1' },
-                { url: 'url-thread02', title: 'title-thread2' },
-                { url: 'url-thread03', title: 'title-thread3' }
+                { url: 'url-thread01', title: 'title-thread1', isActive: true },
+                { url: 'url-thread02', title: 'title-thread2', isActive: true },
+                { url: 'url-thread03', title: 'title-thread3', isActive: true }
             ];
             assert.deepStrictEqual(got, exp);
 
@@ -60,6 +60,15 @@ describe(__filename, () => {
                 })
             };
             assert.deepStrictEqual(got, exp);
+
+            got = pluck(app.threads, 'url');
+            exp = [
+                { url: 'url-thread01' },
+                { url: 'url-thread02' },
+                { url: 'url-thread03' }
+            ];
+            assert.deepStrictEqual(got, exp);
+
         });
     });
 });
