@@ -26,7 +26,7 @@ describe(__filename, () => {
 
         const lastModified = 'Sun, 01 Jan 2017 01:23:00 GMT';
 
-        it('should check', async () => {
+        it('should check active', async () => {
             let urls = [
                 'https://may.2chan.net/b/res/123000.htm',
                 'https://may.2chan.net/b/res/123001.htm',
@@ -36,13 +36,13 @@ describe(__filename, () => {
             store.dispatch(setDomainThreads([
                 { url: urls[0], isActive: true },
                 { url: urls[1], isActive: true },
-                { url: urls[2], isActive: false },
+                { url: urls[2], isActive: true },
                 { url: urls[3], isActive: false }
             ]));
             store.dispatch(setAppThreads([
                 { url: urls[0], httpRes: new HttpRes({ status: 200, lastModified }) },
                 { url: urls[1], httpRes: new HttpRes({ status: 200, lastModified }) },
-                { url: urls[2], httpRes: new HttpRes({ status: 404, lastModified }) },
+                { url: urls[2], httpRes: new HttpRes({ status: 200, lastModified }) },
                 { url: urls[3], httpRes: new HttpRes({ status: 404, lastModified }) }
             ]));
 
@@ -54,9 +54,9 @@ describe(__filename, () => {
 
                 switch (url) {
                 case urls[0]:
-                    return { ok: true, status: 200, headers };
+                    return { ok: true, status: 404, headers };
                 case urls[1]:
-                    return { ok: false, status: 404, headers };
+                    return { ok: false, status: 200, headers };
                 default:
                     throw new Error('not reach here');
                 }
@@ -68,9 +68,9 @@ describe(__filename, () => {
 
             let got = pluck(domain.threads, 'url', 'isActive');
             let exp = [
-                { url: urls[0], isActive: true },
-                { url: urls[1], isActive: false },
-                { url: urls[2], isActive: false },
+                { url: urls[0], isActive: false },
+                { url: urls[1], isActive: true },
+                { url: urls[2], isActive: true },
                 { url: urls[3], isActive: false }
             ];
             assert.deepStrictEqual(got, exp);
@@ -78,9 +78,9 @@ describe(__filename, () => {
             got = pluck(app.threads, 'url', 'httpRes')
                 .map(({ url, httpRes: { status, lastModified } }) => ({ url, status, lastModified }));
             exp = [
-                { url: urls[0], lastModified, status: 200 },
-                { url: urls[1], lastModified, status: 404 },
-                { url: urls[2], lastModified, status: 404 },
+                { url: urls[0], lastModified, status: 404 },
+                { url: urls[1], lastModified, status: 200 },
+                { url: urls[2], lastModified, status: 200 },
                 { url: urls[3], lastModified, status: 404 }
             ];
             assert.deepStrictEqual(got, exp);

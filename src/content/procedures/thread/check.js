@@ -9,6 +9,7 @@ export async function checkActive(store, opts) {
     let { urls = [], sleepTime = SLEEP_TIME } = opts || {};
 
     let { domain } = store.getState();
+    urls = urls.sort();
 
     let count = 0;
     for (let url of urls) {
@@ -20,6 +21,9 @@ export async function checkActive(store, opts) {
         if (++count !== 1) await sleep(sleepTime);
 
         await _checkActive(store, url);
+
+        // handle later threads as active threads for decrease to access 2chan.net
+        if (canInterrupt(store, url)) break;
     }
 }
 
@@ -36,6 +40,13 @@ async function _checkActive(store, url) {
 
     store.dispatch(setDomainThreads({ url, isActive }));
     store.dispatch(setAppThreads({ url, httpRes }));
+}
+
+function canInterrupt(store, url) {
+    let { domain } = store.getState();
+    let thread = domain.threads.get(url);
+    if (thread.isActive) return true;
+    return false;
 }
 
 export const internal = {
