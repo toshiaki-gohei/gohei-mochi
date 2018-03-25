@@ -3,6 +3,7 @@ import assert from 'assert';
 import { checkActive, internal } from '~/content/procedures/thread/check';
 import createStore from '~/content/reducers';
 import { setDomainThreads, setAppThreads } from '~/content/reducers/actions';
+import { HttpRes } from '~/content/model';
 import { setup, teardown, isBrowser } from '@/support/dom';
 import createServer from '@/support/server';
 import { pluckFromMap as pluck } from '@/support/util';
@@ -23,6 +24,8 @@ describe(__filename, () => {
         beforeEach(() => backup = fetch.get);
         afterEach(() => fetch.get = backup);
 
+        const lastModified = 'Sun, 01 Jan 2017 01:23:00 GMT';
+
         it('should check', async () => {
             let urls = [
                 'https://may.2chan.net/b/res/123000.htm',
@@ -36,7 +39,12 @@ describe(__filename, () => {
                 { url: urls[2], isActive: false },
                 { url: urls[3], isActive: false }
             ]));
-            store.dispatch(setAppThreads(urls.map(url => ({ url }))));
+            store.dispatch(setAppThreads([
+                { url: urls[0], httpRes: new HttpRes({ status: 200, lastModified }) },
+                { url: urls[1], httpRes: new HttpRes({ status: 200, lastModified }) },
+                { url: urls[2], httpRes: new HttpRes({ status: 404, lastModified }) },
+                { url: urls[3], httpRes: new HttpRes({ status: 404, lastModified }) }
+            ]));
 
             fetch.get = url => {
                 let headers = {
@@ -68,12 +76,12 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
 
             got = pluck(app.threads, 'url', 'httpRes')
-                .map(({ url, httpRes }) => ({ url, status: httpRes.status }));
+                .map(({ url, httpRes: { status, lastModified } }) => ({ url, status, lastModified }));
             exp = [
-                { url: urls[0], status: 200 },
-                { url: urls[1], status: 404 },
-                { url: urls[2], status: null },
-                { url: urls[3], status: null }
+                { url: urls[0], lastModified, status: 200 },
+                { url: urls[1], lastModified, status: 404 },
+                { url: urls[2], lastModified, status: 404 },
+                { url: urls[3], lastModified, status: 404 }
             ];
             assert.deepStrictEqual(got, exp);
         });
@@ -88,19 +96,25 @@ describe(__filename, () => {
 
         const getUrl = () => `http://localhost:${server.address().port}`;
 
+        const httpRes = new HttpRes({
+            status: 200, statusText: 'OK',
+            lastModified: 'Sun, 01 Jan 2017 01:23:00 GMT',
+            etag: '"123000"'
+        });
+
         it('should set true to isActive if response is 200', async () => {
             server.on('request', (req, res) => {
                 res.writeHead(200, {
                     'Content-type': 'text/plain',
                     'Last-Modified': new Date('2017-01-01T10:23:45+09:00').toUTCString(),
-                    'ETag': '"123000"'
+                    'ETag': '"123450"'
                 });
                 res.end();
             });
 
             let url = getUrl();
             store.dispatch(setDomainThreads({ url }));
-            store.dispatch(setAppThreads({ url }));
+            store.dispatch(setAppThreads({ url, httpRes }));
 
             await _checkActive(store, url);
 
@@ -110,7 +124,7 @@ describe(__filename, () => {
             let got = getApp(url).httpRes;
             let exp = {
                 status: 200, statusText: 'OK',
-                lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
+                lastModified: 'Sun, 01 Jan 2017 01:23:00 GMT',
                 etag: '"123000"'
             };
             assert.deepEqual(got, exp);
@@ -121,14 +135,14 @@ describe(__filename, () => {
                 res.writeHead(404, {
                     'Content-type': 'text/plain',
                     'Last-Modified': new Date('2017-01-01T10:23:45+09:00').toUTCString(),
-                    'ETag': '"123000"'
+                    'ETag': '"123450"'
                 });
                 res.end();
             });
 
             let url = getUrl();
             store.dispatch(setDomainThreads({ url }));
-            store.dispatch(setAppThreads({ url }));
+            store.dispatch(setAppThreads({ url, httpRes }));
 
             await _checkActive(store, url);
 
@@ -138,7 +152,7 @@ describe(__filename, () => {
             let got = getApp(url).httpRes;
             let exp = {
                 status: 404, statusText: 'Not Found',
-                lastModified: 'Sun, 01 Jan 2017 01:23:45 GMT',
+                lastModified: 'Sun, 01 Jan 2017 01:23:00 GMT',
                 etag: '"123000"'
             };
             assert.deepEqual(got, exp);

@@ -27,9 +27,10 @@ async function _checkActive(store, url) {
     let { app } = store.getState();
 
     let res = await fetch.get(url, { method: 'head' });
+    let { status, statusText } = res;
 
     let { httpRes } = app.threads.get(url);
-    httpRes = httpRes.clone(res);
+    httpRes = httpRes.clone({ status, statusText });
 
     let isActive = httpRes.status === 404 ? false : true;
 
