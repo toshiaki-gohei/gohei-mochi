@@ -2,6 +2,7 @@
 import { setAppThreads } from '../../reducers/actions';
 import { getCurrentAppThread } from '../../reducers/getters';
 
+export { checkActive } from './check';
 export {
     addDelformTargets, setDelformTargets, removeDelformTargets, clearDelformTargets
 } from './delform';
