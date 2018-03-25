@@ -160,12 +160,13 @@ function catsetUrl(catalog) {
 
 async function handleUpdate() {
     let { commit, catalog } = this.props;
+    let { query } = this.state;
 
     await commit('preferences/load');
 
     await commit('catalog/update', catalog.url, { sort: catalog.sort });
 
-    await commit('catalog/updateSearchResults');
+    await commit('catalog/updateSearchResults', { query });
 }
 
 function handleSort(sort, event) {

@@ -166,7 +166,7 @@ $`.replace(/\n/g, ''));
             let mock = procedures(store, {
                 ...defaultMap(store),
                 'catalog/update': (...args) => update(args),
-                'catalog/updateSearchResults': () => updateSearchResults()
+                'catalog/updateSearchResults': opts => updateSearchResults(opts)
             });
 
             store.dispatch(setDomainCatalogs({ url: URL, sort: CATALOG_SORT.NEWEST }));
@@ -193,7 +193,9 @@ $`.replace(/\n/g, ''));
                     };
                     assert.deepStrictEqual(got, exp);
                 }),
-                p2
+                p2.then(({ query }) => {
+                    assert(query.isEmpty() === true);
+                })
             ]);
         });
     });

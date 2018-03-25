@@ -3,7 +3,7 @@ import assert from 'assert';
 import updateSearchResults, { internal } from '~/content/procedures/catalog/update-search-results';
 import createStore from '~/content/reducers';
 import * as actions from '~/content/reducers/actions';
-import { Post } from '~/content/model';
+import { catalog, Post } from '~/content/model';
 import fetch from '~/content/util/fetch';
 
 const { setDomainPosts, setDomainThreads, setDomainCatalogs, setAppCatalogs } = actions;
@@ -38,21 +38,25 @@ describe(__filename, () => {
 
             let thread01 = {
                 url: 'https://may.2chan.net/b/res/123001.htm',
+                title: 'foo',
                 posts: posts01.map(post => post.id),
                 replynum: 2, newReplynum: null, isActive: true
             };
             let thread02 = {
                 url: 'https://may.2chan.net/b/res/123002.htm',
+                title: 'bar',
                 posts: posts02.map(post => post.id),
                 replynum: 0, newReplynum: null, isActive: true
             };
             let thread03 = {
                 url: 'https://may.2chan.net/b/res/123003.htm',
+                title: 'hoge',
                 posts: posts03.map(post => post.id),
                 replynum: 0, newReplynum: null, isActive: true
             };
             let thread10 = {
                 url: 'https://may.2chan.net/b/res/123010.htm',
+                title: 'foo bar',
                 posts: posts10.map(post => post.id),
                 replynum: 0, newReplynum: null, isActive: true
             };
@@ -91,7 +95,9 @@ describe(__filename, () => {
                 }
             };
 
-            await updateSearchResults(store, { sleepTime: 1 });
+            let query = new catalog.Query({ title: 'f b', or: true });
+
+            await updateSearchResults(store, { query, sleepTime: 0 });
 
             let { domain, app } = store.getState();
 
