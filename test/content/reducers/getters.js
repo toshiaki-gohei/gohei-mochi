@@ -79,6 +79,35 @@ describe(__filename, () => {
         });
     });
 
+    describe('getActiveThreads()', () => {
+        const { getActiveThreads } = getter;
+
+        const threads = new Map([
+            [ 'url-thread01', { url: 'url-thread01', isActive: true } ],
+            [ 'url-thread02', { url: 'url-thread02', isActive: false } ],
+            [ 'url-thread03', { url: 'url-thread03' } ]
+        ]);
+
+        it('should return active threads', () => {
+            let store = createStore({
+                domain: { threads }
+            });
+            let got = getActiveThreads(store);
+            let exp = [
+                { url: 'url-thread01', isActive: true }
+            ];
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should return [] if domain.threads is empty', () => {
+            let store = createStore({
+                domain: { threads: new Map() }
+            });
+            let got = getActiveThreads(store);
+            assert.deepStrictEqual(got, []);
+        });
+    });
+
     describe('getCurrentCatalog()', () => {
         const { getCurrentCatalog } = getter;
 

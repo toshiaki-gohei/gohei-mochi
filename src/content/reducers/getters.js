@@ -17,6 +17,16 @@ export function getCurrentThread(store) {
     return thread;
 }
 
+export function getActiveThreads(store) {
+    let { domain } = store.getState();
+    let threads = [];
+    for (let thread of domain.threads.values()) {
+        if (!thread.isActive) continue;
+        threads.push(thread);
+    }
+    return threads;
+}
+
 export function getCurrentCatalog(store) {
     let { domain, app } = store.getState();
     let url = app.current.catalog;
