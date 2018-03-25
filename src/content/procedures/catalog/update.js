@@ -1,6 +1,7 @@
 'use strict';
 import { setDomainThreads, setDomainCatalogs, setAppCatalogs } from '../../reducers/actions';
 import { preferences } from '../../model';
+import { checkActive } from '../thread';
 import fetch from '../../util/fetch';
 import { catalogUrl } from '../../util/url';
 import { deepCopy } from '~/common/util';
@@ -9,10 +10,12 @@ import jsCookie from 'js-cookie';
 export default update;
 
 export async function update(store, url, { sort = null } = {}) {
-    let { app } = store.getState();
+    let { domain, app } = store.getState();
 
     if (url == null) url = app.current.catalog;
     if (url == null) throw new TypeError('request url is required');
+
+    let { threads: prevUrls } = domain.catalogs.get(url);
 
     store.dispatch(setDomainCatalogs({ url, sort }));
     store.dispatch(setAppCatalogs({ url, isUpdating: true }));
@@ -30,6 +33,8 @@ export async function update(store, url, { sort = null } = {}) {
     store.dispatch(setAppCatalogs({ url, isUpdating: false, updatedAt }));
 
     setResponse(store, { url, res });
+
+    await dispose(store, { url, prevUrls });
 }
 
 function options(store, { url }) {
@@ -84,19 +89,44 @@ function setResponse(store, { url, res }) {
 function merge(storeThreads, newThreads) {
     newThreads = newThreads.map(threadB => {
         let a = storeThreads.get(threadB.url);
-        let b = threadB;
+        let b = { ...threadB, isActive: true };
 
         if (a == null) return b;
 
-        let thread = { ...a, ...b };
-        thread.newReplynum = b.replynum - a.replynum;
+        let newReplynum = b.replynum - a.replynum;
 
-        return thread;
+        return { ...a, ...b, newReplynum };
     });
 
     return newThreads;
 }
 
+async function dispose(store, opts) {
+    let targets = getCheckTargets(store, opts);
+    await checkActive(store, { urls: targets });
+}
+
+function getCheckTargets(store, { url, prevUrls }) {
+    let { domain } = store.getState();
+    let { threads } = domain.catalogs.get(url);
+
+    let targets = [];
+    for (let url of prevUrls) {
+        if (contains(url, threads)) continue;
+        targets.push(url);
+    }
+
+    return targets;
+}
+
+function contains(url, threads) {
+    for (let threadUrl of threads) {
+        if (url === threadUrl) return true;
+    }
+    return false;
+}
+
 export const internal = {
-    merge
+    merge,
+    getCheckTargets
 };

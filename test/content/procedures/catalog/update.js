@@ -11,7 +11,7 @@ import { F } from '~/common/util';
 import fetch from '~/content/util/fetch';
 import jsCookie from 'js-cookie';
 
-const { setDomainThreads, setDomainCatalogs, setAppCatalogs } = actions;
+const { setDomainThreads, setDomainCatalogs, setAppThreads, setAppCatalogs } = actions;
 
 describe(__filename, () => {
     before(() => setup({ url: URL }));
@@ -26,58 +26,26 @@ describe(__filename, () => {
     const getApp = url => store.getState().app.catalogs.get(url);
 
     describe('update()', () => {
-        let backup;
-        beforeEach(() => backup = fetch.getCatalog);
-        afterEach(() => fetch.getCatalog = backup);
+        let backup1, backup2;
+        beforeEach(() => backup1 = fetch.getCatalog);
+        afterEach(() => fetch.getCatalog = backup1);
+        beforeEach(() => backup2 = fetch.get);
+        afterEach(() => fetch.get = backup2);
 
         const url = URL;
 
         it('should update', async () => {
             let urls = [ 0, 1, 2, 3 ].map(i => `url-thread0${i}`);
             let threads = [
-                { url: urls[0], replynum: 100 },
-                { url: urls[1], replynum: 50 },
-                { url: urls[2], replynum: 0 }
+                { url: urls[0], replynum: 100, isActive: true },
+                { url: urls[1], replynum: 50, isActive: true },
+                { url: urls[2], replynum: 0, isActive: true }
             ];
+            let appThreads = urls.map(url => ({ url }));
             let catalog = { url, threads: [ urls[0], urls[1], urls[2] ] };
             store.dispatch(setDomainThreads(threads));
+            store.dispatch(setAppThreads(appThreads));
             store.dispatch(setDomainCatalogs(catalog));
-            store.dispatch(setAppCatalogs({ url }));
-
-            fetch.getCatalog = () => {
-                let threads = [
-                    // { url: urls[0], replynum: 100 }, // thread is not active already
-                    { url: urls[1], replynum: 50 },
-                    { url: urls[2], replynum: 10 },
-                    { url: urls[3], replynum: 5 }
-                ];
-                let contents = { catalog: { threads } };
-
-                return { ok: true, status: 200, contents };
-            };
-
-            await update(store, url, { sort: 3 });
-
-            let { domain } = store.getState();
-            let got = pluck(domain.threads, 'url', 'replynum', 'newReplynum');
-            let exp = [
-                { url: urls[0], replynum: 100, newReplynum: null },
-                { url: urls[1], replynum: 50, newReplynum: 0 },
-                { url: urls[2], replynum: 10, newReplynum: 10 },
-                { url: urls[3], replynum: 5, newReplynum: null }
-            ];
-            assert.deepStrictEqual(got, exp);
-
-            got = pick(getCatalog(url), 'url', 'threads', 'sort');
-            exp = {
-                url,
-                threads: [ urls[1], urls[2], urls[3] ],
-                sort: 3
-            };
-            assert.deepStrictEqual(got, exp);
-        });
-
-        it('should update app', async () => {
             store.dispatch(setAppCatalogs({ url }));
 
             fetch.getCatalog = () => {
@@ -86,26 +54,58 @@ describe(__filename, () => {
                 let { isUpdating } = getApp(url);
                 assert(isUpdating === true);
 
+                let threads = [
+                    // { url: urls[0], replynum: 100 }, // thread is not active already
+                    { url: urls[1], replynum: 50 },
+                    { url: urls[2], replynum: 10 },
+                    { url: urls[3], replynum: 5 }
+                ];
                 let headers = {
                     'last-modified': 'Sun, 01 Jan 2017 01:23:45 GMT',
                     'etag': '"123000"',
                     get(name) { return this[name]; }
                 };
-                let contents = { catalog: { threads: [] } };
+                let contents = { catalog: { threads } };
 
                 return { ok: true, status: 200, statusText: 'OK', headers, contents };
             };
 
+            // for dispose()
+            fetch.get = url => {
+                switch (url) {
+                case urls[0]:
+                    return { ok: false, status: 404 };
+                default:
+                    throw new Error('not reach here');
+                }
+            };
+
             await update(store, url, { sort: 3 });
 
-            let { sort } = getCatalog(url);
-            assert(sort === 3);
+            let { domain, app } = store.getState();
 
-            let { isUpdating, updatedAt, httpRes } = getApp(url);
+            let got = pick(domain.catalogs.get(url), 'url', 'threads', 'sort');
+            let exp = {
+                url,
+                threads: [ urls[1], urls[2], urls[3] ],
+                sort: 3
+            };
+            assert.deepStrictEqual(got, exp);
+
+            got = pluck(domain.threads, 'url', 'replynum', 'newReplynum', 'isActive');
+            exp = [
+                { url: urls[0], replynum: 100, newReplynum: null, isActive: false },
+                { url: urls[1], replynum: 50, newReplynum: 0, isActive: true },
+                { url: urls[2], replynum: 10, newReplynum: 10, isActive: true },
+                { url: urls[3], replynum: 5, newReplynum: null, isActive: true }
+            ];
+            assert.deepStrictEqual(got, exp);
+
+            let { isUpdating, updatedAt, httpRes } = app.catalogs.get(url);
             assert(isUpdating === false);
 
-            let got = Math.ceil(updatedAt / (1000 * 10));
-            let exp = Math.ceil(Date.now() / (1000 * 10));
+            got = Math.ceil(updatedAt / (1000 * 10));
+            exp = Math.ceil(Date.now() / (1000 * 10));
             assert(got === exp);
 
             got = httpRes;
@@ -115,6 +115,16 @@ describe(__filename, () => {
                 etag: '"123000"'
             };
             assert.deepEqual(got, exp);
+
+            got = pluck(app.threads, 'url', 'httpRes')
+                .map(({ url, httpRes }) => ({ url, status: httpRes.status }));
+            exp = [
+                { url: urls[0], status: 404 },
+                { url: urls[1], status: null },
+                { url: urls[2], status: null },
+                { url: urls[3], status: null }
+            ];
+            assert.deepStrictEqual(got, exp);
         });
 
         it('should handle sort correctly', async () => {
@@ -154,6 +164,7 @@ describe(__filename, () => {
 
         it('should update using current catalog url if not pass url', async () => {
             store = createStore({ app: { current: { catalog: url } } });
+            store.dispatch(setDomainCatalogs({ url }));
             store.dispatch(setAppCatalogs({ url }));
 
             fetch.getCatalog = requrl => {
@@ -173,6 +184,7 @@ describe(__filename, () => {
                 app: { current: { catalog: url } },
                 ui: { preferences: preferences.load() }
             });
+            store.dispatch(setDomainCatalogs({ url }));
             store.dispatch(setAppCatalogs({ url }));
 
             let { hostname: domain, pathname: path } = new window.URL(url);
@@ -195,6 +207,7 @@ describe(__filename, () => {
 
         it('should set state correctly if network error occurs', async () => {
             let url = 'about:config';
+            store.dispatch(setDomainCatalogs({ url }));
             store.dispatch(setAppCatalogs({ url }));
 
             await update(store, url, { sort: 3 });
@@ -236,6 +249,7 @@ describe(__filename, () => {
             });
 
             let url = getUrl();
+            store.dispatch(setDomainCatalogs({ url }));
             store.dispatch(setAppCatalogs({ url }));
 
             await update(store, url, { sort: 3 });
@@ -317,10 +331,49 @@ describe(__filename, () => {
 
             let got = merge(storeThreads, newThreads);
             let exp = [
-                { url: urls[1], replynum: 60, newReplynum: 10 },
-                { url: urls[3], replynum: 5 }
+                { url: urls[1], replynum: 60, newReplynum: 10, isActive: true },
+                { url: urls[3], replynum: 5, isActive: true }
             ];
             assert.deepStrictEqual(got, exp);
+        });
+    });
+
+    describe('getCheckTargets()', () => {
+        const { getCheckTargets } = internal;
+
+        beforeEach(() => {
+            let threads = [ 'url-thread01', 'url-thread02', 'url-thread03' ];
+            store.dispatch(setDomainCatalogs({ url, threads }));
+        });
+
+        const url = URL;
+
+        it('should get check targets', () => {
+            let prevUrls = [ 'url-thread01', 'url-thread02', 'url-thread10' ];
+
+            let got = getCheckTargets(store, { url, prevUrls });
+            let exp = [ 'url-thread10' ];
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should get empty list if threads contain all prev urls', () => {
+            let prevUrls = [ 'url-thread01', 'url-thread02', 'url-thread03' ];
+
+            let got = getCheckTargets(store, { url, prevUrls });
+            assert.deepStrictEqual(got, []);
+        });
+
+        it('should get all prev urls if threads are not found', () => {
+            let prevUrls = [ 'url-thread10', 'url-thread11', 'url-thread12' ];
+
+            let got = getCheckTargets(store, { url, prevUrls });
+            let exp = [ 'url-thread10', 'url-thread11', 'url-thread12' ];
+            assert.deepStrictEqual(got, exp);
+        });
+
+        it('should get empty list if there are no prev urls', () => {
+            let got = getCheckTargets(store, { url, prevUrls: [] });
+            assert.deepStrictEqual(got, []);
         });
     });
 });
