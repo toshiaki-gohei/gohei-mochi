@@ -2,6 +2,7 @@
 import { setDomainThreads, setDomainCatalogs, setAppCatalogs } from '../../reducers/actions';
 import { preferences } from '../../model';
 import { checkActive } from '../thread';
+import { contains } from './util';
 import fetch from '../../util/fetch';
 import { catalogUrl } from '../../util/url';
 import { deepCopy } from '~/common/util';
@@ -117,13 +118,6 @@ function getCheckTargets(store, { url, prevUrls }) {
     }
 
     return targets;
-}
-
-function contains(url, threads) {
-    for (let threadUrl of threads) {
-        if (url === threadUrl) return true;
-    }
-    return false;
 }
 
 export const internal = {
