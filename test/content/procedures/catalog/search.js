@@ -12,24 +12,24 @@ describe(__filename, () => {
         let store;
         beforeEach(() => {
             let threads = [
-                { url: 'url-thread01', title: 'foo' },
-                { url: 'url-thread02', title: 'bar' },
-                { url: 'url-thread03', title: 'foo bar' }
+                { url: 'url-thread01', title: 'foo', isActive: true },
+                { url: 'url-thread02', title: 'bar', isActive: true },
+                { url: 'url-thread03', title: 'foo bar', isActive: true }
             ];
-            let threadIds = threads.map(({ url }) => url);
 
             store = createStore({ app: { current: { catalog: URL } } });
             store.dispatch(setDomainThreads(threads));
-            store.dispatch(setDomainCatalogs({ url: URL, threads: threadIds }));
+            store.dispatch(setDomainCatalogs({ url: URL, threads: [] }));
             store.dispatch(setAppCatalogs({ url: URL }));
         });
+
+        const getSearchResults = url => store.getState().app.catalogs.get(url).searchResults;
 
         it('should search if query is and', () => {
             let query = new catalog.Query({ title: 'f b', and: true });
             search(store, query);
 
-            let { searchResults } = store.getState().app.catalogs.get(URL);
-            let got = searchResults;
+            let got = getSearchResults(URL);
             let exp = [
                 'url-thread03'
             ];
@@ -40,8 +40,7 @@ describe(__filename, () => {
             let query = new catalog.Query({ title: 'f b', or: true });
             search(store, query);
 
-            let { searchResults } = store.getState().app.catalogs.get(URL);
-            let got = searchResults;
+            let got = getSearchResults(URL);
             let exp = [
                 'url-thread01',
                 'url-thread03',
@@ -50,13 +49,32 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, exp);
         });
 
+        it('should search from active threads', () => {
+            let query = new catalog.Query({ title: 'f b', or: true });
+            search(store, query);
+
+            let searchResults = getSearchResults(URL);
+            assert(searchResults.length === 3);
+
+            let threads = [];
+            for (let url of store.getState().domain.threads.keys()) {
+                threads.push({ url, isActive: false });
+            }
+            store.dispatch(setDomainThreads(threads));
+
+            search(store, query);
+
+            let got = getSearchResults(URL);
+            assert.deepStrictEqual(got, []);
+        });
+
         it('should not set search results if search resulsts are same resutls', () => {
             let query = new catalog.Query({ title: 'f b', and: true });
             search(store, query);
-            let { searchResults: before } = store.getState().app.catalogs.get(URL);
+            let before = getSearchResults(URL);
 
             search(store, query);
-            let { searchResults: after } = store.getState().app.catalogs.get(URL);
+            let after = getSearchResults(URL);
             assert(after === before);
         });
     });
@@ -112,7 +130,7 @@ describe(__filename, () => {
             assert.deepStrictEqual(got, [ thread ]);
         });
 
-        it('should not search if query is empty', () => {
+        it('should return [] if query is empty', () => {
             let query = new catalog.Query({ title: ' ', and: true });
             let got = _search(query, threads);
             assert.deepStrictEqual(got, []);

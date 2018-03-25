@@ -1,19 +1,16 @@
 'use strict';
 import { setAppCatalogs } from '../../reducers/actions';
-import { getCurrentCatalog, getCurrentAppCatalog } from '../../reducers/getters';
+import { getActiveThreads, getCurrentAppCatalog } from '../../reducers/getters';
 
 export default search;
 
 export function search(store, query) {
-    let { domain } = store.getState();
-
-    let { threads } = getCurrentCatalog(store);
-    threads = threads.map(url => domain.threads.get(url));
+    let threads = getActiveThreads(store);
 
     let searchResults = _search(query, threads).map(thread => thread.url);
 
     let app = getCurrentAppCatalog(store);
-    if (_equals(searchResults, app.searchResults)) return;
+    if (equals(searchResults, app.searchResults)) return;
 
     store.dispatch(setAppCatalogs({ url: app.url, searchResults }));
 }
@@ -25,7 +22,7 @@ function _search(query, threads) {
     return [];
 }
 
-function _equals(results1, results2) {
+function equals(results1, results2) {
     if (results1.length !== results2.length) return false;
     for (let i = 0, len = results1.length; i < len; ++i) {
         if (results1[i] !== results2[i]) return false;
