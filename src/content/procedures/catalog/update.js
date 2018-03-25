@@ -16,7 +16,7 @@ export async function update(store, url, { sort = null } = {}) {
     if (url == null) url = app.current.catalog;
     if (url == null) throw new TypeError('request url is required');
 
-    let { threads: prevUrls } = domain.catalogs.get(url);
+    let prevCatalog = domain.catalogs.get(url);
 
     store.dispatch(setDomainCatalogs({ url, sort }));
     store.dispatch(setAppCatalogs({ url, isUpdating: true }));
@@ -35,7 +35,7 @@ export async function update(store, url, { sort = null } = {}) {
 
     setResponse(store, { url, res });
 
-    await dispose(store, { url, prevUrls });
+    await dispose(store, { url, prevCatalog });
 }
 
 function options(store, { url }) {
@@ -102,18 +102,19 @@ function merge(storeThreads, newThreads) {
     return newThreads;
 }
 
-async function dispose(store, opts) {
-    let targets = getCheckTargets(store, opts);
+async function dispose(store, { url, prevCatalog }) {
+    let { domain } = store.getState();
+    let catalog = domain.catalogs.get(url);
+    let { threads: urls } = prevCatalog;
+
+    let targets = getUrlsNotInCatalog(urls, catalog);
     await checkActive(store, { urls: targets });
 }
 
-function getCheckTargets(store, { url, prevUrls }) {
-    let { domain } = store.getState();
-    let { threads } = domain.catalogs.get(url);
-
+function getUrlsNotInCatalog(urls, catalog) {
     let targets = [];
-    for (let url of prevUrls) {
-        if (contains(url, threads)) continue;
+    for (let url of urls) {
+        if (contains(url, catalog.threads)) continue;
         targets.push(url);
     }
 
@@ -122,5 +123,5 @@ function getCheckTargets(store, { url, prevUrls }) {
 
 export const internal = {
     merge,
-    getCheckTargets
+    getUrlsNotInCatalog
 };

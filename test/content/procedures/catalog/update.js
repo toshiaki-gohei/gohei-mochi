@@ -338,41 +338,40 @@ describe(__filename, () => {
         });
     });
 
-    describe('getCheckTargets()', () => {
-        const { getCheckTargets } = internal;
+    describe('getUrlsNotInCatalog()', () => {
+        const { getUrlsNotInCatalog } = internal;
 
+        let catalog;
         beforeEach(() => {
             let threads = [ 'url-thread01', 'url-thread02', 'url-thread03' ];
-            store.dispatch(setDomainCatalogs({ url, threads }));
+            catalog = { threads };
         });
 
-        const url = URL;
+        it('should get urls that is not in a catalog', () => {
+            let urls = [ 'url-thread01', 'url-thread02', 'url-thread10' ];
 
-        it('should get check targets', () => {
-            let prevUrls = [ 'url-thread01', 'url-thread02', 'url-thread10' ];
-
-            let got = getCheckTargets(store, { url, prevUrls });
+            let got = getUrlsNotInCatalog(urls, catalog);
             let exp = [ 'url-thread10' ];
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should get empty list if threads contain all prev urls', () => {
-            let prevUrls = [ 'url-thread01', 'url-thread02', 'url-thread03' ];
+        it('should get empty list if all urls is in a catalog', () => {
+            let urls = [ 'url-thread01', 'url-thread02', 'url-thread03' ];
 
-            let got = getCheckTargets(store, { url, prevUrls });
+            let got = getUrlsNotInCatalog(urls, catalog);
             assert.deepStrictEqual(got, []);
         });
 
-        it('should get all prev urls if threads are not found', () => {
-            let prevUrls = [ 'url-thread10', 'url-thread11', 'url-thread12' ];
+        it('should get all urls if all urls is not in a catalog', () => {
+            let urls = [ 'url-thread10', 'url-thread11', 'url-thread12' ];
 
-            let got = getCheckTargets(store, { url, prevUrls });
+            let got = getUrlsNotInCatalog(urls, catalog);
             let exp = [ 'url-thread10', 'url-thread11', 'url-thread12' ];
             assert.deepStrictEqual(got, exp);
         });
 
-        it('should get empty list if there are no prev urls', () => {
-            let got = getCheckTargets(store, { url, prevUrls: [] });
+        it('should get empty list if urls is empty', () => {
+            let got = getUrlsNotInCatalog([], catalog);
             assert.deepStrictEqual(got, []);
         });
     });
