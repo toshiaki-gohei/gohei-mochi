@@ -3,7 +3,7 @@ import { setDomainThreads, setAppThreads } from '../../reducers/actions';
 import fetch from '../../util/fetch';
 import { sleep } from '../../util';
 
-const SLEEP_TIME = 100;
+const SLEEP_TIME = 10;
 
 export async function checkActive(store, opts) {
     let { urls = [], sleepTime = SLEEP_TIME } = opts || {};
