@@ -38,6 +38,7 @@
     "@babel/preset-react": "^7.0.0-beta.42",
     "@babel/register": "^7.0.0-beta.42",
     "babel-plugin-root-import": "file:../tmp/babel-plugin-root-import",
+    "babel-preset-power-assert": "^3.0.0-beta.1",
     "babelify": "https://github.com/ylemkimon/babelify",
     "browserify": "16.1.x",
     "envify": "4.x",
@@ -53,6 +54,7 @@
     "karma-mocha": "1.3.x",
     "licensify": "3.x",
     "mocha": "5.x",
-    "node-fetch": "2.1.x"
+    "node-fetch": "2.1.x",
+    "power-assert": "1.5.x"
   }
 }

@@ -8,7 +8,8 @@
         ]
       }
     }],
-    "@babel/preset-react"
+    "@babel/preset-react",
+    "babel-preset-power-assert"
   ],
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",
@@ -16,5 +17,12 @@
       "paths": [
         { "rootPathSuffix": "src" },
         { "rootPathPrefix": "@", "rootPathSuffix": "test" }] }]
-  ]
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+        "babel-plugin-espower"
+      ]
+    }
+  }
 }
