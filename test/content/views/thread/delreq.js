@@ -91,15 +91,15 @@ $`.replace(/\n/g, ''));
 <td class="gohei-td">1</td><td class="gohei-td">No.101</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/102">
-<td class="gohei-td gohei-text-center"><input type="checkbox" value="on"></td>
+<td class="gohei-td gohei-text-center"><input type="checkbox"></td>
 <td class="gohei-td">2</td><td class="gohei-td">No.102</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/110">
-<td class="gohei-td gohei-text-center"><input type="checkbox" value="on"></td>
+<td class="gohei-td gohei-text-center"><input type="checkbox"></td>
 <td class="gohei-td">10</td><td class="gohei-td">No.110</td>
 </tr>
 <tr class="gohei-tr" data-post-id="may/b/111">
-<td class="gohei-td gohei-text-center"><input type="checkbox" value="on"></td>
+<td class="gohei-td gohei-text-center"><input type="checkbox"></td>
 <td class="gohei-td">11</td><td class="gohei-td">No.111</td>
 </tr>
 </tbody>
