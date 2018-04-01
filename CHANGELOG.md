@@ -1,3 +1,10 @@
+## 1.2.1 (2018-04-01)
+
+* change to handle threads on load a catalog
+* change to handle threads on update a catalog
+* change to search all threads instead of threads in a catalog
+* improve to search threads on update catalog if set query
+
 ## 1.2.0 (2018-03-21)
 
 * add a feature to link strings like siokarabin URL in posts
