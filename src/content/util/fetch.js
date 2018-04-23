@@ -10,22 +10,18 @@ export default {
 
 const TIMEOUT = 20 * 1000;
 
-function fetch(url, opts) {
+async function fetch(url, opts) {
     let { timeout = TIMEOUT, ...rest } = opts || {};
     let timeoutId = null;
 
     let p1 = new Promise(async resolve => {
-        let res = await _fetch(url, rest).catch(err => new window.Response(null, {
-            ok: false, status: 499, statusText: `fetch error: ${err.message}`
-        }));
-        clearTimeout(timeoutId);
+        let res;
+        try { res = await _fetch(url, rest); } catch (e) { res = res499(e); }
+        if (timeoutId != null) clearTimeout(timeoutId);
         resolve(res);
     });
     let p2 = new Promise((resolve, reject) => {
-        let res = new window.Response(null, {
-            ok: false, status: 599, statusText: 'request timeout'
-        });
-        timeoutId = setTimeout(reject, timeout, res);
+        timeoutId = setTimeout(reject, timeout, res599());
     });
 
     let promises = [ p1 ];
@@ -34,11 +30,9 @@ function fetch(url, opts) {
     return Promise.race(promises).then(res => res).catch(err => err);
 }
 
-function _fetch(...args) {
-    if (!isFirefox()) return window.fetch(...args);
-
-    // eslint-disable-next-line no-undef
-    return content.fetch(...args);
+async function _fetch(...args) {
+    if (isFirefox()) return content.fetch(...args); // eslint-disable-line no-undef
+    return window.fetch(...args);
 }
 
 export async function get(url, opts) {
@@ -103,6 +97,18 @@ export async function post(url, opts) {
 function response({ res, ...rest }) {
     let { ok, status, statusText, headers } = res;
     return { ok, status, statusText, headers, ...rest };
+}
+
+function res499(err) {
+    return new window.Response(null, {
+        ok: false, status: 499, statusText: `fetch error: ${err.message}`
+    });
+}
+
+function res599() {
+    return new window.Response(null, {
+        ok: false, status: 599, statusText: 'request timeout'
+    });
 }
 
 async function textify(res) {
