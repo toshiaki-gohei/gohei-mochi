@@ -26,8 +26,7 @@ describe(__filename, () => {
     const isVisibleVideo = true;
 
     describe('render()', () => {
-        it('should render video', () => {
-            let isVisibleVideo = true;
+        it('should render webm video', () => {
             let $el = render(<Video {...{ commit, file, isVisibleVideo }} />);
 
             let got = $el.outerHTML;
@@ -41,6 +40,19 @@ describe(__filename, () => {
 <button class="gohei-icon-btn gohei-close-btn gohei-icon-close"></button>
 </div>
 </div>
+$`.replace(/\n/g, ''));
+            assert(exp.test(got));
+        });
+
+        it('should render mp4 video', () => {
+            let { file } = new Post({ index: 1, file: { url: '/b/src/123001.mp4' } });
+            let $el = render(<Video {...{ commit, file, isVisibleVideo }} />);
+
+            let got = $el.querySelector('video').outerHTML;
+            let exp = new RegExp(`^
+<video class="gohei-video" (?=.*style="display: none;")(?=.*autoplay="" controls="" loop="" volume="0\\.5").*>
+<source src="/b/src/123001.mp4" type="video/mp4">
+</video>
 $`.replace(/\n/g, ''));
             assert(exp.test(got));
         });

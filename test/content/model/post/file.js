@@ -72,6 +72,42 @@ describe(__filename, () => {
         });
     });
 
+    describe('isVideo()', () => {
+        it('should return true if file is video', () => {
+            let file = new File({ url: '/b/src/123001.webm' });
+            assert(file.isWebm() === true);
+            file = new File({ url: '/b/src/123001.mp4' });
+            assert(file.isVideo() === true);
+        });
+
+        it('should return false if file is not video', () => {
+            let file = new File({ url: '/b/src/123001.jpg' });
+            assert(file.isVideo() === false);
+        });
+
+        it('should return false if no url', () => {
+            let file = new File();
+            assert(file.isVideo() === false);
+        });
+    });
+
+    describe('isMp4()', () => {
+        it('should return true if file is mp4', () => {
+            let file = new File({ url: '/b/src/123001.mp4' });
+            assert(file.isMp4() === true);
+        });
+
+        it('should return false if file is not mp4', () => {
+            let file = new File({ url: '/b/src/123001.jpg' });
+            assert(file.isMp4() === false);
+        });
+
+        it('should return false if no url', () => {
+            let file = new File();
+            assert(file.isMp4() === false);
+        });
+    });
+
     describe('isWebm()', () => {
         it('should return true if file is webm', () => {
             let file = new File({ url: '/b/src/123001.webm' });

@@ -11,10 +11,10 @@ export default class File extends Component {
         };
 
         let { post } = props;
-        let hasWebmFile = post.hasFile() && post.file.isWebm();
+        let hasVideo = post.hasFile() && post.file.isVideo();
         this._handlers = {
-            showVideo: hasWebmFile ? handleSetVisibleVideo.bind(this, true) : null,
-            hideVideo: hasWebmFile ? handleSetVisibleVideo.bind(this, false) : null
+            showVideo: hasVideo ? handleSetVisibleVideo.bind(this, true) : null,
+            hideVideo: hasVideo ? handleSetVisibleVideo.bind(this, false) : null
         };
     }
 
@@ -57,7 +57,7 @@ function Thumb({ file, isVisibleVideo, showVideo }) {
 
     let $img = <ThumbImage {...{ file }} />;
 
-    if (file.isWebm()) {
+    if (file.isVideo()) {
         return <a href={file.url} onClick={showVideo}>{$img}</a>;
     }
     return <a href={file.url} target="_blank">{$img}</a>;

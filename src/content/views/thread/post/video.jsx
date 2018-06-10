@@ -1,5 +1,5 @@
 'use strict';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 export default class Video extends Component {
     constructor(props) {
@@ -76,9 +76,6 @@ export default class Video extends Component {
 
         let { loadedMetadata, enter, leave, close } = this._handlers;
 
-        let webmUrl = file.url;
-        let mp4Url = file.url.replace(/\.webm$/, '.mp4');
-
         let styleBtn = isActive ? null : { display: 'none' };
 
         return (
@@ -86,8 +83,7 @@ export default class Video extends Component {
   <video className="gohei-video" style={styleVideo} ref={$el => this._$video = $el}
          autoPlay={true} controls={true} loop={loop} muted={muted} volume={volume}
          onLoadedMetadata={loadedMetadata}>
-    <source src={webmUrl} type="video/webm" />
-    <source src={mp4Url} type="video/mp4" />
+    <Sources {...{ file }} />
   </video>
   <div className="gohei-button-area" style={styleBtn}>
     <button className="gohei-icon-btn gohei-close-btn gohei-icon-close" onClick={close} />
@@ -95,6 +91,22 @@ export default class Video extends Component {
 </div>
         );
     }
+}
+
+function Sources({ file }) {
+    if (file.isWebm()) {
+        let mp4Url = file.url.replace(/\.webm$/, '.mp4');
+        return (
+<Fragment>
+  <source src={file.url} type="video/webm" />
+  <source src={mp4Url} type="video/mp4" />
+</Fragment>
+        );
+    } else if (file.isMp4()) {
+        return <source src={file.url} type="video/mp4" />;
+    }
+
+    return null;
 }
 
 function handleSetVideoPrefs() {

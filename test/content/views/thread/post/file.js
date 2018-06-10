@@ -63,7 +63,7 @@ describe(__filename, () => {
             assert(got === exp);
         });
 
-        it('should render file if file is webm', () => {
+        it('should render file if file is video', () => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ index: 1, file });
             let $el = render(<File {...{ post }} />);
@@ -113,7 +113,7 @@ describe(__filename, () => {
     });
 
     describe('event handlers', () => {
-        it('should make handlers if post has a file and a file is webm', () => {
+        it('should make handlers if post has a file and a file is video', () => {
             file.url = '/b/src/123001.webm';
             let post = new Post({ file });
             let $el = render(<File {...{ post }} />);

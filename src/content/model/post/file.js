@@ -23,6 +23,15 @@ export default class File {
         return obj;
     }
 
+    isVideo() {
+        return this.isMp4() || this.isWebm();
+    }
+
+    isMp4() {
+        if (/\.mp4$/.test(this.url)) return true;
+        return false;
+    }
+
     isWebm() {
         if (/\.webm$/.test(this.url)) return true;
         return false;
