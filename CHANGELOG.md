@@ -1,3 +1,7 @@
+## 1.3.0 (2018-06-10)
+
+* modify to play mp4 video in a post
+
 ## 1.2.1 (2018-04-01)
 
 * change to handle threads on load a catalog
