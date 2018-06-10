@@ -11,7 +11,7 @@ export default {
 const TIMEOUT = 20 * 1000;
 
 async function fetch(url, opts) {
-    let { timeout = TIMEOUT, ...rest } = opts || {};
+    let { timeout = TIMEOUT, ...rest } = opts || {}; // eslint-disable-line no-unused-vars
     let timeoutId = null;
 
     let p1 = new Promise(async resolve => {
@@ -20,12 +20,14 @@ async function fetch(url, opts) {
         if (timeoutId != null) clearTimeout(timeoutId);
         resolve(res);
     });
-    let p2 = new Promise((resolve, reject) => {
-        timeoutId = setTimeout(reject, timeout, res599());
-    });
+    // comment out to disable fetch timeout because the issue where tab crashed
+    // using fetch() on Windows
+    // let p2 = new Promise((resolve, reject) => {
+    //     timeoutId = setTimeout(reject, timeout, res599());
+    // });
 
     let promises = [ p1 ];
-    if (timeout !== 0) promises.push(p2);
+    // if (timeout !== 0) promises.push(p2);
 
     return Promise.race(promises).then(res => res).catch(err => err);
 }
@@ -105,6 +107,7 @@ function res499(err) {
     });
 }
 
+// eslint-disable-next-line no-unused-vars
 function res599() {
     return new window.Response(null, {
         ok: false, status: 599, statusText: 'request timeout'

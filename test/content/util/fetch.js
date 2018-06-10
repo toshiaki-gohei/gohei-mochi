@@ -117,7 +117,7 @@ describe(__filename, () => {
             assert(res.text === 'page not found');
         });
 
-        it('should be timeout if request takes time', async () => {
+        it.skip('should be timeout if request takes time', async () => {
             let svr;
             let p = new Promise(resolve => {
                 svr = res => {
@@ -240,7 +240,7 @@ Content-Type: text/plain; charset=Shift_JIS
             assert(res.text === 'テスト');
         });
 
-        it('should be timeout if request takes time', async () => {
+        it.skip('should be timeout if request takes time', async () => {
             let svr;
             let p = new Promise(resolve => {
                 svr = res => {
